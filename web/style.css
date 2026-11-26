@@ -19,3 +19,7 @@ td button { background: none; border: 0; padding: 0; color: #125d51; text-decora
 tr.selected { background: #e2f1e8; }
 #detail, #legend { line-height: 1.55; }
 @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } }
+
+.history { margin-top: 1rem; }
+#download { padding: .35rem .7rem; border: 1px solid #396f64; border-radius: .25rem; background: #e2f1e8; cursor: pointer; }
+#download:disabled { opacity: .55; cursor: default; }

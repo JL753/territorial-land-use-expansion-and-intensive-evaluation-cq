@@ -14,6 +14,7 @@
     <label>年份 <select id="year"></select></label>
     <label>区域 <select id="group"><option value="">全部</option><option>中心城区</option><option>主城新区</option></select></label>
     <label>指标 <select id="metric"><option value="built_km2">建设用地面积（km²）</option><option value="expansion_km2">净扩张面积（km²）</option><option value="annual_expansion_intensity_pct">年均扩张强度（%）</option><option value="intensive_score">集约利用得分</option></select></label>
+    <button id="download" type="button" disabled>导出筛选结果 CSV</button>
   </section>
   <div class="layout">
     <section class="map"><h2>区级分布</h2><canvas id="map" width="780" height="550" aria-label="区级指标地图，可通过旁边的表格选择区县"></canvas><p id="legend"></p></section>
@@ -21,6 +22,12 @@
       <div class="table-wrap"><table><thead><tr><th scope="col">区县</th><th scope="col" id="value-label"></th><th scope="col">集约排名</th></tr></thead><tbody id="rows"></tbody></table></div>
     </section>
   </div>
+  <section id="history" class="history" hidden>
+    <h2 id="history-title">区县历年指标</h2>
+    <div class="table-wrap"><table><thead><tr>
+      <th scope="col">年份</th><th scope="col" id="history-metric"></th><th scope="col">集约排名</th>
+    </tr></thead><tbody id="history-rows"></tbody></table></div>
+  </section>
 </main>
 </body>
 </html>

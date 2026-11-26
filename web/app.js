@@ -11,6 +11,10 @@ const fmt = new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 4 });
 const display = value => value == null ? "—" : fmt.format(value);
 let records = [], features = [], paths = [], selected = null;
 
+function filteredRecords() {
+  return records.filter(row => !group.value || row.group === group.value);
+}
+
 function polygons(feature) {
   return feature.geometry.type === "Polygon" ? [feature.geometry.coordinates] : feature.geometry.coordinates;
 }
@@ -45,12 +49,15 @@ function buildPaths() {
 
 function render() {
   const key = metric.value;
-  const active = records.filter(row => row.year === Number(year.value) && (!group.value || row.group === group.value));
+  const filtered = filteredRecords();
+  const active = filtered.filter(row => row.year === Number(year.value));
   const byCode = new Map(active.map(row => [row.code, row]));
-  const values = active.map(row => row[key]).filter(Number.isFinite);
+  const values = filtered.map(row => row[key]).filter(Number.isFinite);
+  const hasValues = active.some(row => Number.isFinite(row[key]));
   const min = Math.min(...values), max = Math.max(...values);
-  el("legend").textContent = values.length ? `浅 → 深　${display(min)} 至 ${display(max)}　灰色表示无数据或未选区域` : "该年份没有此指标区间。";
+  el("legend").textContent = hasValues ? `跨期统一色阶　浅 → 深　${display(min)} 至 ${display(max)}　灰色表示无数据或未选区域` : "该年份没有此指标区间。";
   el("value-label").textContent = metric.selectedOptions[0].textContent;
+  el("download").disabled = active.length === 0;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (const { code, path } of paths) {
     const value = byCode.get(code)?.[key];
@@ -66,7 +73,12 @@ function render() {
     if (row.code === selected) tr.className = "selected";
     const button = document.createElement("button");
     button.textContent = row.district;
-    button.addEventListener("click", () => { selected = row.code; render(); });
+    button.dataset.code = row.code;
+    button.addEventListener("click", () => {
+      selected = row.code;
+      render();
+      el("rows").querySelector(`button[data-code="${row.code}"]`)?.focus();
+    });
     tr.insertCell().append(button);
     tr.insertCell().textContent = display(row[key]);
     tr.insertCell().textContent = row.rank;
@@ -81,6 +93,19 @@ function render() {
     `非邻接新增 ${display(row.nonadjacent_km2)} km²`,
     `集约得分 ${display(row.intensive_score)}`,
   ].join(" ｜ ") : "点击地图或选择区县查看分项指标。";
+  el("history").hidden = !row;
+  if (row) {
+    el("history-title").textContent = `${row.district}历年指标`;
+    el("history-metric").textContent = metric.selectedOptions[0].textContent;
+    el("history-rows").replaceChildren(...filtered.filter(item => item.code === selected)
+      .sort((a, b) => a.year - b.year).map(item => {
+        const tr = document.createElement("tr");
+        for (const value of [String(item.year), display(item[key]), item.rank]) {
+          tr.insertCell().textContent = value;
+        }
+        return tr;
+      }));
+  }
 }
 
 canvas.addEventListener("click", event => {
@@ -92,6 +117,21 @@ canvas.addEventListener("click", event => {
     selected = hit.code;
     render();
   }
+});
+
+el("download").addEventListener("click", () => {
+  const rows = filteredRecords().filter(row => row.year === Number(year.value));
+  const columns = ["data_kind", "evaluation_basis", "provisional", "code", "district", "group", "year",
+    "interval_start", "built_km2", "expansion_km2", "annual_expansion_intensity_pct", "added_km2", "lost_km2",
+    "population_density", "gdp_density", "secondary_density", "intensive_score", "rank"];
+  const csvValue = value => '"' + String(value ?? "").replaceAll('"', '""') + '"';
+  const content = [columns.join(","), ...rows.map(row => columns.map(column => csvValue(row[column])).join(","))];
+  const url = URL.createObjectURL(new Blob(["\ufeff", content.join("\r\n")], { type: "text/csv;charset=utf-8" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `cq-land-use-${year.value}.csv`;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 });
 
 async function read(path) {
