@@ -16,6 +16,10 @@ CLASSES = {
 }
 
 
+def neighbors(mask):
+    return mask[:-2, 1:-1] | mask[2:, 1:-1] | mask[1:-1, :-2] | mask[1:-1, 2:]
+
+
 def analyze(source, output):
     tables = source / "tables"
     catalog = pd.read_csv(Path(__file__).parent / "data/districts.csv")
@@ -28,6 +32,8 @@ def analyze(source, output):
 
     counts = np.zeros((len(YEARS), 22, 10), dtype=np.int64)
     transitions = np.zeros((len(YEARS) - 1, 22, 10, 10), dtype=np.int64)
+    morphology = np.zeros((len(YEARS) - 1, 22, 3), dtype=np.int64)
+    centroid_sums = np.zeros((len(YEARS), 22, 2))
     rasters = source / "rasters"
     with ExitStack() as stack:
         districts = stack.enter_context(rasterio.open(rasters / "CQ_Metro21_district_id.tif"))
@@ -52,9 +58,15 @@ def analyze(source, output):
                 raise ValueError("Unexpected district raster code.")
             inside = ids != 0
             district_ids = ids[inside].astype(np.int32)
+            rows, cols = np.nonzero(inside)
+            halo = Window(-1, top - 1, districts.width + 2, window.height + 2)
             prior = None
             for index, raster in enumerate(land):
-                current = raster.read(1, window=window)[inside].astype(np.int32)
+                cells = raster.read(1, window=halo, boundless=True, fill_value=255)
+                current = cells[1:-1, 1:-1][inside].astype(np.int32)
+                built = current == 8
+                centroid_sums[index, :, 0] += np.bincount(district_ids[built], cols[built], minlength=22)
+                centroid_sums[index, :, 1] += np.bincount(district_ids[built], rows[built] + top, minlength=22)
                 if np.any(current > 9):
                     raise ValueError(f"Unexpected land-cover class within study districts in {YEARS[index]}.")
                 counts[index] += np.bincount(district_ids * 10 + current, minlength=220).reshape(22, 10)
@@ -63,18 +75,33 @@ def analyze(source, output):
                         raise ValueError("NoData masks differ by year; a common-coverage policy is required.")
                     keys = district_ids * 100 + prior * 10 + current
                     transitions[index - 1] += np.bincount(keys, minlength=2200).reshape(22, 10, 10)
+                    added = built & (prior != 8) & (prior != 0)
+                    adjacent = neighbors(prior_cells == 8)[inside]
+                    unknown = neighbors((prior_cells == 0) | (prior_cells == 255))[inside]
+                    kinds = np.where(adjacent, 0, np.where(unknown, 2, 1))
+                    morphology[index - 1] += np.bincount(
+                        district_ids[added] * 3 + kinds[added], minlength=66
+                    ).reshape(22, 3)
                 prior = current
+                prior_cells = cells
 
     pixel_area = 30 ** 2 / 1e6
     panel, change = [], []
     for row in identities.itertuples(index=False):
         district_id = row.raster_id
+        previous_centroid = np.array([np.nan, np.nan])
         for index, year in enumerate(YEARS):
+            pixels = counts[index, district_id, 8]
+            if pixels:
+                cell_center = centroid_sums[index, district_id] / pixels + 0.5
+                centroid = np.array(transform @ tuple(cell_center))
+            else:
+                centroid = np.array([np.nan, np.nan])
             area = counts[index, district_id] * pixel_area
             panel.append({
                 "adcode": row.code, "district": row.district, "group": row.group, "year": year,
                 "polygon_km2": row.area_km2_albers, "valid_area_km2": area[1:].sum(),
-                "nodata_area_km2": area[0],
+                "nodata_area_km2": area[0], "centroid_x_m": centroid[0], "centroid_y_m": centroid[1],
                 **{f"{label}_km2": area[code] for code, label in CLASSES.items()},
             })
             if index:
@@ -83,18 +110,28 @@ def analyze(source, output):
                 lost = int(matrix[8, 1:8].sum() + matrix[8, 9])
                 if added - lost != counts[index, district_id, 8] - counts[index - 1, district_id, 8]:
                     raise ValueError("Pixel transitions do not reconcile with class totals.")
+                adjacent, detached, unknown = morphology[index - 1, district_id]
+                if adjacent + detached + unknown != added:
+                    raise ValueError("Morphology pixel counts do not reconcile with additions.")
+                dx, dy = centroid - previous_centroid
+                displacement = np.hypot(dx, dy)
                 start = YEARS[index - 1]
                 previous_km2 = counts[index - 1, district_id, 8] * pixel_area
                 change.append({
                     "adcode": row.code, "district": row.district, "group": row.group,
                     "start": start, "end": year, "added_km2": added * pixel_area,
                     "lost_km2": lost * pixel_area, "net_km2": (added - lost) * pixel_area,
+                    "adjacent_km2": adjacent * pixel_area, "nonadjacent_km2": detached * pixel_area,
+                    "adjacency_unknown_km2": unknown * pixel_area,
+                    "centroid_displacement_km": displacement / 1000,
+                    "centroid_bearing_deg": np.degrees(np.arctan2(dx, dy)) % 360 if displacement > 0 else np.nan,
                     "annual_net_km2": (added - lost) * pixel_area / (year - start),
                     "annual_expansion_intensity_pct": (added - lost) * pixel_area * 100
                     / (row.area_km2_albers * (year - start)),
                     "annual_growth_pct": ((area[8] / previous_km2) ** (1 / (year - start)) - 1) * 100
                     if previous_km2 else np.nan,
                 })
+            previous_centroid = centroid
 
     panel = pd.DataFrame(panel)
     change = pd.DataFrame(change)
@@ -112,7 +149,9 @@ def analyze(source, output):
     panel.to_csv(output / "landcover_recomputed.csv", index=False, float_format="%.6f")
     change.to_csv(output / "impervious_change.csv", index=False, float_format="%.6f")
     panel.groupby(["group", "year"])[columns].sum().to_csv(output / "landcover_groups.csv", float_format="%.6f")
-    change.groupby(["group", "start", "end"])[["added_km2", "lost_km2", "net_km2"]].sum().to_csv(
+    change.groupby(["group", "start", "end"])[[
+        "added_km2", "lost_km2", "net_km2", "adjacent_km2", "nonadjacent_km2", "adjacency_unknown_km2"
+    ]].sum().to_csv(
         output / "impervious_change_groups.csv", float_format="%.6f"
     )
     print(f"{len(panel)} district-years; {len(change)} district-period changes; maximum table error {max_error:.8f} km².")
