@@ -1,0 +1,215 @@
+{
+  "generated_at": "2026-11-26 18:38:57",
+  "question": "附件 21 区边界的坐标基准是什么？",
+  "comparison_reference": "GADM 4.1 level-3（CHN），已知为 WGS84",
+  "n_compared": 13,
+  "before": {
+    "median_offset_m": 525.9,
+    "mean_offset_m": 2236.6,
+    "stdev_offset_m": 6025.1,
+    "median_d_lon_deg": 0.004133,
+    "median_d_lat_deg": -0.002154
+  },
+  "after_gcj02_to_wgs84": {
+    "median_offset_m": 184.6,
+    "mean_offset_m": 1902.5
+  },
+  "convergence_pct": 35.1,
+  "verdict": "判定为 GCJ-02（火星坐标，高德/阿里系）。依据：与 WGS84 的 GADM 相比，21 区质心偏移中位 526 m，方向以 +经度、-纬度为系统性倾向（中位 dLon +0.00413°, dLat -0.00215°），量级与方向都符合 GCJ-02 对 WGS84 的典型偏移（300–600 m），而非随机误差。用 gcj02_to_wgs84 迭代反解后，中位偏移降至 185 m（收敛至 35%）。",
+  "caveats": [
+    "GADM 自身与官方边界也有差异（简化、年代不同），因此残余 185 m 不能全部归因于转换误差。",
+    "DataV 边界总点数仅 3080，是简化边界，面积与官方差 -0.05%。",
+    "GADM 缺 8 个中心城区的同名面（Yuzhong/Dadukou/Shapingba/Jiulongpo/Nan'an/Beibei/Yubei/Banan 在当时按区处理方式不同），故可比区县为 12 个，全部位于主城新区与外围。"
+  ],
+  "deliverables": {
+    "original_gcj02": "out/boundaries/CQ_Metro21_districts.geojson",
+    "converted_wgs84": "out/boundaries/CQ_Metro21_districts_wgs84.geojson",
+    "albers_projected": "out/boundaries/CQ_Metro21_districts_albers.shp"
+  },
+  "per_district": [
+    {
+      "adcode": 500103,
+      "district": "渝中区",
+      "status": "GADM 无对应面，跳过比对"
+    },
+    {
+      "adcode": 500104,
+      "district": "大渡口区",
+      "status": "GADM 无对应面，跳过比对"
+    },
+    {
+      "adcode": 500105,
+      "district": "江北区",
+      "d_lon_deg": -0.009506,
+      "d_lat_deg": -0.205913,
+      "d_east_m": -510.8,
+      "d_north_m": -23101.2,
+      "offset_m": 23106.8,
+      "offset_after_wgs84_m": 22815.6
+    },
+    {
+      "adcode": 500106,
+      "district": "沙坪坝区",
+      "status": "GADM 无对应面，跳过比对"
+    },
+    {
+      "adcode": 500107,
+      "district": "九龙坡区",
+      "status": "GADM 无对应面，跳过比对"
+    },
+    {
+      "adcode": 500108,
+      "district": "南岸区",
+      "status": "GADM 无对应面，跳过比对"
+    },
+    {
+      "adcode": 500109,
+      "district": "北碚区",
+      "status": "GADM 无对应面，跳过比对"
+    },
+    {
+      "adcode": 500112,
+      "district": "渝北区",
+      "status": "GADM 无对应面，跳过比对"
+    },
+    {
+      "adcode": 500113,
+      "district": "巴南区",
+      "status": "GADM 无对应面，跳过比对"
+    },
+    {
+      "adcode": 500102,
+      "district": "涪陵区",
+      "d_lon_deg": 0.004471,
+      "d_lat_deg": -0.003277,
+      "d_east_m": 436.5,
+      "d_north_m": -357.2,
+      "offset_m": 564.0,
+      "offset_after_wgs84_m": 67.4
+    },
+    {
+      "adcode": 500115,
+      "district": "长寿区",
+      "d_lon_deg": 0.005924,
+      "d_lat_deg": -0.001113,
+      "d_east_m": 567.6,
+      "d_north_m": -112.7,
+      "offset_m": 578.7,
+      "offset_after_wgs84_m": 235.5
+    },
+    {
+      "adcode": 500116,
+      "district": "江津区",
+      "d_lon_deg": 0.005146,
+      "d_lat_deg": -0.001556,
+      "d_east_m": 498.4,
+      "d_north_m": -167.9,
+      "offset_m": 525.9,
+      "offset_after_wgs84_m": 212.3
+    },
+    {
+      "adcode": 500117,
+      "district": "合川区",
+      "d_lon_deg": 0.004514,
+      "d_lat_deg": -0.002037,
+      "d_east_m": 432.8,
+      "d_north_m": -222.9,
+      "offset_m": 486.8,
+      "offset_after_wgs84_m": 96.1
+    },
+    {
+      "adcode": 500118,
+      "district": "永川区",
+      "d_lon_deg": 0.004133,
+      "d_lat_deg": -0.002964,
+      "d_east_m": 400.2,
+      "d_north_m": -328.6,
+      "offset_m": 517.8,
+      "offset_after_wgs84_m": 46.2
+    },
+    {
+      "adcode": 500119,
+      "district": "南川区",
+      "d_lon_deg": 0.003016,
+      "d_lat_deg": -0.001602,
+      "d_east_m": 294.4,
+      "d_north_m": -173.0,
+      "offset_m": 341.4,
+      "offset_after_wgs84_m": 184.6
+    },
+    {
+      "adcode": 500110,
+      "district": "綦江区",
+      "d_lon_deg": 0.003527,
+      "d_lat_deg": -0.003879,
+      "d_east_m": 348.2,
+      "d_north_m": -428.2,
+      "offset_m": 551.9,
+      "offset_after_wgs84_m": 81.1
+    },
+    {
+      "adcode": 500111,
+      "district": "大足区",
+      "d_lon_deg": 0.003548,
+      "d_lat_deg": -0.002258,
+      "d_east_m": 341.6,
+      "d_north_m": -250.6,
+      "offset_m": 423.7,
+      "offset_after_wgs84_m": 58.7
+    },
+    {
+      "adcode": 500120,
+      "district": "璧山区",
+      "d_lon_deg": 0.003038,
+      "d_lat_deg": -0.002154,
+      "d_east_m": 294.0,
+      "d_north_m": -238.0,
+      "offset_m": 378.2,
+      "offset_after_wgs84_m": 94.0
+    },
+    {
+      "adcode": 500151,
+      "district": "铜梁区",
+      "d_lon_deg": 0.00249,
+      "d_lat_deg": -0.004327,
+      "d_east_m": 242.9,
+      "d_north_m": -482.8,
+      "offset_m": 540.5,
+      "offset_after_wgs84_m": 218.2
+    },
+    {
+      "adcode": 500152,
+      "district": "潼南区",
+      "d_lon_deg": 0.005641,
+      "d_lat_deg": 0.000751,
+      "d_east_m": 536.2,
+      "d_north_m": 88.6,
+      "offset_m": 543.5,
+      "offset_after_wgs84_m": 435.9
+    },
+    {
+      "adcode": 500153,
+      "district": "荣昌区",
+      "d_lon_deg": 0.005004,
+      "d_lat_deg": -0.001713,
+      "d_east_m": 481.1,
+      "d_north_m": -189.6,
+      "offset_m": 517.1,
+      "offset_after_wgs84_m": 186.8
+    }
+  ],
+  "review": {
+    "source_report_sha256": "bcbac4f6f8a7820bfff80e11b16c9ea25457c78753661345edc924ec1a2513d6",
+    "comparison_count_from_per_district": 13,
+    "report_consistency": "逐区记录及 n_compared 均为 13，原 caveats 中“12 个”按笔误处理。",
+    "assessment": "证据支持 DataV 原始边界采用 GCJ-02。转换结果用于区级 WebGIS 展示，未通过同源控制点或权威边界的独立测绘精度验证。",
+    "map_geometry_repaired_codes": [
+      500107,
+      500115,
+      500117,
+      500151,
+      500152
+    ],
+    "landcover_basis": "土地覆盖和扩张指标沿用附件原生 Albers 网格及区归属栅格。转换后边界未用于重划像元，原网格的历史边界配准误差仍未量化。"
+  }
+}

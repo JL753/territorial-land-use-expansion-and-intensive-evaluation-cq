@@ -106,8 +106,10 @@ Promise.all([read("/dashboard.json"), read("/districts.geojson")]).then(([rows, 
   buildPaths();
   const years = [...new Set(records.map(row => row.year))].sort((a, b) => b - a);
   years.forEach(value => year.add(new Option(value, value)));
+  const exploratory = records.some(row => row.evaluation_basis === "nominal_four_year_exploratory");
   status.textContent = records.some(row => row.data_kind === "demo")
-    ? "模拟数据与虚构几何，仅用于系统验证" : "实测数据 · 区级统计";
+    ? "模拟数据与虚构几何，仅用于系统验证"
+    : exploratory ? "四期探索性评分 · 现价指标 · 2010、2015 年经济分项待复核" : "实测数据 · 区级统计";
   [year, group, metric].forEach(control => control.addEventListener("change", () => {
     if (!records.some(row => row.code === selected && (!group.value || row.group === group.value))) selected = null;
     render();

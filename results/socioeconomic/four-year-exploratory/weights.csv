@@ -1,0 +1,4 @@
+indicator,weight,data_kind
+population_density,0.2576718223708832,observed
+gdp_density,0.5357681406829267,observed
+secondary_density,0.20656003694619005,observed

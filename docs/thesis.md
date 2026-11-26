@@ -1,16 +1,16 @@
 # 基于多源国土空间数据的重庆市主城都市区建设用地扩张时空格局与集约利用评价系统设计与实现
 
-毕业论文工作稿。系统设计、算法和合成数据实验已可复现。研究区实证部分须在原始数据到齐并完成口径复核后撰写。
+毕业论文工作稿。系统设计、算法和合成数据实验已可复现。已完成不透水面扩张实证、2020 与 2022 年集约利用比较和四期探索性评价。早期经济分项仍需核对年鉴原表。
 
 ## 摘要
 
-本文设计并实现一套面向重庆市主城都市区的建设用地扩张分析与集约利用评价系统。研究单元为中心城区和主城新区的 21 个行政区，分析时点设为 2010、2015、2020 和 2022 年。系统统一多期分类栅格的空间参考与像元网格，在固定区界内提取建设用地规模、净增长、新增与减少面积、邻接形态和用地重心位移。人口承载密度、单位建设用地地区生产总值和单位建设用地第二产业增加值经统一标准化后，采用熵权 TOPSIS 计算相对集约利用得分，并用等权结果检验排名敏感性。系统利用 PostGIS 管理区界和评价结果，通过 WebGIS 提供地图和分项指标查询。合成数据实验覆盖 21 区四期观测，验证了面积核算、面板匹配、空间查询与浏览器交互。附件栅格复算显示，2010—2022 年研究区有效范围内不透水面净增 625.00 km²，三个阶段的年均净增依次为 61.58、51.48 和 29.84 km²。集约利用差异有待取得同期社会经济资料后检验。
+本文设计并实现一套面向重庆市主城都市区的建设用地扩张分析与集约利用评价系统。研究单元为中心城区和主城新区的 21 个行政区，分析时点设为 2010、2015、2020 和 2022 年。系统统一多期分类栅格的空间参考与像元网格，在固定区界内提取建设用地规模、净增长、新增与减少面积、邻接形态和用地重心位移。人口承载密度、单位建设用地地区生产总值和单位建设用地第二产业增加值经统一标准化后，采用熵权 TOPSIS 计算相对集约利用得分，并用等权结果检验排名敏感性。系统利用 PostGIS 管理区界和评价结果，通过 WebGIS 提供地图和分项指标查询。合成数据实验覆盖 21 区四期观测，验证了面积核算、面板匹配、空间查询与浏览器交互。附件栅格复算显示，2010—2022 年研究区有效范围内不透水面净增 625.00 km²，三个阶段的年均净增依次为 61.58、51.48 和 29.84 km²。2020、2022 年以 42 条较高质量观测计算集约利用，渝中区、涪陵区与荣昌区两期均列前三。2020—2022 年扩张强度与期末得分的 Spearman 系数为 −0.378。2010、2015 年经济分项纳入探索性评价并保留口径限制。
 
 **关键词**　建设用地扩张，土地集约利用，CLCD，熵权 TOPSIS，WebGIS
 
 ## Abstract
 
-This study designs and implements a system for analysing construction-land expansion and evaluating intensive land use in the Chongqing metropolitan area. The study covers 21 districts in 2010, 2015, 2020 and 2022. Aligned categorical rasters and fixed district boundaries support the estimation of land area, gains and losses, adjacency of new cells, and changes in the centroid of construction land. An entropy-weighted TOPSIS model combines population and economic output densities. Equal-weight TOPSIS provides a ranking sensitivity check. A PostGIS database and a WebGIS dashboard expose district geometry and results. A synthetic panel demonstrates the processing and visualization workflow. Recalculation from the supplied land-cover rasters shows a net increase in impervious surface of 625.00 km² from 2010 to 2022. Intensive-use evaluation requires harmonized socioeconomic records.
+This study designs and implements a system for analysing construction-land expansion and evaluating intensive land use in the Chongqing metropolitan area. The study covers 21 districts in 2010, 2015, 2020 and 2022. Aligned categorical rasters and fixed district boundaries support the estimation of land area, gains and losses, adjacency of new cells, and changes in the centroid of construction land. An entropy-weighted TOPSIS model combines population and economic output densities. Equal-weight TOPSIS provides a ranking sensitivity check. A PostGIS database and a WebGIS dashboard expose district geometry and results. A synthetic panel demonstrates the processing and visualization workflow. Recalculation from the supplied land-cover rasters shows a net increase in impervious surface of 625.00 km² from 2010 to 2022. A separate evaluation based on 42 district-year observations in 2020 and 2022 places Yuzhong, Fuling and Rongchang in the top three in both years. Expansion intensity and the 2022 score show a descriptive Spearman correlation of −0.378. Early economic data were retained only in an exploratory analysis due to extraction and historical-boundary uncertainty.
 
 **Keywords**　construction-land expansion, intensive land use, CLCD, TOPSIS, WebGIS
 
@@ -24,7 +24,7 @@ This study designs and implements a system for analysing construction-land expan
 
 ## 第 2 章 研究区和数据
 
-研究计划采用 CLCD 的四期土地覆盖分类、统一行政边界和统计年鉴区县资料。CLCD 基于 Landsat 观测提供长期土地覆盖信息，可用于跨年土地覆盖变化研究。本文以对应不透水面的分类作为遥感建设用地操作定义。国土调查法定建设用地与城建统计建成区各有自己的定义和范围。
+研究使用附件提供的 CLCD 四期土地覆盖分类、固定区归属栅格和统计年鉴转录的区县资料。CLCD 基于 Landsat 观测提供长期土地覆盖信息，可用于跨年土地覆盖变化研究。本文以对应不透水面的分类作为遥感建设用地操作定义。国土调查法定建设用地与城建统计建成区各有自己的定义和范围。
 
 使用同一套边界提取四期面积，可以保持空间分母的一致性。统计资料须按相同区界重新核对，包括 2010 年的区县拆并和功能区。处理表记录原始单位、具体表号、经济价格、合并依据和文件版本。四期共 84 条面板记录。每一阶段的区际关联单独分析，避免把同一区跨期记录当作独立样本。
 
@@ -64,11 +64,13 @@ GDP 包含第二产业增加值，两项使用相同面积分母，指标之间�
 
 附件实测复算采用原生 30 米 Albers 网格与区归属栅格。2010、2015、2020、2022 年的不透水面面积分别为 668.8755、976.7943、1,234.2015 和 1,293.8787 km²。2010—2022 年净增 625.0032 km²，增幅 93.44%。三个阶段年均净增由 61.58 km² 降至 29.84 km²。主城新区在 2020—2022 年净增 36.37 km²，占该阶段总增量的 60.95%。区级累计净增以渝北区最高。附件汇总表经 84 条区年重算验证。详见 [四期不透水面扩张实证结果](landcover-results.md)。
 
-167.0256 km² 研究区像元四期均缺测，因此面积和变化结论适用于共同有效范围。附件区界的坐标来源仍需核对。阶段邻接分类和重心位移已按原生栅格复算，未知邻域面积单列。同期人口、GDP 和第二产业增加值到齐后，才能完成集约得分及名次、等权敏感性和分期关联。
+167.0256 km² 研究区像元四期均缺测，因此面积和变化结论适用于共同有效范围。附件区界的坐标来源仍需核对。阶段邻接分类和重心位移已按原生栅格复算，未知邻域面积单列。同期人口、GDP 和第二产业增加值已按 21 区与四期土地覆盖关联。2020、2022 年 42 条观测以同一参照计算，人口、GDP 与二产用地密度的权重分别为 0.2025、0.5740、0.2235。两期前三均为渝中区、涪陵区和荣昌区。改用等权后 21 条区年观测名次变化。2020—2022 年扩张强度与期末得分的区际 Spearman 系数为 −0.378。
+
+四期探索性比较保留 2010、2015 年经济数据的 B/C 质量标识。以另一附件中 2010 年綦江和大足的经济合并口径作敏感性检验，结果改变 5 条区年名次。由于理想点和熵权基于整个面板，即使早期修改也可能影响后期排名。正式比较使用现价产出，得分变化包含价格因素。详见 [集约利用评价实证结果](socioeconomic-results.md)。
 
 ## 第 6 章 结论与展望
 
-本文实现了统一观测口径、栅格变化提取、集约评价、空间存储与交互查询的工作流，合成实验验证了关键计算和数据接口。附件实测表明，2010—2022 年研究区不透水面增加且年均净增放缓。集约利用实证部分仍需完成统计资料收集和口径核验。现有分析以区级尺度和遥感地表分类为基础，后续可在同一数据口径下核验山地坡度、距离水系与道路等空间因素，并增加栅格精度和行政尺度敏感性分析。
+本文实现了统一观测口径、栅格变化提取、集约评价、空间存储与交互查询的工作流，合成实验验证了关键计算和数据接口。附件实测表明，2010—2022 年研究区不透水面增加且年均净增放缓。2020、2022 年集约评价提供了可复现的区际比较，结果对指标权重有一定敏感性。2010、2015 年的跨期解释仍受 OCR 和历史区划口径影响。现有分析以区级尺度和遥感地表分类为基础，后续可在同一数据口径下核验山地坡度、距离水系与道路等空间因素，并增加栅格精度和行政尺度敏感性分析。
 
 ## 参考资料
 
