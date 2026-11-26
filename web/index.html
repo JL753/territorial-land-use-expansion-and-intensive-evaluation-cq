@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>重庆主城都市区建设用地分析</title>
+<link rel="stylesheet" href="/style.css">
+<script defer src="/app.js"></script>
+</head>
+<body>
+<header><h1>重庆主城都市区建设用地分析</h1><p id="status" role="status">正在加载数据</p></header>
+<main>
+  <section class="controls" aria-label="筛选">
+    <label>年份 <select id="year"></select></label>
+    <label>区域 <select id="group"><option value="">全部</option><option>中心城区</option><option>主城新区</option></select></label>
+    <label>指标 <select id="metric"><option value="built_km2">建设用地面积（km²）</option><option value="expansion_km2">净扩张面积（km²）</option><option value="annual_expansion_intensity_pct">年均扩张强度（%）</option><option value="intensive_score">集约利用得分</option></select></label>
+  </section>
+  <div class="layout">
+    <section class="map"><h2>区级分布</h2><canvas id="map" width="780" height="550" aria-label="区级指标地图，可通过旁边的表格选择区县"></canvas><p id="legend"></p></section>
+    <section><h2>区级数据</h2><p id="detail" aria-live="polite">点击地图或选择区县查看分项指标。</p>
+      <div class="table-wrap"><table><thead><tr><th scope="col">区县</th><th scope="col" id="value-label"></th><th scope="col">集约排名</th></tr></thead><tbody id="rows"></tbody></table></div>
+    </section>
+  </div>
+</main>
+</body>
+</html>
