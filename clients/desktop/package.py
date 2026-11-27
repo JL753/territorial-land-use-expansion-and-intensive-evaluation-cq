@@ -14,4 +14,5 @@ with ZipFile(target, "w", compression=ZIP_DEFLATED) as archive:
     for name in ("dashboard.json", "districts.geojson"):
         archive.write(root / "results/socioeconomic/four-year-exploratory" / name, "assets/" + name)
     archive.write(root / "results/analysis/report.json", "assets/analysis-report.json")
+    archive.write(root / "results/socioeconomic/recent-year-comparison/district_year.csv", "assets/recent-observations.csv")
 print(target.name)

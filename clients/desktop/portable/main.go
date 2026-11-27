@@ -4,6 +4,7 @@ package main
 import (
     "embed"
     "encoding/json"
+    "encoding/csv"
     "errors"
     "fmt"
     "io/fs"
@@ -42,6 +43,21 @@ func run() error {
     mux.HandleFunc("/api/config",func(w http.ResponseWriter,r *http.Request){
         w.Header().Set("Content-Type","application/json")
         fmt.Fprint(w,"{}")
+    })
+    mux.HandleFunc("/api/v1/recent-observations/",func(w http.ResponseWriter,r *http.Request){
+        file, err := files.Open("recent-observations.csv")
+        if err != nil { http.Error(w,"Study observations unavailable",503); return }
+        defer file.Close()
+        rows, err := csv.NewReader(file).ReadAll()
+        if err != nil || len(rows)==0 { http.Error(w,"Study observations unavailable",503); return }
+        values := make([]map[string]string,0,len(rows)-1)
+        for _, fields := range rows[1:] {
+            row := make(map[string]string)
+            for i,key := range rows[0] { row[key] = fields[i] }
+            values = append(values,row)
+        }
+        w.Header().Set("Content-Type","application/json")
+        json.NewEncoder(w).Encode(map[string]any{"count":len(values),"results":values})
     })
     check := len(os.Args)>1 && os.Args[1]=="--check"
     address := "127.0.0.1:38421"

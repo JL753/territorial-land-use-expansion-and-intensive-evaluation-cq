@@ -2,6 +2,7 @@
 import argparse
 import csv
 import json
+from io import StringIO
 import os
 from pathlib import Path
 import shutil
@@ -31,6 +32,7 @@ def resources():
     assets["analysis-report.json"] = (ROOT / "results/analysis/report.json").read_bytes()
     for name in ("dashboard.json", "districts.geojson"):
         assets[name] = (ROOT / RESULTS / name).read_bytes()
+    assets["recent-observations.csv"] = (ROOT / "results/socioeconomic/recent-year-comparison/district_year.csv").read_bytes()
     return assets
 
 
@@ -40,7 +42,11 @@ def local_server(assets, port=0):
             key = urlsplit(self.path).path.removeprefix("/") or "index.html"
             if key == "api/v1/analysis/":
                 key = "analysis-report.json"
-            data = b"{}" if key == "api/config" else assets.get(key)
+            if key == "api/v1/recent-observations/":
+                rows = list(csv.DictReader(StringIO(assets["recent-observations.csv"].decode("utf-8-sig"))))
+                data = json.dumps({"count": len(rows), "results": rows}, ensure_ascii=False).encode("utf-8")
+            else:
+                data = b"{}" if key == "api/config" else assets.get(key)
             if data is None:
                 self.send_error(404)
                 return
