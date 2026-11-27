@@ -53,6 +53,40 @@ def snapshot(name):
 
 
 @require_GET
+def health(request):
+    """Readiness probe: report ready only when the full 21-district, four-period panel is usable."""
+    try:
+        boundary_data = snapshot("districts.geojson")
+        rows = snapshot("dashboard.json")
+        features = boundary_data.get("features", []) if isinstance(boundary_data, dict) else []
+        codes = {
+            str(feature["properties"]["code"])
+            for feature in features
+            if isinstance(feature, dict) and isinstance(feature.get("properties"), dict)
+        }
+        years = sorted({row["year"] for row in rows})
+        keys = {(str(row["code"]), row["year"]) for row in rows}
+        expected_years = [2010, 2015, 2020, 2022]
+        if (
+            len(features) != 21 or len(codes) != 21 or len(rows) != 84
+            or years != expected_years
+            or keys != {(code, year) for code in codes for year in expected_years}
+        ):
+            raise ValueError("The published study panel is incomplete.")
+    except (DatabaseError, ValueError, OSError, KeyError, TypeError, AttributeError):
+        return JsonResponse(
+            {"status": "not_ready", "error": "研究数据尚未完成初始化或完整性校验。"},
+            status=503,
+        )
+    return JsonResponse({
+        "status": "ok",
+        "districts": len(codes),
+        "observations": len(rows),
+        "years": years,
+    })
+
+
+@require_GET
 def data(request, name):
     try:
         result = snapshot(name)
