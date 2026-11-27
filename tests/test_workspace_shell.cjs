@@ -27,11 +27,12 @@ test("every web entry point loads the shared workspace assets", () => {
 test("the home research tabs remain compatible with the existing app controller", () => {
   const shell = fs.readFileSync(path.join(root, "web", "workspace.js"), "utf8");
   const app = fs.readFileSync(path.join(root, "web", "app.js"), "utf8");
+  const home = fs.readFileSync(path.join(root, "web", "index.html"), "utf8");
   assert.match(shell, /nav\[aria-label="主导航"\]/);
   assert.match(shell, /workspace-module-nav/);
   assert.match(app, /document\.querySelectorAll\("nav button"\)/);
   for (const key of ["overview", "lab", "relations", "analytics", "library", "assistant", "report"]) {
-    assert.ok(shell.includes('data-page="' + key + '"') || app.includes('"' + key + '"'), "missing module " + key);
+    assert.ok(home.includes('data-page="' + key + '"'), "missing home module " + key);
   }
 });
 
