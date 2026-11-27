@@ -272,3 +272,12 @@ body.app-mobile-page .paper,body.app-mobile-page .tile{border-radius:13px;box-sh
   .workspace-content{padding:0}
   body.app-shell-page{background:#fff!important}
 }
+
+body[data-app-page="city"] .tool-accordion{margin:.55rem 0;padding:.5rem 0;border-top:1px solid #e3ebef}
+body[data-app-page="city"] .tool-accordion summary{display:flex;align-items:center;justify-content:space-between;gap:10px;list-style:none;cursor:pointer;color:#315e75;font-size:11px;font-weight:750}
+body[data-app-page="city"] .tool-accordion summary::-webkit-details-marker{display:none}
+body[data-app-page="city"] .tool-accordion summary::after{content:"＋";display:grid;place-items:center;width:22px;height:22px;border-radius:7px;background:#eef5f8;color:#397b91;font-size:13px}
+body[data-app-page="city"] .tool-accordion[open] summary::after{content:"−"}
+body[data-app-page="city"] .tool-accordion[open] summary{margin-bottom:.55rem}
+body[data-app-page="city"] .tool-accordion .layer-list{margin:0}
+body[data-app-page="city"] .tool-accordion>label{margin:.55rem 0}
