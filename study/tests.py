@@ -66,6 +66,11 @@ class StudyViewsTests(TestCase):
         self.assertEqual(response.json()["status"], "not_built")
         self.assertEqual(response.json()["rows"], [])
 
+    @override_settings(OSM_OUTPUT_DIR=Path("/tmp/shancheng-test-osm-missing"))
+    def test_osm_layer_endpoint_does_not_claim_missing_coverage(self):
+        self.assertEqual(self.client.get("/api/v1/osm-status/").json()["status"], "not_built")
+        self.assertEqual(self.client.get("/api/v1/osm-layers/buildings/500105.geojson").status_code, 404)
+
     @override_settings(OLLAMA_MODEL="test")
     def test_csrf_and_json_validation(self):
         browser = Client(enforce_csrf_checks=True)

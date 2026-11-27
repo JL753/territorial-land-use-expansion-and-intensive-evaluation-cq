@@ -39,7 +39,7 @@ jobs:
           DJANGO_DEBUG: "1"
           DJANGO_SECRET_KEY: "ci-only-not-for-deployment"
         run: |
-          python -m py_compile tools/build_clcd_district_series.py
+          python -m py_compile tools/build_clcd_district_series.py tools/build_chongqing_osm_layers.py
           python manage.py check
           python manage.py migrate --noinput
           python manage.py import_study

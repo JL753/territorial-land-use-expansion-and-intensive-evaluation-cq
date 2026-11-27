@@ -1,7 +1,7 @@
 "use strict";
 (function(){
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
-const state={features:[],rows:[],landcoverRows:[],selected:params.get("code")||"",year:null,metric:"built_km2",map:null,source:null};
+const state={features:[],rows:[],landcoverRows:[],selected:params.get("code")||"",year:null,metric:"built_km2",map:null,source:null,osmSequence:0};
 const metrics={built_km2:["不透水面面积","km²"],expansion_km2:["阶段净扩张","km²"],annual_expansion_intensity_pct:["年均扩张强度","%"],intensive_score:["集约利用得分","分"]};
 const fmt=(v,d=2)=>Number.isFinite(Number(v))?Number(v).toLocaleString("zh-CN",{maximumFractionDigits:d}):"—";
 const code=f=>String(f.properties.code),name=f=>f.properties.district;
@@ -23,7 +23,36 @@ function selectDistrict(value,fly=true){
  if(state.map&&fly)state.map.fitBounds(bounds(f.geometry),{padding:65,duration:1000,maxZoom:11.5});
  if(state.source)state.source.setData({type:"FeatureCollection",features:state.features.map(x=>({...x,properties:{...x.properties,selected:code(x)===state.selected}}))});
  profile();
+ if(state.map)loadOsmLayers(state.selected);
 }
+
+async function loadOsmLayers(code){
+ const sequence=++state.osmSequence;
+ const definitions=[
+  ["buildings","district-buildings",{id:"district-buildings-3d",type:"fill-extrusion",source:"district-buildings",
+   paint:{"fill-extrusion-color":["interpolate",["linear"],["to-number",["get","height_m"]],0,"#b8d0df",12,"#6f9bb8",40,"#3e6f94"],
+    "fill-extrusion-height":["coalesce",["to-number",["get","height_m"]],6],"fill-extrusion-base":0,"fill-extrusion-opacity":0.84}}],
+  ["roads","district-roads",{id:"district-roads-line",type:"line",source:"district-roads",
+   paint:{"line-color":"#e6a95c","line-width":["interpolate",["linear"],["zoom"],8,0.5,14,2.2],"line-opacity":0.82}}],
+  ["poi","district-poi",{id:"district-poi-points",type:"circle",source:"district-poi",
+   paint:{"circle-radius":["interpolate",["linear"],["zoom"],8,2,15,5],"circle-color":"#bd6f54","circle-stroke-color":"#fff","circle-stroke-width":1}}]
+ ];
+ await Promise.all(definitions.map(async ([layer,sourceId])=>{
+  try{
+   const response=await fetch("/api/v1/osm-layers/"+layer+"/"+code+".geojson");
+   if(!response.ok)throw new Error("OSM layer unavailable");
+   const data=await response.json();
+   if(sequence!==state.osmSequence||!state.map)return;
+   if(state.map.getSource(sourceId))state.map.getSource(sourceId).setData(data);
+   else state.map.addSource(sourceId,{type:"geojson",data});
+   const layerId=layer==="buildings"?"district-buildings-3d":layer==="roads"?"district-roads-line":"district-poi-points";
+   if(!state.map.getLayer(layerId))state.map.addLayer(definitions.find(x=>x[0]===layer)[2]);
+  }catch(error){
+   if(sequence===state.osmSequence&&layer==="buildings")console.info("该区县尚无已发布 OSM 建筑图层",code);
+  }
+ }));
+}
+
 function initMap(){
  if(!window.maplibregl)throw new Error("MapLibre 未加载，请检查网络。");
  state.map=new maplibregl.Map({container:"district-map",center:[106.55,29.6],zoom:8.2,pitch:62,bearing:-15,maxPitch:82,style:{version:8,sources:{osm:{type:"raster",tiles:["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],tileSize:256,attribution:"© OpenStreetMap contributors",maxzoom:19},dem:{type:"raster-dem",tiles:["https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"],encoding:"terrarium",tileSize:256,maxzoom:15}},layers:[{id:"background",type:"background",paint:{"background-color":"#dceaf3"}},{id:"terrain-hillshade",type:"hillshade",source:"dem",paint:{"hillshade-exaggeration":0.35}},{id:"osm",type:"raster",source:"osm",paint:{"raster-opacity":0.68}}]},canvasContextAttributes:{antialias:true}});

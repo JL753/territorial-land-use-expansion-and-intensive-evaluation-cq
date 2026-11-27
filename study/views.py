@@ -356,3 +356,34 @@ def landcover_series(request):
     response = JsonResponse(payload, json_dumps_params={"ensure_ascii": False})
     response["Cache-Control"] = "no-store"
     return response
+
+
+@require_GET
+def osm_status(request):
+    manifest_path = settings.OSM_OUTPUT_DIR / "manifest.json"
+    if not manifest_path.is_file():
+        return JsonResponse({"status": "not_built", "counts": {}, "snapshot_date": None})
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if manifest.get("schema") != 1 or len(manifest.get("districts", [])) != 21:
+            raise ValueError("Invalid 21-district OSM manifest.")
+        return JsonResponse({
+            "status": "ready", "snapshot_date": manifest.get("snapshot_date"),
+            "generated_at": manifest.get("generated_at"), "license": manifest.get("license"),
+            "pbf_sha256": manifest.get("pbf_sha256"), "counts": manifest.get("counts", {}),
+        }, json_dumps_params={"ensure_ascii": False})
+    except (OSError, ValueError, TypeError) as exc:
+        return JsonResponse({"status": "invalid", "error": str(exc)}, status=503)
+
+
+@require_GET
+def osm_layer(request, layer, code):
+    if layer not in {"buildings", "roads", "poi"} or not re.fullmatch(r"\d{6}", code):
+        raise Http404
+    path = settings.OSM_OUTPUT_DIR / f"{layer}_{code}.geojson"
+    if not path.is_file():
+        raise Http404
+    response = FileResponse(path.open("rb"), content_type="application/geo+json")
+    response["Cache-Control"] = "public, max-age=3600"
+    response["X-Content-Type-Options"] = "nosniff"
+    return response

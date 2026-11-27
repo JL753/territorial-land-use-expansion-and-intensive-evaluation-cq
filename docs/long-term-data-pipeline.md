@@ -44,3 +44,13 @@ OSM 派生数据须按 ODbL 1.0 署名并遵守共享条款。OSM 缺少建筑�
 ## 部署
 
 容器应持久化 /app/state 卷。本地运行确保 state/ 可写。完整年度处理可能需要较长网络读取和处理时间，先执行小批量年份检查 CRS、边界和有效像元比例。派生数据不会提交进 Git，避免将大型数据文件混入源码。
+
+
+## 21 区县 OSM 三维要素
+
+运行 `python tools/build_chongqing_osm_layers.py` 自动下载 Geofabrik 重庆区域 PBF，并按 21 区县边界切分建筑轮廓、道路和 POI 到 `state/osm-21/`。各区县页面按当前区县代码按需加载对应 GeoJSON。建筑高度优先采用 OSM `height`，其次使用 `building:levels × 3 m` 估算，仍缺失时使用 6 m 概化高度；属性 `height_source` 会标明来源。该高度仅用于可视化，不是实测高度。OSM 数据遵守 ODbL 1.0，页面需保留 OpenStreetMap 署名。
+
+
+## 21 区县 OSM 三维要素
+
+运行 `python tools/build_chongqing_osm_layers.py` 自动下载 Geofabrik 重庆区域 PBF，并按 21 区县边界切分建筑轮廓、道路和 POI 到 `state/osm-21/`。各区县页面按当前区县代码按需加载对应 GeoJSON。建筑高度优先采用 OSM `height`，其次使用 `building:levels × 3 m` 估算，仍缺失时使用 6 m 概化高度；属性 `height_source` 会标明来源。该高度仅用于可视化，不是实测高度。OSM 数据遵守 ODbL 1.0，页面保留 OpenStreetMap 署名。

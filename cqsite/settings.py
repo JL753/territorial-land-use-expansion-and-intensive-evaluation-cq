@@ -74,3 +74,6 @@ RESEARCH_FEED_URL = os.environ.get("CQ_RESEARCH_FEED_URL")
 
 # Optional locally generated CLCD district-year series; kept outside the source tree.
 CLCD_SERIES_PATH = Path(os.environ.get("CQ_CLCD_SERIES_PATH", str(ROOT / "state" / "clcd-district-series.json")))
+
+# Generated 21-district OpenStreetMap layers; persistent volume, not Git.
+OSM_OUTPUT_DIR = Path(os.environ.get("CQ_OSM_OUTPUT_DIR", str(ROOT / "state" / "osm-21")))
