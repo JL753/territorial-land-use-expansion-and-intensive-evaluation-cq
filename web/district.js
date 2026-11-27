@@ -15,7 +15,7 @@ function profile(){
  $("stat-built").textContent=r?fmt(r.built_km2)+" km²":"—";$("stat-growth").textContent=r?fmt(r.expansion_km2)+" km²":"—";$("stat-intensity").textContent=r?fmt(r.annual_expansion_intensity_pct)+"%":"—";$("stat-score").textContent=r?fmt(r.intensive_score,3):"—";
  $("map-year-label").textContent=state.year+" 年";$("map-metric-label").textContent=metrics[state.metric][0];
  const history=$("year-history");history.replaceChildren();
- [...state.rows,...state.landcoverRows].filter(x=>String(x.code)===state.selected).sort((a,b)=>a.year-b.year).forEach(x=>{const item=document.createElement("div");item.className="history-row";const left=document.createElement("span"),right=document.createElement("strong");left.textContent=x.year+" 年";right.textContent=fmt(x[state.metric])+" "+metrics[state.metric][1];item.append(left,right);history.append(item);});
+ const historyMap=new Map();[...state.rows,...state.landcoverRows].filter(x=>String(x.code)===state.selected).forEach(x=>{const year=Number(x.year);historyMap.set(year,{...(historyMap.get(year)||{}),...x});});[...historyMap.values()].sort((a,b)=>a.year-b.year).forEach(x=>{const item=document.createElement("div");item.className="history-row";const left=document.createElement("span"),right=document.createElement("strong");left.textContent=x.year+" 年";right.textContent=fmt(x[state.metric])+" "+metrics[state.metric][1];item.append(left,right);history.append(item);});
 }
 function selectDistrict(value,fly=true){
  const f=state.features.find(x=>code(x)===String(value));if(!f)return;state.selected=String(value);$("district-select").value=state.selected;
