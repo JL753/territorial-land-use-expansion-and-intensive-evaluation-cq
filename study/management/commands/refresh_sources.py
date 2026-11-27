@@ -53,7 +53,7 @@ class Command(BaseCommand):
                         release, changed = publish_research(geo, rows, source)
                     state = "restored" if action in {"restore", "restore_map"} else "published" if changed else "unchanged"
                     detail = f"{action}: version {release.pk} ({release.digest[:12]})"
-                except (OSError, ValueError, KeyError, TypeError, DatabaseError, ResearchRelease.DoesNotExist, MapRelease.DoesNotExist, ShapelyError) as exc:
+                except (OSError, ValueError, KeyError, TypeError, ImportError, DatabaseError, ResearchRelease.DoesNotExist, MapRelease.DoesNotExist, ShapelyError) as exc:
                     failed = True
                     state = "failed"
                     detail = f"{action}: {type(exc).__name__}: {str(exc)[:320]}"

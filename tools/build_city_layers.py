@@ -5,11 +5,6 @@ import re
 from collections import Counter
 from pathlib import Path
 
-import numpy as np
-from PIL import Image
-import rasterio
-from rasterio.transform import from_bounds
-from rasterio.warp import reproject, Resampling, transform, transform_bounds
 from shapely.geometry import Polygon
 
 
@@ -100,6 +95,12 @@ COLORS = ["#d6d85f", "#4f875f", "#8ca671", "#adc582", "#5598b5", "#e3eef9", "#b3
 
 
 def land_layers(root, out):
+    import numpy as np
+    from PIL import Image
+    import rasterio
+    from rasterio.transform import from_bounds
+    from rasterio.warp import reproject, Resampling, transform, transform_bounds
+
     rasters = root / "rasters"
     inputs = {}
     for file in rasters.glob("CQ_Metro21_LC_*.tif"):
