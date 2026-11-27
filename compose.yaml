@@ -43,7 +43,13 @@ services:
     command:
       - sh
       - -c
-      - python tools/build_clcd_district_series.py && python tools/build_chongqing_osm_layers.py
+      - |
+        set +e
+        python tools/build_clcd_district_series.py
+        clcd_status=$?
+        python tools/build_chongqing_osm_layers.py
+        osm_status=$?
+        test $clcd_status -eq 0 -a $osm_status -eq 0
     restart: "no"
 volumes:
   study-state:
