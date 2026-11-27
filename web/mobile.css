@@ -3,7 +3,7 @@
 :root{--paper:#f6f1e5;--serif:"Noto Serif CJK SC","Songti SC",SimSun,serif;background:var(--paper)}
 header{background:#f6f1e5;color:#284b3d;font-family:var(--serif)}
 .hero,.profile-head{
-  color:#1f4337;background:#eee6d1 url("/river-ink.webp") 46% center/cover no-repeat;
+  color:#1f4337;background:#eee6d1 url("/chongqing-relief-bg.svg") 46% center/cover no-repeat;
   border:1px solid #d8d5bd;border-radius:6px 23px 6px 6px;
 }
 .hero::before,.profile-head::before{content:"";position:absolute;inset:0;background:#f7f2df91;z-index:0;pointer-events:none}

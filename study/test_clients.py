@@ -6,7 +6,7 @@ from django.test import TestCase, override_settings
 
 class ClientSurfaceTests(TestCase):
     def test_web_mobile_and_desktop_pages_are_served(self):
-        for path in ("/", "/mobile.html", "/desktop.html", "/city.html", "/dashboard3d.html", "/guide.html"):
+        for path in ("/", "/mobile.html", "/desktop.html", "/city.html", "/dashboard3d.html", "/guide.html", "/data-center.html", "/district.html"):
             with self.subTest(path=path):
                 response = self.client.get(path)
                 self.assertEqual(response.status_code, 200)
@@ -19,6 +19,7 @@ class ClientSurfaceTests(TestCase):
             "/vendor/echarts-6.0.0.min.js", "/vendor/maplibre-5.16.0.js",
             "/city.js", "/city/manifest.json", "/city/cover-2022.png", "/city/buildings.geojson",
             "/dashboard3d.js", "/dashboard3d.css", "/guide.js", "/guide.css",
+            "/data-center.js", "/data-center.css", "/district.js", "/district.css", "/chongqing-relief-bg.svg",
         ):
             with self.subTest(path=path):
                 response = self.client.get(path)
@@ -41,6 +42,7 @@ class ClientSurfaceTests(TestCase):
     def test_unknown_assets_are_not_served(self):
         self.assertEqual(self.client.get("/.env").status_code, 404)
         self.assertEqual(self.client.get("/not-a-real-asset.js").status_code, 404)
+        self.assertEqual(self.client.get("/api/v1/data-sources/").status_code, 200)
 
     def test_read_only_data_endpoints_reject_mutating_methods(self):
         self.assertEqual(self.client.post("/dashboard.json").status_code, 405)

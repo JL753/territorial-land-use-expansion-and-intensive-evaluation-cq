@@ -8,7 +8,7 @@ from django.core.management.base import CommandError
 from django.test import TestCase
 
 from .models import Publication, RefreshRun, ResearchRelease
-from .updates import load_remote_bundle, publish_research, restore_research
+from .updates import check_clcd_version, load_remote_bundle, publish_research, restore_research
 
 
 class PublicationTests(TestCase):
@@ -53,3 +53,48 @@ class PublicationTests(TestCase):
         with patch("study.updates.download", side_effect=[manifest, geo, b"[]"]):
             with self.assertRaisesRegex(ValueError, "Checksum mismatch"):
                 load_remote_bundle("https://example.org/release/manifest.json")
+
+
+class PublicSourceMonitoringTests(TestCase):
+    def test_clcd_metadata_exposes_available_raster_years(self):
+        from io import BytesIO
+        seed = {"id": 18180184, "conceptrecid": 18180180}
+        latest = {
+            "id": 18180185, "conceptrecid": 18180180,
+            "metadata": {"title": "CLCD 1985-2025", "version": "1.0.5", "publication_date": "2026-01-01"},
+            "updated": "2026-01-02T00:00:00Z",
+            "links": {"html": "https://zenodo.org/records/18180185"},
+            "files": [
+                {"key": "CLCD_v01_2010_albert.tif", "size": 100},
+                {"key": "CLCD_v01_2022_albert.tif", "size": 200},
+                {"key": "CLCD_v01_2025_albert.tif", "size": 300},
+                {"key": "CLCD_v01_2025_albert_province.zip", "size": 500},
+            ],
+        }
+        with patch("study.updates.urlopen", side_effect=[
+            BytesIO(json.dumps(seed).encode()), BytesIO(json.dumps({"hits": {"hits": [latest]}}).encode())
+        ]):
+            result = check_clcd_version()
+        self.assertEqual(result["latest_year"], 2025)
+        self.assertEqual(result["available_years"], [2010, 2022, 2025])
+        self.assertEqual(result["total_size_bytes"], 1100)
+
+    def test_clcd_refresh_command_records_version_check(self):
+        metadata = {"version": "1.0.5", "latest_year": 2025, "available_years": [2010, 2022, 2025]}
+        with patch("study.management.commands.refresh_sources.check_clcd_version", return_value=metadata):
+            call_command("refresh_sources", "--clcd")
+        run = RefreshRun.objects.get(feed="clcd")
+        self.assertEqual(run.status, "checked")
+        self.assertIn("2025", run.detail)
+
+    def test_data_center_api_and_manual_clcd_check(self):
+        from .models import RefreshRun
+        catalog = self.client.get("/api/v1/data-sources/")
+        self.assertEqual(catalog.status_code, 200)
+        self.assertIn("clcd", {source["key"] for source in catalog.json()["sources"]})
+        metadata = {"version": "1.0.5", "latest_year": 2025, "available_years": [2010, 2022, 2025]}
+        with patch("study.views.check_clcd_version", return_value=metadata):
+            response = self.client.post("/api/v1/data-updates/check/", data="{}", content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["status"], "checked")
+        self.assertEqual(RefreshRun.objects.filter(feed="clcd").count(), 1)

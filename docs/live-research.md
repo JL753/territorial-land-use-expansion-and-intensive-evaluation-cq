@@ -10,7 +10,7 @@
 |---|---|---|
 | 虎溪建筑、设施、道路 | 定时访问 OpenStreetMap 官方地图数据接口。记录未变化、发布成功或失败 | 虎溪固定研究框，保留 OSM 数据署名和高度口径 |
 | 重庆 21 区区年数据 | 发布批准的本地包，或定时读取受控 HTTPS 清单 | 必须提供可比面板和每区每年来源，自动重算成果 |
-| CLCD 栅格预览 | 取得带年份和许可的原始栅格后，按三维专题复现步骤生成 | 当前随仓库发布的是 2010、2015、2020、2022 四期图像。其他年份可浏览已发布区级统计 |
+| CLCD 年度土地覆盖 | 每 6 小时检查 Zenodo 公开记录版本元数据；大栅格下载与裁剪另行执行 | 公开记录覆盖 1985—2025 产品期，实际可用年份以文件清单为准；当前正式统计仍以已发布区年面板为准 |
 
 新增栅格沿用命名 `CQ_Metro21_LC_YYYY.tif`，与原四期放在同一 rasters 目录，再运行 `tools/build_city_layers.py`。程序发现新栅格年份并生成对应预览。部署时保留生成的 `web/city` 资源和该版本的来源记录。
 
@@ -56,3 +56,6 @@ python manage.py refresh_sources --restore-map 1
 | `/api/v1/research/panel/` | 助手可一次获得同一版本的区年面板 |
 | `/api/v1/research/map/` | 返回单次发布的建筑、设施和道路 |
 | `/api/v1/analysis/` | 返回与当前研究版本绑定的重算报告 |
+
+
+CLCD 版本检查只读取 Zenodo API 元数据并写入 `RefreshRun(feed=clcd)`，不在定时 Web/刷新请求中下载数百 MB 的栅格。可手动运行 `python manage.py refresh_sources --clcd`；数据中心 `/data-center.html` 也提供即时版本检查。

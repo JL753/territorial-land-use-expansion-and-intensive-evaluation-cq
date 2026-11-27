@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#edf4f8"><title>山城地研 · 数据资源与更新中心</title>
+<link rel="stylesheet" href="/data-center.css"><script defer src="/analysis.js"></script><script defer src="/data-center.js"></script>
+<link rel="stylesheet" href="/live.css"><script defer src="/live.js"></script>
+</head><body>
+<header class="dc-top"><a href="/" class="dc-brand"><span>渝</span><b>山城地研<small>GEOINTELLIGENCE DATA HUB</small></b></a>
+<nav><a href="/">研究总览</a><a href="/dashboard3d.html">三维大屏</a><a href="/district.html">21 区县三维</a><a class="active" href="/data-center.html">数据中心</a><a href="/guide.html">毕设工作台</a></nav>
+<span class="dc-live"><i></i>数据版本监测</span></header>
+<main>
+<section class="dc-hero"><div><p class="eyebrow">DATA CATALOG · VERSION CONTROL</p><h1>数据资源与更新中心</h1><p>统一查看土地覆盖、地形、建筑、道路、统计资料和区县研究面板的来源、时效与发布状态。</p></div>
+<div class="dc-hero-note"><strong>安全更新机制</strong><span>版本检查 → 暂存采集 → 质量审计 → 研究者确认发布</span></div></section>
+<section class="dc-summary">
+<article><span>登记数据源</span><strong id="source-count">—</strong><small>统一来源目录</small></article>
+<article><span>研究区县</span><strong>21</strong><small>中心城区 + 主城新区</small></article>
+<article><span>当前观测年份</span><strong id="year-count">—</strong><small id="year-list">读取已发布面板</small></article>
+<article><span>当前研究版本</span><strong id="research-version">—</strong><small id="research-source">仓库基线</small></article>
+</section>
+<section class="dc-actions"><div><h2>公开数据源目录</h2><p>区分可定时检查、年度产品和需等待官方发布的数据。</p></div><button id="check-updates">立即检查 CLCD 版本</button></section>
+<div id="dc-status" class="dc-status" role="status">正在读取数据源与发布记录…</div>
+<section id="source-grid" class="dc-grid"></section>
+<section class="dc-history"><div><h2>最近更新与发布记录</h2><p>失败的更新不会覆盖当前已发布的研究数据。</p></div>
+<div class="dc-table-wrap"><table><thead><tr><th>时间</th><th>数据流</th><th>状态</th><th>详情</th></tr></thead><tbody id="update-history"><tr><td colspan="4">暂无更新记录</td></tr></tbody></table></div></section>
+<section class="dc-note"><h2>数据时效与研究边界</h2><ul>
+<li>CLCD 是年度 Landsat 土地覆盖产品，不是实时遥感流。公开记录覆盖 1985—2025 产品期，实际可用年份以 Zenodo 文件清单为准。</li>
+<li>OSM 是持续编辑的众包地理要素，可定期同步快照；当前已有自动刷新的是虎溪研究框，21 区全域建筑数据仍需扩充。</li>
+<li>人口、GDP 和产业统计需等待官方统计年鉴或公报发布，不能用实时接口臆造历史区县数据。</li>
+<li>新数据必须保存来源、发布日期、许可、文件校验值、处理参数和质量审计结果，再由研究者确认发布。</li>
+</ul></section>
+</main></body></html>

@@ -3,8 +3,8 @@
   const create=(tag,text)=>{
     const el=document.createElement(tag);if(text!=null)el.textContent=text;return el;
   };
-  const launch=create("button","问山城");
-  launch.id="live-launch";launch.type="button";launch.setAttribute("aria-haspopup","dialog");
+  const launch=create("button","AI");
+  launch.id="live-launch";launch.type="button";launch.setAttribute("aria-haspopup","dialog");launch.setAttribute("aria-label","打开问山城 AI 研究助手");launch.title="问山城 AI 研究助手";
   const dialog=create("dialog");dialog.id="live-assistant";dialog.setAttribute("aria-labelledby","live-title");
   const form=create("form"),label=create("label","问题"),question=create("input");
   const title=create("h2","山城研究助手");title.id="live-title";
@@ -28,8 +28,8 @@
   if(location.pathname==="/mobile.html")document.body.classList.add("live-mobile");
   const savedPanel={version:null,rows:[]};
   let sequence=0,resultQuestion="",evidence="",statusSnapshot=null;
-  const translate={published:"已发布",unchanged:"未变化",failed:"失败，保留上次快照",restored:"已恢复",
-    research:"区年研究",osm:"虎溪地图"};
+  const translate={published:"已发布",unchanged:"未变化",failed:"失败，保留上次快照",restored:"已恢复",checked:"已检查",
+    research:"区年研究",osm:"虎溪地图",clcd:"CLCD 年度土地覆盖"};
   async function getJSON(path){
     const response=await fetch(path);
     if(!response.ok)throw Error("数据暂不可用");
@@ -70,7 +70,10 @@
   function context(rows){
     const options=[...document.querySelectorAll("#year,#d-year,#city-years [aria-pressed=true],#years [aria-pressed=true]")];
     const y=Number(options.map(x=>x.value||x.textContent).find(v=>rows.some(row=>row.year===Number(v))));
-    return {year:y||Math.max(...rows.map(row=>row.year)),group:document.querySelector("#group, #d-group")?.value||""};
+    const selected=document.querySelector("#district-select, #city-district")?.selectedOptions?.[0]?.textContent;
+    const detail=document.querySelector("#district-detail .district-name")?.textContent;
+    const district=(selected||detail||"").trim();
+    return {year:y||Math.max(...rows.map(row=>row.year)),group:document.querySelector("#group, #d-group")?.value||"",district};
   }
   async function mapAnswer(){
     let snap;
@@ -89,7 +92,8 @@
       else{
         const data=await retrieve(),c=context(data.rows);
         const key=document.querySelector("#metric")?.value||"built_km2";
-        text=data.source+"\n"+researchAnswer(query,data.rows,c.year,c.group,key);
+        const contextualQuery=c.district&&!query.includes(c.district)?c.district+" "+query:query;
+        text=data.source+"\n"+researchAnswer(contextualQuery,data.rows,c.year,c.group,key);
       }
       if(current!==sequence)return;
       resultQuestion=query;evidence=text;answer.textContent=text;

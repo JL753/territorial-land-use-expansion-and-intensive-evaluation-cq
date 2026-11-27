@@ -5,7 +5,7 @@
 aside{background:linear-gradient(180deg,#243f35,#1a2e2a);color:#eff3e8}aside h1,header h2,.panel h3{font-family:var(--serif)}
 aside p{color:#b7cbbc}nav button,nav a{border-color:#547164;color:#e0ede1}
 nav button[aria-current=page]{background:#e3e7c8;color:#284435;border-color:#e3e7c8}
-header{padding:1.35rem;min-height:115px;border:1px solid #ded7c5;border-radius:5px 18px 5px 5px;background:#f3ead8 url("/river-ink.webp") center 60%/cover no-repeat}
+header{padding:1.35rem;min-height:115px;border:1px solid #ded7c5;border-radius:5px 18px 5px 5px;background:#f3ead8 url("/chongqing-relief-bg.svg") center 60%/cover no-repeat}
 header p{color:#315949}header h2{color:#173e35}
 .panel{background:#fffdf7;border-color:#dcdcc9}
 th{background:#e7eadb}tbody tr:nth-child(even){background:#f4f4e9}td,th{border-color:#e1e3d3}
