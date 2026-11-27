@@ -20,7 +20,7 @@ class ClientSurfaceTests(TestCase):
             with self.subTest(path=path):
                 response = self.client.get(path)
                 self.assertEqual(response.status_code, 200)
-                self.assertGreater(len(response.content), 0)
+                self.assertGreater(len(b"".join(response.streaming_content)), 0)
 
     def test_unknown_assets_are_not_served(self):
         self.assertEqual(self.client.get("/.env").status_code, 404)
