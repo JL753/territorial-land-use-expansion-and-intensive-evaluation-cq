@@ -24,8 +24,9 @@
 <div class="dc-table-wrap"><table><thead><tr><th>时间</th><th>数据流</th><th>状态</th><th>详情</th></tr></thead><tbody id="update-history"><tr><td colspan="4">暂无更新记录</td></tr></tbody></table></div></section>
 <section class="dc-note"><h2>数据时效与研究边界</h2><ul>
 <li>CLCD 是年度 Landsat 土地覆盖产品，不是实时遥感流。公开记录覆盖 1985—2025 产品期，实际可用年份以 Zenodo 文件清单为准。</li>
-<li>OSM 是持续编辑的众包地理要素，可定期同步快照；当前已有自动刷新的是虎溪研究框，21 区全域建筑数据仍需扩充。</li>
+<li>OSM 是持续编辑的众包地理要素；执行 python tools/build_chongqing_osm_layers.py 可下载重庆 PBF 并按 21 区县裁剪建筑、道路和 POI。缺少建筑高度时使用明确标记的概化高度。</li>
 <li>人口、GDP 和产业统计需等待官方统计年鉴或公报发布，不能用实时接口臆造历史区县数据。</li>
 <li>新数据必须保存来源、发布日期、许可、文件校验值、处理参数和质量审计结果，再由研究者确认发布。</li>
+<li>CLCD 年度栅格处理：python tools/build_clcd_district_series.py；建议先用 --years 2010,2015,2020,2025 抽样，再处理全部可用年份。</li>
 </ul></section>
 </main></body></html>

@@ -19,7 +19,7 @@
   const refresh=create("button","刷新页面数据");refresh.type="button";refresh.hidden=true;
   details.append(summary,status,refresh);
   const hints=create("div");hints.className="live-hints";
-  for(const tip of ["总结当前数据","不透水面历年变化趋势","虎溪建筑和设施有多少","哪些数据待复核？"]){
+  for(const tip of ["总结当前研究数据","1985—2025 年建设用地变化趋势","当前区县的三维数据覆盖情况","哪些数据待复核？"]){
     const button=create("button",tip);button.type="button";button.onclick=()=>{question.value=tip;form.requestSubmit();};hints.append(button);
   }
   form.append(label,question,ask);
@@ -58,9 +58,13 @@
   async function retrieve(){
     try{
       const data=await getJSON("/api/v1/research/panel/");
+      const lc=await getJSON("/api/v1/landcover-series/").catch(()=>({rows:[]}));
       if(savedPanel.version&&savedPanel.version!==data.version)refresh.hidden=false;
-      savedPanel.version=data.version;savedPanel.rows=enrichObservations(data.observations);
-      return {rows:savedPanel.rows,source:data.version==="base"?"仓库基线":"研究版本 #"+data.version};
+      savedPanel.version=data.version;
+      const merged=new Map();
+      [...enrichObservations(data.observations),...(lc.rows||[])].forEach(row=>{const key=String(row.code)+":"+row.year;merged.set(key,{...(merged.get(key)||{}),...row});});
+      savedPanel.rows=[...merged.values()];
+      return {rows:savedPanel.rows,source:(data.version==="base"?"仓库基线":"研究版本 #"+data.version)+(lc.years?.length?" + CLCD "+lc.years[0]+"—"+lc.years.at(-1):"")};
     }catch{
       if(savedPanel.rows.length)return {rows:savedPanel.rows,source:"最近读取的"+(savedPanel.version==="base"?"仓库基线":"研究版本 #"+savedPanel.version)};
       const rows=enrichObservations(await getJSON("/dashboard.json"));
@@ -68,9 +72,9 @@
     }
   }
   function context(rows){
-    const options=[...document.querySelectorAll("#year,#d-year,#city-years [aria-pressed=true],#years [aria-pressed=true]")];
+    const options=[...document.querySelectorAll("#year,#d-year,#year-select,#city-years [aria-pressed=true],#years [aria-pressed=true]")];
     const y=Number(options.map(x=>x.value||x.textContent).find(v=>rows.some(row=>row.year===Number(v))));
-    const selected=document.querySelector("#district-select, #city-district")?.selectedOptions?.[0]?.textContent;
+    const selected=document.querySelector("#district-select, #city-district")?.selectedOptions?.[0]?.textContent||document.querySelector("[data-selected-district]")?.getAttribute("data-selected-district");
     const detail=document.querySelector("#district-detail .district-name")?.textContent;
     const district=(selected||detail||"").trim();
     return {year:y||Math.max(...rows.map(row=>row.year)),group:document.querySelector("#group, #d-group")?.value||"",district};
@@ -91,7 +95,7 @@
       if(/虎溪/.test(query)&&/建筑|设施|道路|地图/.test(query))text=await mapAnswer();
       else{
         const data=await retrieve(),c=context(data.rows);
-        const key=document.querySelector("#metric")?.value||"built_km2";
+        const key=document.querySelector("#metric, #metric-select, #d-metric")?.value||"built_km2";
         const contextualQuery=c.district&&!query.includes(c.district)?c.district+" "+query:query;
         text=data.source+"\n"+researchAnswer(contextualQuery,data.rows,c.year,c.group,key);
       }

@@ -332,3 +332,80 @@ def check_data_updates(request):
         detail = f"CLCD version check: {type(exc).__name__}: {str(exc)[:300]}"
         RefreshRun.objects.create(feed="clcd", status="failed", detail=detail)
         return JsonResponse({"error": "CLCD 版本检查失败；现有已发布数据保持不变。", "detail": detail}, status=502)
+
+
+@require_GET
+def landcover_series(request):
+    """Return the separately audited CLCD remote-sensing series, if generated."""
+    path = settings.CLCD_SERIES_PATH
+    if not path.is_file():
+        return JsonResponse({
+            "schema": 1, "status": "not_built", "years": [], "rows": [],
+            "message": "CLCD 年度栅格尚未处理。运行 python tools/build_clcd_district_series.py。",
+        }, json_dumps_params={"ensure_ascii": False})
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if payload.get("schema") != 1 or payload.get("status") != "ready":
+            raise ValueError("Unsupported CLCD series schema.")
+        rows = payload.get("rows", [])
+        years = payload.get("source", {}).get("years", [])
+        if not rows or not years or len(rows) != len(years) * 21:
+            raise ValueError("CLCD series is incomplete; expected 21 districts for every selected year.")
+        for year in years:
+            year_rows = [row for row in rows if int(row.get("year", -1)) == int(year)]
+            codes = {str(row.get("code", "")) for row in year_rows}
+            if len(year_rows) != 21 or len(codes) != 21:
+                raise ValueError(f"CLCD year {year} does not contain 21 unique districts.")
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        return JsonResponse({"status": "invalid", "error": str(exc)}, status=503)
+    response = JsonResponse(payload, json_dumps_params={"ensure_ascii": False})
+    response["Cache-Control"] = "no-store"
+    return response
+
+
+@require_GET
+def osm_status(request):
+    manifest_path = settings.OSM_OUTPUT_DIR / "manifest.json"
+    if not manifest_path.is_file():
+        return JsonResponse({"status": "not_built", "counts": {}, "snapshot_date": None})
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        districts = manifest.get("districts", [])
+        codes = [str(d.get("code", "")) for d in districts]
+        if (manifest.get("schema") != 1 or len(districts) != 21
+                or len(set(codes)) != 21 or any(not re.fullmatch(r"\d{6}", code) for code in codes)):
+            raise ValueError("Invalid 21-district OSM manifest.")
+        expected = {f"{layer}_{code}.geojson" for layer in ("buildings", "roads", "poi")
+                    for code in codes}
+        published = manifest.get("files", {})
+        if not expected.issubset(published) or any(not (settings.OSM_OUTPUT_DIR / name).is_file()
+                                                    for name in expected):
+            raise ValueError("OSM layer publication is incomplete.")
+        return JsonResponse({
+            "status": "ready", "snapshot_date": manifest.get("snapshot_date"),
+            "generated_at": manifest.get("generated_at"), "license": manifest.get("license"),
+            "pbf_sha256": manifest.get("pbf_sha256"), "counts": manifest.get("counts", {}),
+        }, json_dumps_params={"ensure_ascii": False})
+    except (OSError, ValueError, TypeError) as exc:
+        return JsonResponse({"status": "invalid", "error": str(exc)}, status=503)
+
+
+@require_GET
+def osm_layer(request, layer, code):
+    if layer not in {"buildings", "roads", "poi"} or not re.fullmatch(r"\d{6}", code):
+        raise Http404
+    manifest_path = settings.OSM_OUTPUT_DIR / "manifest.json"
+    path = settings.OSM_OUTPUT_DIR / f"{layer}_{code}.geojson"
+    if not manifest_path.is_file() or not path.is_file():
+        raise Http404
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        key = f"{layer}_{code}.geojson"
+        if key not in manifest.get("files", {}):
+            raise Http404
+    except (OSError, ValueError, TypeError):
+        raise Http404
+    response = FileResponse(path.open("rb"), content_type="application/geo+json")
+    response["Cache-Control"] = "no-store"
+    response["X-Content-Type-Options"] = "nosniff"
+    return response

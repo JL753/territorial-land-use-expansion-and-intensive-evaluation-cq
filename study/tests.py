@@ -59,6 +59,34 @@ class StudyViewsTests(TestCase):
         self.assertEqual(District.objects.count(), 21)
         self.assertEqual(Observation.objects.count(), 84)
 
+    @override_settings(CLCD_SERIES_PATH=Path("/tmp/shancheng-test-clcd-series-missing.json"))
+    def test_clcd_series_endpoint_is_explicit_when_not_processed(self):
+        response = self.client.get("/api/v1/landcover-series/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["status"], "not_built")
+        self.assertEqual(response.json()["rows"], [])
+
+    @override_settings(OSM_OUTPUT_DIR=Path("/tmp/shancheng-test-osm-missing"))
+    def test_osm_layer_endpoint_does_not_claim_missing_coverage(self):
+        self.assertEqual(self.client.get("/api/v1/osm-status/").json()["status"], "not_built")
+        self.assertEqual(self.client.get("/api/v1/osm-layers/buildings/500105.geojson").status_code, 404)
+
+    @override_settings(OSM_OUTPUT_DIR=Path("/tmp/shancheng-test-osm-incomplete"))
+    def test_osm_status_rejects_incomplete_publication_manifest(self):
+        from tempfile import TemporaryDirectory
+        with TemporaryDirectory() as temp:
+            root = Path(temp)
+            manifest = {
+                "schema": 1,
+                "districts": [{"code": f"{500100 + index:06d}"} for index in range(21)],
+                "files": {},
+            }
+            (root / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+            with override_settings(OSM_OUTPUT_DIR=root):
+                response = self.client.get("/api/v1/osm-status/")
+                self.assertEqual(response.status_code, 503)
+                self.assertEqual(response.json()["status"], "invalid")
+
     @override_settings(OLLAMA_MODEL="test")
     def test_csrf_and_json_validation(self):
         browser = Client(enforce_csrf_checks=True)

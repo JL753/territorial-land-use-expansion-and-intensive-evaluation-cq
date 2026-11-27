@@ -23,7 +23,7 @@
     <article><span>建设用地面积</span><strong id="kpi-built">—</strong><small>当前年份 · km²</small></article>
     <article><span>阶段净扩张</span><strong id="kpi-growth">—</strong><small>相对上一观测期 · km²</small></article>
     <article><span>集约利用均分</span><strong id="kpi-score">—</strong><small id="kpi-score-note">TOPSIS · 0—1</small></article>
-    <article><span>数据观测</span><strong id="kpi-records">84</strong><small>21 区 × 4 期</small></article>
+    <article><span>数据观测</span><strong id="kpi-records">84</strong><small>21 区 × 已发布年份</small></article>
   </section>
   <section class="workspace">
     <aside class="column left-column">
@@ -33,7 +33,7 @@
         <label>区县范围<select id="group"><option value="">全域 · 21 区</option><option value="中心城区">中心城区 · 9 区</option><option value="主城新区">主城新区 · 12 区</option></select></label>
         <label>三维表达指标<select id="metric"><option value="built_km2">不透水面面积</option><option value="expansion_km2">阶段净扩张面积</option><option value="annual_expansion_intensity_pct">年均扩张强度</option><option value="intensive_score">集约利用得分</option><option value="population_density">人口承载密度</option><option value="gdp_density">单位用地 GDP</option><option value="secondary_density">单位用地二产增加值</option></select></label>
         <div class="toggle-row"><label class="switch-label"><input id="river-toggle" type="checkbox" checked><span>长江 / 嘉陵江水系</span></label><span class="live-dot">DATA LINK</span></div>
-        <div class="button-row"><button id="play-years" class="primary">▶ 播放四期</button><button id="reset-camera" class="outline">复位视角</button></div>
+        <div class="button-row"><button id="play-years" class="primary">▶ 播放年度序列</button><button id="reset-camera" class="outline">复位视角</button></div>
         <p class="micro-note">区块高度按当前指标归一化拉伸，仅用于专题对比，不代表真实建筑高度或地形高程。</p>
       </article>
       <article class="panel chart-panel"><div class="panel-title"><span class="signal"></span><h2>建设用地演变</h2><small>2010—2022</small></div><div id="trend-chart" class="chart"></div></article>
@@ -54,7 +54,7 @@
   <footer class="timeline">
     <div><strong>历史时序</strong><span>LAND-COVER OBSERVATION</span></div>
     <div class="year-buttons"><button data-year="2010">2010</button><i></i><button data-year="2015">2015</button><i></i><button data-year="2020">2020</button><i></i><button class="selected" data-year="2022">2022</button></div>
-    <div class="timeline-caption" id="timeline-caption">四期遥感观测 · 三个变化阶段</div>
+    <div class="timeline-slider"><label for="year-slider">年度观测</label><input id="year-slider" type="range" min="0" max="3" value="3"><output id="year-slider-value">2022</output></div><div class="timeline-caption" id="timeline-caption">加载已发布的年度遥感序列后，可逐年查看全部可用年份。</div>
   </footer>
 </main>
 </body>
