@@ -41,12 +41,14 @@ def load_districts(path):
     features=geo.get("features",[])
     if geo.get("type")!="FeatureCollection" or len(features)!=21:
         raise ValueError("Expected exactly 21 validated district polygons.")
-    items=[]
+    items=[]; seen=set()
     for f in features:
         p=f["properties"]; geom=shape(f["geometry"])
         code=str(p["code"])
-        if not re.fullmatch(r"\d{6}",code) or geom.is_empty or not geom.is_valid:
-            raise ValueError("Invalid district geometry: "+code)
+        if (not re.fullmatch(r"\d{6}",code) or code in seen or geom.is_empty
+                or not geom.is_valid or geom.geom_type not in ("Polygon", "MultiPolygon")):
+            raise ValueError("Invalid or duplicate district polygon: "+code)
+        seen.add(code)
         items.append({"code":code,"name":p["district"],"group":p["group"],"geometry":geom})
     return items
 

@@ -86,7 +86,7 @@ python manage.py runserver
 
 ## 重庆三维大屏
 
-「两江立体图」提供区县画像、四期土地覆盖、增减变化、虎溪三维建筑、设施周边分析、视图保存、CSV 和 PNG 导出。网页地址为 `/city.html`，桌面端可从侧栏进入。 [操作与数据来源](docs/city-atlas.md) · [三维界面预览](docs/landscape-interface.md#两江立体图)
+「两江立体图」提供区县画像、土地覆盖专题、增减变化、虎溪精细建筑、设施周边分析、视图保存、CSV 和 PNG 导出；年度 CLCD 区县统计在生成后供区县三维页与 Cesium 时间轴调用。网页地址为 `/city.html`，桌面端可从侧栏进入。 [操作与数据来源](docs/city-atlas.md) · [三维界面预览](docs/landscape-interface.md#两江立体图)
 
 ## 数据处理与机器学习
 

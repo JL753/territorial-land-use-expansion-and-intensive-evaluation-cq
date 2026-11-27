@@ -351,6 +351,11 @@ def landcover_series(request):
         years = payload.get("source", {}).get("years", [])
         if not rows or not years or len(rows) != len(years) * 21:
             raise ValueError("CLCD series is incomplete; expected 21 districts for every selected year.")
+        for year in years:
+            year_rows = [row for row in rows if int(row.get("year", -1)) == int(year)]
+            codes = {str(row.get("code", "")) for row in year_rows}
+            if len(year_rows) != 21 or len(codes) != 21:
+                raise ValueError(f"CLCD year {year} does not contain 21 unique districts.")
     except (OSError, ValueError, TypeError, KeyError) as exc:
         return JsonResponse({"status": "invalid", "error": str(exc)}, status=503)
     response = JsonResponse(payload, json_dumps_params={"ensure_ascii": False})
@@ -365,10 +370,13 @@ def osm_status(request):
         return JsonResponse({"status": "not_built", "counts": {}, "snapshot_date": None})
     try:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        if manifest.get("schema") != 1 or len(manifest.get("districts", [])) != 21:
+        districts = manifest.get("districts", [])
+        codes = [str(d.get("code", "")) for d in districts]
+        if (manifest.get("schema") != 1 or len(districts) != 21
+                or len(set(codes)) != 21 or any(not re.fullmatch(r"\d{6}", code) for code in codes)):
             raise ValueError("Invalid 21-district OSM manifest.")
         expected = {f"{layer}_{code}.geojson" for layer in ("buildings", "roads", "poi")
-                    for code in (str(d.get("code", "")) for d in manifest["districts"])}
+                    for code in codes}
         published = manifest.get("files", {})
         if not expected.issubset(published) or any(not (settings.OSM_OUTPUT_DIR / name).is_file()
                                                     for name in expected):
