@@ -21,8 +21,8 @@ public class StudyActivity extends Activity {
     private static final int EXPORT = 21;
     private static final String HOST = "appassets.androidplatform.net";
     private static final Set<String> ASSETS = new HashSet<>(Arrays.asList(
-        "mobile.html","mobile.js","analysis.js","mobile.css","client-utils.js","icon192.png","icon512.png",
-        "dashboard.json","mobile.webmanifest","river-ink.webp"));
+        "mobile.html","mobile.js","live.js","live.css","analysis.js","mobile.css","client-utils.js","icon192.png","icon512.png",
+        "dashboard.json","city/manifest.json","mobile.webmanifest","river-ink.webp"));
     private String pendingCsv;
     private WebView web;
 

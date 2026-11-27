@@ -1,0 +1,39 @@
+services:
+  web:
+    build: .
+    image: cq-land-research:local
+    environment:
+      DJANGO_DEBUG: "1"
+      CQ_DB_PATH: /app/state/db.sqlite3
+      CQ_RESEARCH_FEED_URL: ${CQ_RESEARCH_FEED_URL:-}
+    volumes:
+      - study-state:/app/state
+    ports:
+      - "127.0.0.1:8000:8000"
+    command:
+      - sh
+      - -c
+      - python manage.py migrate --noinput && python manage.py import_study --if-empty && exec gunicorn cqsite.wsgi:application --bind 0.0.0.0:8000 --workers 2
+  refresh:
+    image: cq-land-research:local
+    depends_on:
+      web:
+        condition: service_healthy
+    environment:
+      DJANGO_DEBUG: "1"
+      CQ_DB_PATH: /app/state/db.sqlite3
+      CQ_RESEARCH_FEED_URL: ${CQ_RESEARCH_FEED_URL:-}
+    volumes:
+      - study-state:/app/state
+    command:
+      - sh
+      - -c
+      - |
+        set -- --osm --interval 21600
+        if [ -n "$$CQ_RESEARCH_FEED_URL" ]; then set -- "$$@" --panel; fi
+        exec python manage.py refresh_sources "$$@"
+    healthcheck:
+      disable: true
+    restart: unless-stopped
+volumes:
+  study-state:

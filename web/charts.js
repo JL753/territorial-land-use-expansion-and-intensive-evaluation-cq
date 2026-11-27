@@ -25,7 +25,9 @@ function drawAnalytics(report){
       data:trend.map(r=>Number(r.built_km2.toFixed(3)))}]
   });
   const period=document.getElementById("analysis-period");
-  if(!period.options.length){
+  if(period.dataset.fingerprint!==report.panel_fingerprint){
+    period.replaceChildren();
+    period.dataset.fingerprint=report.panel_fingerprint;
     for(const end of [...new Set(report.flows.map(row=>row.end))]){
       const row=report.flows.find(item=>item.end===end);
       period.add(new Option(row.start+"—"+end,end));
@@ -60,7 +62,7 @@ function drawAnalytics(report){
     return tr;
   }));
   document.getElementById("analysis-design").textContent=
-    `2010—2015、2015—2020 两段训练，共 ${model.train_count} 条。2020—2022 留出检验，共 ${model.holdout_count} 条。${model.validation}`;
+     `${model.train_years.map(years=>years.join("—")).join("、")} 训练，共 ${model.train_count} 条。${model.holdout_years.join("—")} 留出，共 ${model.holdout_count} 条。${model.validation}`;
   const best=Object.keys(model.scores).sort((a,b)=>model.scores[a].mae-model.scores[b].mae)[0];
   document.getElementById("analysis-model-note").textContent=
     `本次留出检验中，${modelLabels[best]}的 MAE 最低。模型得分用于历史回测与方法对照。`;

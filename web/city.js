@@ -7,7 +7,7 @@ const BASIS_COLORS = {"源高度标签":"#9edfbd","按楼层估算":"#e5c57c","�
 const STORED = "cq-city-views-v1";
 const empty = {type:"FeatureCollection",features:[]};
 let panel=[], districts, atlas, poi, buildings, city, chart, buildingChart, markers=[], radiusCenter=null, picking=false;
-let year=2022, pane="overview", selected="500106", interval, mode3D=true, ready=false;
+let panelYears=[],year=2022, pane="overview", selected="500106", interval, mode3D=true, ready=false;
 const saved = readLocal(STORED,[]);
 const controls = {district:["district-fill","district-outline"],volume:["district-volume"],river:["rivers"],cover:["cover"],compare:["compare"],
   change:["change"],envelope:["coverage"],buildings:["buildings","footprints"],road:["roads"],poi:["poi"]};
@@ -84,13 +84,15 @@ function loadLayers(rivers,roads){
 function showLayers(){
   for(const [name,ids] of Object.entries(controls)){
     for(const id of ids){
-      const enabled=checked(name)&&(id!=="change"||year!==atlas.land.years[0])
+      const rasterYear=atlas.land.years.includes(year);
+      const enabled=checked(name)&&(id!=="cover"||rasterYear)&&(id!=="change"||(rasterYear&&year!==atlas.land.years[0]))
         &&(id!=="district-volume"||(mode3D&&checked("district")&&!checked("cover")&&!checked("compare")&&!checked("change")))
         &&(id!=="buildings"||mode3D)&&(id!=="footprints"||!mode3D);
       city.setLayoutProperty(id,"visibility",enabled?"visible":"none");
     }
   }
-  get("layer-change").disabled=year===atlas.land.years[0];
+  get("layer-cover").disabled=!atlas.land.years.includes(year);
+  get("layer-change").disabled=!atlas.land.years.includes(year)||year===atlas.land.years[0];
   const multiplier=Number(get("height-scale").value);
   safeText("height-value",multiplier+"× · 仅影响显示");
   city.setPaintProperty("buildings","fill-extrusion-height",["*",["get","height"],multiplier]);
@@ -110,8 +112,8 @@ function updateMarkers(){
 }
 function legend(){
   const active=[];
-  if(checked("cover")||checked("compare"))active.push(...classNames.map((n,i)=>[n,atlas.land.colors[i]]));
-  if(checked("change")&&year!==atlas.land.years[0])active.push(["新增不透水面","#ef873e"],["转出不透水面","#79c9da"]);
+  if((checked("cover")&&!get("layer-cover").disabled)||checked("compare"))active.push(...classNames.map((n,i)=>[n,atlas.land.colors[i]]));
+  if(checked("change")&&!get("layer-change").disabled)active.push(["新增不透水面","#ef873e"],["转出不透水面","#79c9da"]);
   if(city.getZoom()>=11&&checked("envelope"))active.push(["虎溪快照覆盖框","#ffe398"]);
   if(city.getZoom()>=12&&checked("buildings"))active.push(...Object.entries(get("building-color").value==="basis"?BASIS_COLORS:USE_COLORS));
   if(city.getZoom()>=12&&checked("poi"))active.push(...Object.entries(POI_COLORS));
@@ -130,10 +132,10 @@ function legend(){
 function setYear(value){
   year=Number(value);if(!ready)return;
   for(const b of get("city-years").children)b.setAttribute("aria-pressed",String(Number(b.textContent)===year));
-  const previous=atlas.land.years[atlas.land.years.indexOf(year)-1];
-  safeText("period-note",previous?`${previous}—${year} 阶段`:"基准期 · 无阶段变化");
-  city.getSource("cover").updateImage({url:`/city/cover-${year}.png`,coordinates:atlas.land.corners});
-  if(previous)city.getSource("change").updateImage({url:`/city/change-${year}.png`,coordinates:atlas.land.corners});
+  const previous=panelYears[panelYears.indexOf(year)-1];
+  safeText("period-note",previous?`${previous}—${year} 阶段${atlas.land.years.includes(year)?"":" · 暂无对应栅格预览"}`:"基准期 · 无阶段变化");
+  if(atlas.land.years.includes(year))city.getSource("cover").updateImage({url:`/city/cover-${year}.png`,coordinates:atlas.land.corners});
+  if(atlas.land.years.indexOf(year)>0)city.getSource("change").updateImage({url:`/city/change-${year}.png`,coordinates:atlas.land.corners});
   showLayers();updateDistrictColors();renderReport();
 }
 function updateDistrictColors(){
@@ -301,7 +303,7 @@ function renderReport(){
     for(const row of rows){const tr=grid.insertRow();[row.type,row.m500,row.m1000].forEach(v=>tr.insertCell().textContent=v);}
     summary.append(make("p","设施统计为直线距离，范围可能超出虎溪快照。"),grid);
   }
-  get("city-district-export").onclick=()=>saveTable(r.district+"-四期区年数据.csv",history,
+  get("city-district-export").onclick=()=>saveTable(r.district+"-历期区年数据.csv",history,
     ["code","district","group","year","built_km2","expansion_km2","population","gdp_10k_cny","secondary_10k_cny","intensive_score","provisional","source_pop","source_gdp"]);
 }
 
@@ -317,7 +319,7 @@ function displayViews(){
       select("city-radius",view.radius);select("poi-type",view.poiType);
       select("building-color",view.buildingColor);select("district-metric",view.metric);
       city.getSource("compare").updateImage({url:`/city/cover-${view.compareYear}.png`,coordinates:atlas.land.corners});
-      city.jumpTo(view.camera);pickDistrict(view.district);setYear(view.year);setCenter(view.point);
+      city.jumpTo(view.camera);pickDistrict(view.district);setYear(panelYears.includes(view.year)?view.year:panelYears.at(-1));setCenter(view.point);
       safeText("city-task-status","已恢复 "+view.name);
     };
     remove.onclick=()=>{
@@ -369,7 +371,7 @@ get("city-fullscreen").onclick=async()=>{
 get("city-play").onclick=()=>{
   if(!ready)return;
   if(interval){clearInterval(interval);interval=null;safeText("city-play","播放");return;}
-  interval=setInterval(()=>{const yrs=atlas.land.years;setYear(yrs[(yrs.indexOf(year)+1)%yrs.length]);},1700);
+  interval=setInterval(()=>{const yrs=panelYears;setYear(yrs[(yrs.indexOf(year)+1)%yrs.length]);},1700);
   safeText("city-play","暂停");
 };
 get("city-district").onchange=()=>{if(ready)pickDistrict(get("city-district").value,true);};
@@ -416,10 +418,15 @@ if("serviceWorker" in navigator){
   navigator.serviceWorker.register("/sw.js").then(()=>navigator.serviceWorker.ready)
     .then(registration=>registration.active?.postMessage("cache-city")).catch(()=>{});
 }
-Promise.all([studyData(),readCity("/districts.geojson"),readCity("/city/manifest.json"),readCity("/city/buildings.geojson"),
-  readCity("/city/poi.geojson"),readCity("/city/roads.geojson"),readCity("/rivers.geojson")])
-.then(([rows,boundary,metadata,structures,sites,roads,rivers])=>{
-  panel=rows;districts=boundary;atlas=metadata;buildings=structures;poi=sites;
+Promise.all([studyData(),readCity("/districts.geojson"),readCity("/city/manifest.json"),
+  readCity("/api/v1/research/map/").catch(async()=>{
+    const [buildings,poi,roads]=await Promise.all(["buildings","poi","roads"].map(name=>readCity("/city/"+name+".geojson")));
+    return {buildings,poi,roads};
+  }),readCity("/rivers.geojson")])
+.then(([rows,boundary,metadata,site,rivers])=>{
+  panel=rows;districts=boundary;atlas={...metadata,osm:site.osm??metadata.osm};
+  buildings=site.buildings;poi=site.poi;const roads=site.roads;
+  panelYears=[...new Set(rows.map(r=>r.year))].sort((a,b)=>a-b);
   if(!window.maplibregl)throw Error("地图组件未加载。");
   city=new maplibregl.Map({
     container:"city-map",style:{version:8,sources:{},layers:[{id:"background",type:"background",paint:{"background-color":"#1a3531"}}]},
@@ -437,10 +444,11 @@ Promise.all([studyData(),readCity("/districts.geojson"),readCity("/city/manifest
   });
   city.once("load",()=>{
     loadLayers(rivers,roads);initSearch();
-    for(const y of atlas.land.years){
+    for(const y of panelYears){
       const b=make("button",y);b.onclick=()=>setYear(y);
-      get("city-years").append(b);get("compare-year").add(new Option(y,y));
+      get("city-years").append(b);
     }
+    atlas.land.years.forEach(y=>get("compare-year").add(new Option(y,y)));
     for(const type of Object.keys(POI_COLORS))get("poi-type").add(new Option(type,type));
     for(const f of districts.features){
       const {code,district}=f.properties;
@@ -456,6 +464,6 @@ Promise.all([studyData(),readCity("/districts.geojson"),readCity("/city/manifest
     city.on("click",mapClick);
     city.on("zoomend",()=>{legend();updateMarkers();});
     new ResizeObserver(()=>{city.resize();if(pane==="overview")chart?.resize();if(pane==="nearby")buildingChart?.resize();}).observe(get("city-body"));
-    safeText("city-status",`${districts.features.length} 区四期观测 · 虎溪快照 ${atlas.osm.buildings} 个建筑轮廓、${atlas.osm.poi} 个设施点 · ${atlas.osm.date}`);
+    safeText("city-status",`${districts.features.length} 区 · ${panelYears.length} 期观测 · 虎溪快照 ${atlas.osm.buildings} 个建筑轮廓、${atlas.osm.poi} 个设施点 · ${atlas.osm.date}`);
   });
 }).catch(error=>{safeText("city-status",error.message+" 可返回研究台使用二维地图。");});

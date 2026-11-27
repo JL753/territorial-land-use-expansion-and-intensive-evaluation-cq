@@ -246,7 +246,7 @@ function lab(){
     $("weight-"+i).disabled=mode!=="custom";
     $("weight-value-"+i).textContent=format(calc.weights[i]*100)+"%";
   });
-  $("lab-note").textContent=`${sample.length} 条观测 · ${recent?"近期共同参照":"四期探索性参照"} · 现价产出 · ${$("scenario-code").value?"情景结果，改动只作用于当前年份":"原始观测"}。`;
+  $("lab-note").textContent=`${sample.length} 条观测 · ${recent?"近期共同参照":"全期探索性参照"} · 现价产出 · ${$("scenario-code").value?"情景结果，改动只作用于当前年份":"原始观测"}。`;
   $("scores").replaceChildren(...labRows.map(r=>{
     const tr=node("tr");for(const v of [r.district,format(r.score,4),r.scenarioRank,r.baseline_rank,r.provisional?"待复核":r.quality_gdp||r.data_kind])tr.append(node("td",v));return tr;
   }));
@@ -269,7 +269,7 @@ function answer(q){
   if(/方案|试算|实验室/.test(q)){
     const year=Number($("year").value),recent=$("basis").value==="recent";
     const sample=records.filter(r=>!recent||[2020,2022].includes(r.year));
-    if(!sample.some(r=>r.year===year))currentAnswer="当前年份超出近期试算范围，可在评价实验室切换为四期。";
+    if(!sample.some(r=>r.year===year))currentAnswer="当前年份超出近期试算范围，可在评价实验室切换为全期。";
     else try{
       const model=evaluateRows(scenarioSample(sample,year),$("scheme").value,weights);
       const sorted=model.rows.filter(r=>r.year===year&&(!$("group").value||r.group===$("group").value)).sort((a,b)=>a.scenarioRank-b.scenarioRank);
@@ -283,7 +283,7 @@ ${sorted.slice(0,3).map(r=>r.district+" "+format(r.score,4)+"（年度第 "+r.sc
 }
 function stopPlayback(){
   clearInterval(playback);playback=null;
-  $("play-years").textContent="播放四期";$("play-years").setAttribute("aria-pressed","false");
+  $("play-years").textContent="播放观测期";$("play-years").setAttribute("aria-pressed","false");
 }
 $("play-years").onclick=()=>{
   if(playback){stopPlayback();return;}
@@ -424,7 +424,7 @@ function render(){
   if(!datasetReady)return;
   $("map-focus").textContent="";
   const restrict=page==="lab"&&$("basis").value==="recent";
-  for(const o of $("year").options)o.disabled=restrict&&Number(o.value)<2020;
+  for(const o of $("year").options)o.disabled=restrict&&![2020,2022].includes(Number(o.value));
   if($("year").selectedOptions[0]?.disabled)$("year").value="2020";
   if(!yearRows().some(r=>r.code===selected))selected=yearRows()[0]?.code||"";
   $("matrix-section").hidden=page!=="overview";
@@ -472,7 +472,7 @@ Promise.all([read("/dashboard.json"),read("/districts.geojson")]).then(([data,bo
   [...new Set(records.map(r=>r.year))].sort((a,b)=>b-a).forEach(y=>option($("year"),y,y));
   for(const [key,[name,unit]] of Object.entries(fields))if(records.some(r=>Number.isFinite(r[key])))option($("metric"),key,name+(unit?" · "+unit:""));
   $("status").textContent=records.some(r=>r.data_kind==="demo")?"模拟数据与虚构几何，仅用于系统验证":
-    `${new Set(records.map(r=>r.code)).size} 个区县 · ${records.length} 条区年观测 · CLCD 30 m ｜ 经济指标为现价，四期评价含早期待复核记录`;
+    `${new Set(records.map(r=>r.code)).size} 个区县 · ${records.length} 条区年观测 · CLCD 30 m ｜ 经济指标为现价，全期评价含早期待复核记录`;
   for(const [code,name] of new Map(records.map(r=>[r.code,r.district])))option($("scenario-code"),code,name);
   datasetReady=true;
   const route=new URLSearchParams(location.search);
@@ -480,7 +480,7 @@ Promise.all([read("/dashboard.json"),read("/districts.geojson")]).then(([data,bo
   if([...$("year").options].some(option=>option.value===routeYear))$("year").value=routeYear;
   if(records.some(row=>row.code===routeDistrict))selected=routeDistrict;
   if(routeView==="lab"){
-    $("basis").value=Number($("year").value)<2020?"full":"recent";
+    $("basis").value=[2020,2022].includes(Number($("year").value))?"recent":"full";
     if([...$("scenario-code").options].some(option=>option.value===routeDistrict))$("scenario-code").value=routeDistrict;
     tab("lab");
   }else render();

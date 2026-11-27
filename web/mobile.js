@@ -42,7 +42,7 @@ function profile(){
   get("years").replaceChildren(...rows.map(r=>{
     const b=make("button",r.year);b.setAttribute("aria-pressed",String(r.year===year));b.onclick=()=>{year=r.year;profile();};return b;
   }));
-  get("quality").textContent=row.provisional?"本年部分经济指标待复核。四期排名属于探索性评价。":"经济指标采用当年现价。页面排名来自四期探索性评价。";
+  get("quality").textContent=row.provisional?"本年部分经济指标待复核。四期排名属于探索性评价。":"经济指标采用当年现价。页面排名来自全期探索性评价。";
   get("tiles").replaceChildren(...["built_km2","impervious_share_pct","expansion_km2","built_person_m2","population","nominal_gdp_person_yuan","secondary_share_pct","coverage_gap_pct"].map(k=>{
     const item=make("div",null,"tile");
     item.append(make("small",fields[k][0]),make("strong",format(row[k])),make("span",fields[k][1]));return item;

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import District, Observation
+from .models import District, MapRelease, Observation, RefreshRun, ResearchRelease
 
 
 class PublishedDataAdmin(admin.ModelAdmin):
@@ -27,3 +27,16 @@ class ObservationAdmin(PublishedDataAdmin):
     list_filter = ("year", "district__region")
     search_fields = ("district__name", "district__code")
     list_select_related = ("district",)
+
+
+@admin.register(RefreshRun)
+class RefreshRunAdmin(PublishedDataAdmin):
+    list_display = ("feed", "status", "happened_at", "detail")
+    list_filter = ("feed", "status")
+    ordering = ("-happened_at",)
+
+
+@admin.register(ResearchRelease, MapRelease)
+class ReleaseAdmin(PublishedDataAdmin):
+    list_display = ("id", "source", "digest", "published_at")
+    ordering = ("-published_at",)

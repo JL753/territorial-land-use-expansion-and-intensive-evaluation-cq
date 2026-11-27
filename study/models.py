@@ -22,3 +22,31 @@ class Observation(models.Model):
 
     def __str__(self):
         return f"{self.district_id} · {self.year}"
+
+
+class ResearchRelease(models.Model):
+    digest = models.CharField(max_length=64, unique=True)
+    source = models.CharField(max_length=300)
+    published_at = models.DateTimeField(auto_now_add=True)
+    districts = models.JSONField()
+    observations = models.JSONField()
+    report = models.JSONField(null=True)
+
+
+class MapRelease(models.Model):
+    digest = models.CharField(max_length=64, unique=True)
+    source = models.CharField(max_length=300)
+    published_at = models.DateTimeField(auto_now_add=True)
+    payload = models.JSONField()
+
+
+class Publication(models.Model):
+    research = models.ForeignKey(ResearchRelease, null=True, on_delete=models.PROTECT)
+    map_release = models.ForeignKey(MapRelease, null=True, on_delete=models.PROTECT)
+
+
+class RefreshRun(models.Model):
+    feed = models.CharField(max_length=20)
+    status = models.CharField(max_length=20)
+    detail = models.CharField(max_length=400)
+    happened_at = models.DateTimeField(auto_now_add=True, db_index=True)

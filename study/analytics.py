@@ -48,12 +48,16 @@ def metrics(actual, predict):
             "rmse": round(float(root_mean_squared_error(actual, predict)), 6)}
 
 
-def machine_learning(rows):
+def machine_learning(rows, rolling=False):
     columns = list(FEATURES)
-    train = [x for x in rows if x["end"] <= 2020]
-    holdout = [x for x in rows if x["start"] == 2020 and x["end"] == 2022]
-    if len(train) != 42 or len(holdout) != 21:
-        raise ValueError("Expected 42 training rows and 21 temporal holdout rows.")
+    intervals = sorted({(r["start"], r["end"]) for r in rows})
+    if len(intervals) < 3:
+        raise ValueError("At least three intervals are required for temporal validation.")
+    test_start, test_end = intervals[-1] if rolling else (2020, 2022)
+    train = [x for x in rows if x["end"] <= test_start]
+    holdout = [x for x in rows if x["start"] == test_start and x["end"] == test_end]
+    if len(train) < 42 or len(holdout) != 21:
+        raise ValueError("Expected at least 42 training rows and 21 temporal holdout rows.")
     x_train, x_test = (np.array([[r[k] for k in columns] for r in subset], dtype=float) for subset in (train, holdout))
     y_train, y_test = (np.array([r["annual_net_km2"] for r in subset]) for subset in (train, holdout))
     if not all(np.isfinite(a).all() for a in (x_train, x_test, y_train, y_test)):
@@ -84,11 +88,11 @@ def machine_learning(rows):
         "baseline_area_km2": row["baseline_area_km2"], "baseline_population": row["baseline_population"],
     } for i, row in enumerate(holdout)]
     return {
-        "features": FEATURES, "train_years": [[2010, 2015], [2015, 2020]], "holdout_years": [2020, 2022],
+        "features": FEATURES, "train_years": sorted({(r["start"], r["end"]) for r in train}), "holdout_years": [test_start, test_end],
         "train_count": len(train), "holdout_count": len(holdout), "target_unit": "km²/年",
         "validation": "同一批区县的时间留出检验。模型仅用期初土地覆盖和人口变量。结果用于回测。",
         "scores": scores, "predictions": holdout_result,
-        "clusters": {"year": 2020, "k": 3, "silhouette": round(float(silhouette_score(standardized, groups)), 6), "rows": labels},
+        "clusters": {"year": test_start, "k": 3, "silhouette": round(float(silhouette_score(standardized, groups)), 6) if 1 < len(set(groups)) < len(groups) else None, "rows": labels},
     }
 
 

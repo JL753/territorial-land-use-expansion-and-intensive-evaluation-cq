@@ -55,7 +55,7 @@ function currentPlan(){
     weights:indicators.map((_,i)=>get("w"+i).valueAsNumber)};
 }
 function calculate(plan){
-  const sample=data.filter(r=>plan.basis==="full"||r.year>=2020);
+  const sample=data.filter(r=>plan.basis==="full"||[2020,2022].includes(r.year));
   return evaluateRows(sample,plan.mode,plan.weights);
 }
 function renderPlans(){
@@ -96,7 +96,7 @@ function delta(){
 }
 function rank(){
   const plan=currentPlan(),picker=get("d-rank-year"),prior=picker.value;
-  const available=years.filter(y=>plan.basis==="full"||y>=2020);
+  const available=years.filter(y=>plan.basis==="full"||[2020,2022].includes(y));
   picker.replaceChildren(...available.map(y=>new Option(y,y)));
   picker.value=available.includes(Number(prior))?prior:available.at(-1);
   get("d-weights").hidden=plan.mode!=="custom";
@@ -149,11 +149,11 @@ function pair(){
   get("pair-title").textContent=fields[key].join(" ");
   get("pair-table").replaceChildren(table(["年份",left[0].district,right[0].district,"差额 A−B"],rows.map(r=>
     [r.year,format(r.value_a,4),format(r.value_b,4),format(r.difference,4)])));
-  get("d-export-pair").onclick=()=>saveTable("区县四期对照.csv",rows,Object.keys(rows[0]));
+  get("d-export-pair").onclick=()=>saveTable("区县历期对照.csv",rows,Object.keys(rows[0]));
 }
 for(const id of ["district-a","district-b","pair-metric"])get(id).onchange=pair;
 function scanYears(){
-  const picker=get("s-year"),prior=Number(picker.value),range=years.filter(y=>get("s-basis").value==="full"||y>=2020);
+  const picker=get("s-year"),prior=Number(picker.value),range=years.filter(y=>get("s-basis").value==="full"||[2020,2022].includes(y));
   picker.replaceChildren(...range.map(y=>new Option(y,y)));picker.value=range.includes(prior)?prior:range.at(-1);
   clearScan();
 }
@@ -165,7 +165,7 @@ get("s-year").onchange=clearScan;
 get("s-run").onclick=()=>{
   const year=Number(get("s-year").value),basis=get("s-basis").value;
   try{
-    const scan=weightSensitivity(data.filter(r=>basis==="full"||r.year>=2020),year);
+    const scan=weightSensitivity(data.filter(r=>basis==="full"||[2020,2022].includes(r.year)),year);
     const rows=scan.rows.sort((a,b)=>b.span-a.span||a.scenarioRank-b.scenarioRank);
     if(!rows.length)throw Error("该年份没有可扫描的观测。");
     get("s-result").textContent=`${year} 年 · ${scan.scenarios} 套权重 · ${rows.length} 区 · 最大名次跨度 ${rows[0].span} 位`;

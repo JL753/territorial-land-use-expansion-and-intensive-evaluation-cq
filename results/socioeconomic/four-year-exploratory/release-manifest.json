@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "files": {
+    "districts.geojson": {
+      "path": "districts.geojson",
+      "sha256": "1524e2204954b035e465ac23b201a92b7b43e9063da0be5bfafa50e050dd4a05"
+    },
+    "dashboard.json": {
+      "path": "dashboard.json",
+      "sha256": "6d69ed6729e4e4499edf3ab6fa9cf5582440ceed9129839e662f786dc8976957"
+    }
+  }
+}

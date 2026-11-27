@@ -5,16 +5,20 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
-from study.models import District, Observation
+from study.models import District, Observation, Publication
 
 
 class Command(BaseCommand):
     help = "Validate and atomically import a published district-year panel."
 
     def add_arguments(self, parser):
+        parser.add_argument("--if-empty", action="store_true")
         parser.add_argument("--source", type=Path, default=settings.PUBLISHED_RESULTS)
 
     def handle(self, *args, **options):
+        if options["if_empty"] and Observation.objects.exists():
+            self.stdout.write("Existing publication retained.")
+            return
         source = options["source"]
         try:
             geo = json.loads((source / "districts.geojson").read_text(encoding="utf-8"))
@@ -47,6 +51,8 @@ class Command(BaseCommand):
             raise CommandError(str(exc)) from exc
 
         with transaction.atomic():
+            if Publication.objects.filter(pk=1, research__isnull=False).exists():
+                raise CommandError("Use refresh_sources to update a versioned research publication.")
             Observation.objects.all().delete()
             District.objects.all().delete()
             District.objects.bulk_create(districts.values())

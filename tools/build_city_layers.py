@@ -96,12 +96,19 @@ def osm_layers(source, out):
             "height_basis": dict(Counter(f["properties"]["basis"] for f in buildings))}
 
 
-YEARS = [2010, 2015, 2020, 2022]
 COLORS = ["#d6d85f", "#4f875f", "#8ca671", "#adc582", "#5598b5", "#e3eef9", "#b39d7c", "#d37554", "#4fbbb1"]
 
 
 def land_layers(root, out):
     rasters = root / "rasters"
+    inputs = {}
+    for file in rasters.glob("CQ_Metro21_LC_*.tif"):
+        name = file.stem.removeprefix("CQ_Metro21_LC_")
+        if re.fullmatch(r"20[0-9]{2}", name):
+            inputs[int(name)] = file
+    years = sorted(inputs)
+    if not {2010, 2015, 2020, 2022}.issubset(years):
+        raise ValueError("The four original raster years must be preserved.")
     with rasterio.open(rasters / "CQ_Metro21_district_id.tif") as mask:
         left, bottom, right, top = transform_bounds(mask.crs, "EPSG:3857", *mask.bounds, densify_pts=21)
         w, h = 1250, round(1250 * (top-bottom) / (right-left))
@@ -116,9 +123,9 @@ def land_layers(root, out):
         palette[i] = [*bytes.fromhex(color[1:]), 225]
     transition = np.array([[0, 0, 0, 0], [242, 119, 49, 255], [119, 206, 224, 255]], dtype="uint8")
     prior = None
-    for year in YEARS:
+    for year in years:
         current = np.zeros_like(district)
-        with rasterio.open(rasters / f"CQ_Metro21_LC_{year}.tif") as source:
+        with rasterio.open(inputs[year]) as source:
             reproject(rasterio.band(source, 1), current, **settings)
         current[(district < 1) | (district > 21) | (current > 9)] = 0
         Image.fromarray(palette[current]).save(out / f"cover-{year}.png", optimize=True)
@@ -128,7 +135,7 @@ def land_layers(root, out):
             Image.fromarray(transition[gain.astype("uint8") + 2 * loss]).save(out / f"change-{year}.png", optimize=True)
         prior = current
     x, y = transform("EPSG:3857", "EPSG:4326", [left,right,right,left], [top,top,bottom,bottom])
-    return {"corners": list(zip(x, y)), "years": YEARS, "colors": COLORS, "pixels": [w,h]}
+    return {"corners": list(zip(x, y)), "years": years, "colors": COLORS, "pixels": [w,h]}
 
 
 if __name__ == "__main__":

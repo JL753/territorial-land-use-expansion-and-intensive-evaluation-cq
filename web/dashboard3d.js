@@ -72,7 +72,8 @@ function render(){
  const rows=currentRows();renderKpis(rows);renderCover(rows);renderRanking(rows);renderDetail();applyMap();
  document.querySelectorAll("[data-year]").forEach(b=>b.classList.toggle("selected",Number(b.dataset.year)===state.year));
  $("year").value=String(state.year);$("group").value=state.group;$("metric").value=state.metric;
- $("timeline-caption").textContent=state.year===2010?"基期观测 · 不计算阶段扩张":state.year===2015?"2010—2015 年阶段变化":state.year===2020?"2015—2020 年阶段变化":"2020—2022 年阶段变化";
+ const prior=years[years.indexOf(state.year)-1];
+ $("timeline-caption").textContent=prior?`${prior}—${state.year} 年阶段变化`:"基期观测 · 不计算阶段扩张";
 }
 async function initMap(){
  if(!window.Cesium){throw new Error("CesiumJS 引擎未能加载。请检查网络连接后刷新页面；二维研究总览仍可正常使用。")}
@@ -92,7 +93,7 @@ async function initMap(){
  },C.ScreenSpaceEventType.LEFT_CLICK);
  setStatus("三维场景已就绪 · 点击区县查看数据");
 }
-function stopPlay(){state.playing=false;if(state.timer)clearInterval(state.timer);state.timer=null;$("play-years").textContent="▶ 播放四期"}
+function stopPlay(){state.playing=false;if(state.timer)clearInterval(state.timer);state.timer=null;$("play-years").textContent="▶ 播放观测期"}
 function play(){if(state.playing){stopPlay();return}state.playing=true;$("play-years").textContent="Ⅱ 暂停";let i=years.indexOf(state.year);state.timer=setInterval(()=>{i=(i+1)%years.length;state.year=years[i];render()},2600)}
 function bind(){
  $("year").addEventListener("change",e=>{state.year=Number(e.target.value);render()});
@@ -105,10 +106,23 @@ function bind(){
  document.querySelectorAll("[data-year]").forEach(b=>b.addEventListener("click",()=>{state.year=Number(b.dataset.year);stopPlay();render()}));
 }
 async function start(){
- initCharts();bind();
+ initCharts();
  try{
   const results=await Promise.all([fetch("/dashboard.json").then(r=>{if(!r.ok)throw new Error("研究面板读取失败");return r.json()}),fetch("/districts.geojson").then(r=>{if(!r.ok)throw new Error("区县边界读取失败");return r.json()}),fetch("/api/v1/recent-observations/").then(r=>r.ok?r.json():{results:[]}).catch(()=>({results:[]}))]);
   state.rows=results[0].map(normalize);state.features=results[1];state.recent=(results[2].results||[]).map(normalize);
+  years.splice(0,years.length,...new Set(state.rows.map(r=>r.year).sort((a,b)=>a-b)));
+  state.year=years.at(-1);
+  $("year").replaceChildren(...years.map(y=>new Option(y,y)));
+  const first=document.querySelector("[data-year]");
+  if(first){
+   const fragment=document.createDocumentFragment();
+   for(const y of years){
+    const button=first.cloneNode();button.dataset.year=y;button.textContent=y;fragment.append(button);
+   }
+   for(const node of [...document.querySelectorAll("[data-year]")].slice(1))node.remove();
+   first.replaceWith(fragment);
+  }
+  bind();
   $("kpi-districts").textContent=String(state.features.features.length);$("kpi-records").textContent=String(state.rows.length);
   renderTrend();await initMap();render();
  }catch(error){

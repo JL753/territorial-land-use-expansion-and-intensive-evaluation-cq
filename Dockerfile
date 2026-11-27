@@ -8,9 +8,12 @@ RUN --mount=type=secret,id=pip_ca \
 COPY manage.py audit_landcover.py serve.py ./
 COPY cqsite cqsite
 COPY study study
+COPY tools tools
+COPY data data
+COPY evaluate.py ./
 COPY web web
 COPY results results
-RUN useradd --create-home --uid 10001 study && chown -R study:study /app
+RUN useradd --create-home --uid 10001 study && mkdir /app/state && chown -R study:study /app
 USER study
 # Use a throwaway build-time key for collectstatic/migrations. A real key is required at runtime.
 RUN export DJANGO_SECRET_KEY="$(python -c 'import secrets; print(secrets.token_urlsafe(48))')" \

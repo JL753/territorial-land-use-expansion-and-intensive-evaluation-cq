@@ -12,7 +12,7 @@
 <script defer src="/analysis.js"></script>
 <script defer src="/client-utils.js"></script>
 <script defer src="/city.js"></script>
-</head>
+<link rel="stylesheet" href="/live.css"><script defer src="/live.js"></script></head>
 <body>
 <header>
   <a class="brand" href="/"><img src="/icon192.png" alt="">山城地研</a>
@@ -41,7 +41,7 @@
       <label>区县专题<select id="district-metric"><option value="built_km2">不透水面面积</option><option value="expansion_km2">阶段净扩张</option><option value="intensive_score">集约利用得分</option><option value="population_density">人口承载密度</option></select></label>
       <label>对照年份<select id="compare-year"></select></label>
       <label>虎溪建筑高度显示倍率 <input id="height-scale" type="range" min="1" max="4" step="0.5" value="2.5"><output id="height-value">2.5×</output></label><label>对照图透明度 <input id="compare-opacity" type="range" min="0" max="100" value="50"></label>
-      <div class="sources">区县统计与 CLCD 按观测年切换。虎溪建筑、道路和设施来自 2026 年 OSM 快照。</div>
+      <div class="sources">区县统计与 CLCD 按观测年切换。虎溪建筑、道路和设施来自当前发布的 OSM 快照。</div>
     </aside>
     <section class="stage" aria-label="三维研究地图">
       <div id="city-map"></div>
@@ -76,7 +76,7 @@
         <p>保存当前地图视角、观测年份和图层状态，便于重开同一分析。成果保存在本机。</p>
         <label>视图名称<input id="city-task-name" maxlength="48" placeholder="例如 2022 年虎溪设施核查"></label><button id="save-city-task">保存视图</button>
         <div id="city-tasks"></div><p id="city-task-status" role="status"></p>
-        <button id="city-district-export">导出区县四期数据</button>
+        <button id="city-district-export">导出区县历年数据</button>
         <button id="city-map-export">导出地图 PNG</button><button id="city-print">打印研究简报</button>
         <div id="city-summary"></div>
       </section>

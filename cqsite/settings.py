@@ -70,3 +70,4 @@ RESULT_OVERRIDE = os.environ.get("CQ_RESULTS")
 USE_POSTGIS = os.environ.get("CQ_POSTGIS") == "1"
 OLLAMA_MODEL = os.environ.get("CQ_OLLAMA_MODEL")
 ANALYSIS_REPORT = Path(os.environ.get("CQ_ANALYSIS_REPORT", str(ROOT / "results" / "analysis" / "report.json")))
+RESEARCH_FEED_URL = os.environ.get("CQ_RESEARCH_FEED_URL")
