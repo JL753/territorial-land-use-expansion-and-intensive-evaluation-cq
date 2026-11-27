@@ -5,7 +5,7 @@ Requires pyosmium, Shapely 2 and the repository's validated district GeoJSON.
 Buildings without measured height are marked as estimated, never as surveyed.
 """
 from __future__ import annotations
-import argparse, hashlib, json, os, re, shutil, tempfile
+import argparse, hashlib, json, os, re, tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.request import Request, urlopen
@@ -21,13 +21,20 @@ LAYERS=("buildings","roads","poi")
 
 def download(url,dest):
     req=Request(url,headers={"User-Agent":UA})
-    with urlopen(req,timeout=60) as response:
-        with dest.open("wb") as out:
-            while True:
-                chunk=response.read(1024*1024)
-                if not chunk: break
-                out.write(chunk)
-        return response.headers.get("Last-Modified")
+    temporary=dest.with_suffix(dest.suffix+".part")
+    try:
+        with urlopen(req,timeout=60) as response:
+            length=int(response.headers.get("Content-Length") or 0)
+            if length>250*1024*1024: raise ValueError("Unexpectedly large regional PBF; refusing download.")
+            with temporary.open("wb") as out:
+                while True:
+                    chunk=response.read(1024*1024)
+                    if not chunk: break
+                    out.write(chunk)
+            os.replace(temporary,dest)
+            return response.headers.get("Last-Modified")
+    finally:
+        if temporary.exists(): temporary.unlink()
 
 def load_districts(path):
     geo=json.loads(path.read_text(encoding="utf-8"))
@@ -158,7 +165,7 @@ def main():
         modified=download(URL,args.pbf)
         print("Snapshot Last-Modified: "+str(modified),flush=True)
     else:
-        modified=None
+        modified=datetime.fromtimestamp(args.pbf.stat().st_mtime,timezone.utc).isoformat()
     result=build(args.pbf,args.output_dir,args.districts,modified)
     print(json.dumps({"counts":result["counts"],"pbf_sha256":result["pbf_sha256"]},ensure_ascii=False,indent=2))
 
