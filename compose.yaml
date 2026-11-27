@@ -29,7 +29,7 @@ services:
       - sh
       - -c
       - |
-        set -- --osm --interval 21600
+        set -- --osm --clcd --interval 21600
         if [ -n "$$CQ_RESEARCH_FEED_URL" ]; then set -- "$$@" --panel; fi
         exec python manage.py refresh_sources "$$@"
     healthcheck:

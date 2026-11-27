@@ -13,12 +13,12 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_GET, require_POST
 
 from .models import District, Observation, MapRelease, RefreshRun, ResearchRelease
-from .updates import publication
+from .updates import check_clcd_version, publication
 from .ollama import choose_evidence
 from .postgis import published_data
 
 WEB = settings.ROOT / "web"
-PAGES = {"/": "index.html", "/mobile.html": "mobile.html", "/desktop.html": "desktop.html", "/city.html": "city.html", "/dashboard3d.html": "dashboard3d.html", "/guide.html": "guide.html"}
+PAGES = {"/": "index.html", "/mobile.html": "mobile.html", "/desktop.html": "desktop.html", "/city.html": "city.html", "/dashboard3d.html": "dashboard3d.html", "/guide.html": "guide.html", "/data-center.html": "data-center.html", "/district.html": "district.html"}
 ASSETS = {
     "app.js", "style.css", "analysis.js", "client-utils.js", "sw.js", "manifest.webmanifest",
     "mobile.js", "mobile.css", "mobile.webmanifest", "desktop.js", "desktop.css", "river-ink.webp", "rivers.geojson",
@@ -28,7 +28,7 @@ ASSETS = {
     "city/cover-2010.png", "city/cover-2015.png", "city/cover-2020.png", "city/cover-2022.png",
     "city/change-2015.png", "city/change-2020.png", "city/change-2022.png",
     "vendor/echarts-6.0.0.min.js", "vendor/echarts-LICENSE.txt", "vendor/echarts-NOTICE.txt",
-    "live.js", "live.css",
+    "live.js", "live.css", "data-center.js", "data-center.css", "district.js", "district.css", "chongqing-relief-bg.svg",
     "dashboard3d.js", "dashboard3d.css", "guide.js", "guide.css",
 }
 
@@ -219,7 +219,7 @@ def live_status(request):
                          "published_at": research.published_at if research else None,
                          "years": sorted({row["year"] for row in rows}), "observations": len(rows)},
             "map": {"id": map_release.pk if map_release else None,
-                    "observed_at": map_release.payload["osm"]["date"] if map_release else "2026-10-13",
+                    "observed_at": map_meta.get("date") or (map_release.published_at.isoformat() if map_release else "未记录"),
                     "published_at": map_release.published_at if map_release else None},
             "versions": list(ResearchRelease.objects.order_by("-published_at").values("id","source","published_at")[:12]),
             "map_versions": list(MapRelease.objects.order_by("-published_at").values("id","source","published_at")[:12]),
@@ -259,3 +259,76 @@ def live_map(request):
         return response
     except DatabaseError:
         return JsonResponse({"error": "更新图层暂不可用。"}, status=503)
+
+
+@require_GET
+def data_sources(request):
+    active = publication()
+    research = active.research if active and active.research_id else None
+    map_release = active.map_release if active and active.map_release_id else None
+    runs = list(RefreshRun.objects.order_by("-happened_at", "-pk").values("feed", "status", "detail", "happened_at")[:30])
+    latest_clcd = next((run for run in runs if run["feed"] == "clcd"), None)
+    rows = research.observations if research else snapshot("dashboard.json")
+    map_meta = map_release.payload.get("osm", {}) if map_release else {}
+    return JsonResponse({
+        "sources": [
+            {"key": "clcd", "name": "CLCD 年度土地覆盖", "category": "土地覆盖",
+             "coverage": "1985—2025 产品期；实际年份按 Zenodo 文件清单识别", "resolution": "30 m",
+             "freshness": "年度产品，非实时遥感流", "mode": "每 6 小时检查公开版本元数据",
+             "status": latest_clcd["status"] if latest_clcd else "尚未检查",
+             "latest_check": latest_clcd["happened_at"] if latest_clcd else None,
+             "url": "https://zenodo.org/records/18180184"},
+            {"key": "osm", "name": "OpenStreetMap 建筑、道路与 POI", "category": "矢量地理要素",
+             "coverage": "当前虎溪研究框；全域区县数据待扩展", "resolution": "要素级",
+             "freshness": "按 6 小时计划检查，受公开服务限流影响", "mode": "定时同步快照",
+             "status": next((run["status"] for run in runs if run["feed"] == "osm"), "尚未检查"),
+             "latest_check": next((run["happened_at"] for run in runs if run["feed"] == "osm"), None),
+             "url": "https://www.openstreetmap.org/"},
+            {"key": "research", "name": "重庆区县年度统计面板", "category": "社会经济与评价",
+             "coverage": "当前已发布区县年份：" + "、".join(map(str, sorted({row["year"] for row in rows}))),
+             "resolution": "21 区县 × 年份", "freshness": "批准的数据包或 HTTPS 清单发布后更新",
+             "mode": "版本化发布、质量校验、人工确认",
+             "status": next((run["status"] for run in runs if run["feed"] == "research"), "仓库基线"),
+             "latest_check": next((run["happened_at"] for run in runs if run["feed"] == "research"), None),
+             "url": "https://tjj.cq.gov.cn/"},
+            {"key": "terrain", "name": "AWS Terrain Tiles / Terrarium", "category": "当前三维地形",
+             "coverage": "全球瓦片服务", "resolution": "视瓦片缩放级别而定",
+             "freshness": "静态地形瓦片，非实时高程", "mode": "在线按需读取",
+             "status": "区县三维场景正在使用", "latest_check": None,
+             "url": "https://registry.opendata.aws/terrain-tiles/"},
+            {"key": "dem", "name": "Copernicus DEM GLO-30", "category": "本地高程数据",
+             "coverage": "全球", "resolution": "约 30 m",
+             "freshness": "静态地形产品，非实时", "mode": "下载后版本化入库",
+             "status": "待接入本地 DEM 处理流水线", "latest_check": None,
+             "url": "https://dataspace.copernicus.eu/"},
+            {"key": "ghsl", "name": "GHSL 全球人居环境数据", "category": "独立对照",
+             "coverage": "多期全球产品", "resolution": "依产品而定",
+             "freshness": "按产品版本更新", "mode": "发布后人工核验",
+             "status": "来源已登记", "latest_check": None,
+             "url": "https://ghsl.jrc.ec.europa.eu/"},
+        ],
+        "research": {"version": research.pk if research else None,
+                     "years": sorted({row["year"] for row in rows}), "observations": len(rows),
+                     "source": research.source if research else "仓库基线"},
+        "map": {"version": map_release.pk if map_release else None,
+                "observed_at": map_release.payload["osm"]["date"] if map_release else "2026-10-13"},
+        "runs": runs,
+    }, json_dumps_params={"ensure_ascii": False})
+
+
+@require_POST
+def check_data_updates(request):
+    try:
+        details = check_clcd_version()
+        detail = (
+            f"CLCD {details['version']} · 最新栅格年份 {details['latest_year']} · "
+            f"{len(details['available_years'])} 个年份文件 · "
+            f"可用年份：{', '.join(map(str, details['available_years']))}"
+        )
+        RefreshRun.objects.create(feed="clcd", status="checked", detail=detail)
+        return JsonResponse({"status": "checked", "detail": detail, "source": details},
+                            json_dumps_params={"ensure_ascii": False})
+    except Exception as exc:
+        detail = f"CLCD version check: {type(exc).__name__}: {str(exc)[:300]}"
+        RefreshRun.objects.create(feed="clcd", status="failed", detail=detail)
+        return JsonResponse({"error": "CLCD 版本检查失败；现有已发布数据保持不变。", "detail": detail}, status=502)

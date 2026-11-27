@@ -2,11 +2,12 @@
 import hashlib
 import json
 import math
+import re
 from pathlib import Path
 import tempfile
 from urllib.error import URLError
 from urllib.parse import urlencode, urljoin, urlsplit
-from urllib.request import HTTPRedirectHandler, Request, build_opener
+from urllib.request import HTTPRedirectHandler, Request, build_opener, urlopen
 
 from django.conf import settings
 from django.db import transaction
@@ -294,3 +295,56 @@ def restore_map(version):
         pointer.map_release = release
         pointer.save(update_fields=["map_release"])
     return release
+
+ 
+CLCD_RECORD_URL = "https://zenodo.org/api/records/18180184"
+
+
+def check_clcd_version():
+    """Resolve the newest version of the CLCD Zenodo record series without downloading rasters."""
+    request = Request(CLCD_RECORD_URL, headers={
+        "Accept": "application/json",
+        "User-Agent": "ShanchengDiyan/2.0 (public dataset version monitor)",
+    })
+    with urlopen(request, timeout=18) as response:
+        seed = json.load(response)
+    concept_id = seed.get("conceptrecid") or seed.get("id") or "18180184"
+    query = urlencode({
+        "q": f"conceptrecid:{concept_id}",
+        "all_versions": "true",
+        "sort": "mostrecent",
+        "size": 1,
+    })
+    latest_request = Request(
+        "https://zenodo.org/api/records?" + query,
+        headers={"Accept": "application/json", "User-Agent": "ShanchengDiyan/2.0"},
+    )
+    with urlopen(latest_request, timeout=18) as response:
+        search = json.load(response)
+    hits = search.get("hits", {}).get("hits", [])
+    record = hits[0] if hits else seed
+    metadata = record.get("metadata", {})
+    years = set()
+    total_size = 0
+    files = record.get("files", [])
+    for item in files:
+        name = item.get("key", "")
+        if name.endswith("_albert.tif"):
+            match = re.search(r"(?:19|20)\d{2}", name)
+            if match:
+                years.add(int(match.group(0)))
+        total_size += int(item.get("size") or 0)
+    available_years = sorted(years)
+    return {
+        "record_id": str(record.get("id") or concept_id),
+        "concept_record_id": str(concept_id),
+        "record_url": record.get("links", {}).get("html", "https://zenodo.org/records/18180184"),
+        "title": metadata.get("title", "CLCD"),
+        "version": metadata.get("version") or metadata.get("publication_date") or "latest",
+        "publication_date": metadata.get("publication_date"),
+        "modified": record.get("updated"),
+        "latest_year": max(available_years) if available_years else None,
+        "available_years": available_years,
+        "file_count": len(files),
+        "total_size_bytes": total_size,
+    }

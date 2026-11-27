@@ -1,13 +1,13 @@
-#live-launch{position:fixed;bottom:1.1rem;right:1.2rem;z-index:15;padding:.6rem .85rem;border:1px solid #84aa96;border-radius:999px;background:#1d4c40;color:#fffbeb;box-shadow:0 5px 18px #102a2340;font:700 14px system-ui,sans-serif;cursor:pointer}
-.live-mobile #live-launch{bottom:calc(4.6rem + env(safe-area-inset-bottom));right:.65rem}
-#live-assistant{position:fixed;inset:auto 1rem 4.5rem auto;margin:0;width:min(94vw,460px);max-height:min(76dvh,650px);overflow:auto;z-index:16;padding:1.15rem;border:1px solid #b9c5af;border-radius:14px;color:#263e31;background:#fcf8e9;box-shadow:0 16px 45px #0d262547;font:14px/1.5 system-ui,sans-serif}
-#live-assistant::backdrop{background:#112c2b55}#live-assistant h2{margin:0 0 .65rem;font-size:1.2rem}
-#live-assistant p{margin:.55rem 0;white-space:pre-wrap;color:#32463a}
-#live-answer:not(:empty){padding:.65rem;border-left:3px solid #7ea17e;background:#edf2df}
-#live-assistant label{display:block;color:#426654}#live-assistant form{display:grid;grid-template-columns:1fr auto;gap:.35rem;margin:.8rem 0}#live-assistant form label{grid-column:1/-1}
-#live-assistant button,#live-assistant input{font:inherit;color:#244737;border:1px solid #a7b9a1;border-radius:6px;background:#fffaf0;padding:.35rem .5rem;min-width:0}
-#live-assistant button{cursor:pointer}#live-assistant button[type=submit]{background:#285b49;color:white}.live-close{float:right}
-.live-hints{display:flex;flex-wrap:wrap;gap:.25rem}.live-hints button{font-size:.75rem!important}
-#live-assistant details{color:#354d3f;margin-top:.7rem;border-top:1px solid #d2dac8;padding-top:.5rem}#live-assistant details p{font-size:.76rem}
-@media(max-width:520px){#live-assistant{inset:auto .5rem 4.3rem auto}#live-launch{right:.6rem}}
+#live-launch{position:fixed;right:24px;bottom:24px;z-index:10000;width:58px;height:58px;padding:0;display:grid;place-items:center;border:1px solid #b6d0e5;border-radius:50%;background:linear-gradient(145deg,#2d7db8,#185789);color:#fff;box-shadow:0 10px 28px #173f652b,0 0 0 5px #ffffffd9;font:800 16px/1 Inter,system-ui,sans-serif;cursor:pointer;transition:transform .18s,box-shadow .18s}#live-launch:hover{transform:translateY(-3px);box-shadow:0 14px 34px #173f6540,0 0 0 6px #fff}#live-launch::after{content:"问山城研究助手";position:absolute;right:68px;top:50%;transform:translateY(-50%);white-space:nowrap;padding:7px 10px;border:1px solid #d6e3ed;border-radius:7px;background:#fff;color:#365a76;font-size:11px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .15s}#live-launch:hover::after,#live-launch:focus-visible::after{opacity:1}
+.live-mobile #live-launch{bottom:calc(4.6rem + env(safe-area-inset-bottom));right:16px}
+#live-assistant{position:fixed;inset:auto 20px 94px auto;margin:0;width:min(94vw,460px);max-height:min(76dvh,650px);overflow:auto;z-index:10001;padding:18px;border:1px solid #d6e2ec;border-radius:15px;color:#1d3b55;background:#fff;box-shadow:0 20px 60px #1a426328;font:13px/1.6 Inter,system-ui,"Microsoft YaHei",sans-serif}
+#live-assistant::backdrop{background:#15334d55}#live-assistant h2{margin:0 0 10px;font-size:18px;color:#1c4263}
+#live-assistant p{margin:9px 0;white-space:pre-wrap;color:#39566e}
+#live-answer:not(:empty){padding:11px 12px;border-left:3px solid #4384b5;border-radius:0 8px 8px 0;background:#eff5fa}
+#live-assistant label{display:block;color:#54738d}#live-assistant form{display:grid;grid-template-columns:1fr auto;gap:7px;margin:12px 0}#live-assistant form label{grid-column:1/-1}
+#live-assistant button,#live-assistant input{font:inherit;color:#244760;border:1px solid #d0deea;border-radius:7px;background:#fbfdff;padding:8px 10px;min-width:0}
+#live-assistant button{cursor:pointer}#live-assistant button[type=submit]{background:#2866a8;color:white;border-color:#2866a8}.live-close{float:right}
+.live-hints{display:flex;flex-wrap:wrap;gap:6px}.live-hints button{font-size:11px!important;border-radius:20px!important;background:#f5f9fc!important}
+#live-assistant details{color:#355a77;margin-top:12px;border-top:1px solid #e2ebf2;padding-top:9px}#live-assistant details p{font-size:11px}
+@media(max-width:520px){#live-assistant{inset:auto 8px calc(4.3rem + env(safe-area-inset-bottom)) auto;width:calc(100vw - 16px)}#live-launch{right:14px;bottom:calc(4.6rem + env(safe-area-inset-bottom))}}
 @media print{#live-launch,#live-assistant{display:none!important}}
