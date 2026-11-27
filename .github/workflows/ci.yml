@@ -76,3 +76,20 @@ jobs:
           context: .
           push: false
           tags: cq-land-study:ci
+
+      - name: Run container readiness smoke test
+        run: |
+          docker run --detach --rm --name cq-land-study-ci \\
+            -p 127.0.0.1:8000:8000 \\
+            -e DJANGO_SECRET_KEY=ci-runtime-only-secret \\
+            -e DJANGO_ALLOWED_HOSTS=127.0.0.1,localhost \\
+            cq-land-study:ci
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8000/healthz; then
+              docker stop cq-land-study-ci
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs cq-land-study-ci
+          exit 1

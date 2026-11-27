@@ -1,4 +1,6 @@
-from django.test import TestCase
+from unittest.mock import patch
+
+from django.test import TestCase, override_settings
 
 
 class ClientSurfaceTests(TestCase):
@@ -27,3 +29,15 @@ class ClientSurfaceTests(TestCase):
     def test_read_only_data_endpoints_reject_mutating_methods(self):
         self.assertEqual(self.client.post("/dashboard.json").status_code, 405)
         self.assertEqual(self.client.post("/districts.geojson").status_code, 405)
+
+    @override_settings(DEBUG=False, SECURE_SSL_REDIRECT=True, SECURE_REDIRECT_EXEMPT=[r"^healthz$"])
+    def test_health_probe_is_available_to_container_runtime(self):
+        codes = [f"{500100 + index:06d}" for index in range(21)]
+        features = {"type": "FeatureCollection", "features": [
+            {"properties": {"code": code}} for code in codes
+        ]}
+        rows = [{"code": code, "year": year} for code in codes
+                for year in (2010, 2015, 2020, 2022)]
+        with patch("study.views.snapshot", side_effect=[features, rows]):
+            response = self.client.get("/healthz")
+        self.assertEqual(response.status_code, 200)
