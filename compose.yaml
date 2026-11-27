@@ -35,5 +35,15 @@ services:
     healthcheck:
       disable: true
     restart: unless-stopped
+  spatial-data-build:
+    image: cq-land-research:local
+    profiles: ["data-build"]
+    volumes:
+      - study-state:/app/state
+    command:
+      - sh
+      - -c
+      - python tools/build_clcd_district_series.py && python tools/build_chongqing_osm_layers.py
+    restart: "no"
 volumes:
   study-state:

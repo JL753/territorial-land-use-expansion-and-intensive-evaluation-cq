@@ -78,6 +78,7 @@ python manage.py runserver
 - 全域建筑/道路/POI：`python tools/build_chongqing_osm_layers.py`，按 21 区县输出独立 GeoJSON，并由区县三维页按需加载。
 - 结果写入 `state/clcd-district-series.json`，通过 `/api/v1/landcover-series/` 提供给区县三维页、Cesium 年度时间轴和研究助手。遥感单源年份不生成虚假的人口、GDP 或集约利用得分。
 - 全域建筑/道路/POI：`python tools/build_chongqing_osm_layers.py`，按 21 区县输出独立 GeoJSON，区县三维页按需加载。
+- Docker 一次性构建两类空间数据：先 `docker compose build web`，再执行 `docker compose --profile data-build run --rm spatial-data-build`。结果持久化到 `study-state` 卷，Web 页面会自动读取。
 - 21 区县均可进入独立三维地形场景；当前地形来自在线 DEM 瓦片，虎溪精细建筑数据不能代表其他区县建筑模型已覆盖。
 - 详细数据处理与口径见 [长期数据流水线](docs/long-term-data-pipeline.md)。
 

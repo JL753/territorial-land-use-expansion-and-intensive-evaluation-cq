@@ -54,3 +54,8 @@ OSM 派生数据须按 ODbL 1.0 署名并遵守共享条款。OSM 缺少建筑�
 ## 21 区县 OSM 三维要素
 
 运行 `python tools/build_chongqing_osm_layers.py` 自动下载 Geofabrik 重庆区域 PBF，并按 21 区县边界切分建筑轮廓、道路和 POI 到 `state/osm-21/`。各区县页面按当前区县代码按需加载对应 GeoJSON。建筑高度优先采用 OSM `height`，其次使用 `building:levels × 3 m` 估算，仍缺失时使用 6 m 概化高度；属性 `height_source` 会标明来源。该高度仅用于可视化，不是实测高度。OSM 数据遵守 ODbL 1.0，页面保留 OpenStreetMap 署名。
+
+
+## Docker 一次性数据构建
+
+先构建应用镜像，再执行 `docker compose --profile data-build run --rm spatial-data-build`。该一次性服务依次生成 CLCD 年度区县序列和重庆 21 区县 OSM 建筑/道路/POI 图层，输出保存在持久化的 `study-state` 卷中。首次处理建议预估网络和磁盘资源；若只想快速验收，可先在本机直接运行 CLCD 脚本的 `--years 2010,2015,2020,2025` 抽样参数，再执行全年度。
