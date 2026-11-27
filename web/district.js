@@ -37,6 +37,8 @@ async function loadOsmLayers(code){
   ["poi","district-poi",{id:"district-poi-points",type:"circle",source:"district-poi",
    paint:{"circle-radius":["interpolate",["linear"],["zoom"],8,2,15,5],"circle-color":"#bd6f54","circle-stroke-color":"#fff","circle-stroke-width":1}}]
  ];
+ const empty={type:"FeatureCollection",features:[]};
+ definitions.forEach(([,sourceId])=>{const source=state.map&&state.map.getSource(sourceId);if(source)source.setData(empty);});
  await Promise.all(definitions.map(async ([layer,sourceId])=>{
   try{
    const response=await fetch("/api/v1/osm-layers/"+layer+"/"+code+".geojson");

@@ -74,8 +74,11 @@ class Extractor(osmium.SimpleHandler):
     def __init__(self,outputs,polygons,tree,manifest):
         super().__init__()
         self.outputs=outputs; self.polygons=polygons; self.tree=tree; self.manifest=manifest
-        self.factory=osmium.geom.WKBFactory()
-    def emit(self,layer,osm_id,geom,tags):
+        self.factory=osmium.geom.WKBFactory(); self.seen={layer:set() for layer in LAYERS}
+    def emit(self,layer,osm_id,geom,tags,entity_type):
+        identity=(entity_type,int(osm_id))
+        if identity in self.seen[layer]: return
+        self.seen[layer].add(identity)
         if geom is None or geom.is_empty: return
         if not geom.is_valid:
             geom=geom.buffer(0)
@@ -103,20 +106,20 @@ class Extractor(osmium.SimpleHandler):
         if not (is_building or is_poi): return
         try: geom=wkb.loads(self.factory.create_multipolygon(a),hex=True)
         except Exception: return
-        if is_building: self.emit("buildings",a.id,geom,tags)
-        if is_poi: self.emit("poi",a.id,geom,tags)
+        if is_building: self.emit("buildings",a.id,geom,tags,"area")
+        if is_poi: self.emit("poi",a.id,geom,tags,"area")
     def way(self,w):
         tags=tags_dict(w.tags)
         if not tags.get("highway"): return
         try: geom=wkb.loads(self.factory.create_linestring(w),hex=True)
         except Exception: return
-        self.emit("roads",w.id,geom,tags)
+        self.emit("roads",w.id,geom,tags,"way")
     def node(self,n):
         tags=tags_dict(n.tags)
         if not any(tags.get(k) for k in POI_KEYS): return
         try: geom=Point(n.location.lon,n.location.lat)
         except Exception: return
-        self.emit("poi",n.id,geom,tags)
+        self.emit("poi",n.id,geom,tags,"node")
 
 def build(pbf,output_dir,district_path,snapshot_date=None):
     districts=load_districts(district_path)
