@@ -11,7 +11,7 @@
 - ECharts：复用仓库本地版本绘制趋势、土地覆盖构成和区县排行。
 - 原始研究数据：四期 21 区面板、2020/2022 年 42 条 A 级主要比较观测、WGS84 区县 GeoJSON 和长江/嘉陵江参考线。
 
-CesiumJS 通过官方 CDN 加载，三维页面首次使用需要网络访问 CesiumJS 脚本及其 Worker/Assets 文件；本项目未引入 Cesium ion Token，也未把付费地形或在线建筑数据作为必要依赖。原有二维研究总览和其他功能不依赖 Cesium CDN。
+CesiumJS 通过官方 CDN 加载，三维页面首次使用需要网络访问 CesiumJS 脚本及其 Worker/Assets 文件；底图使用 OpenStreetMap 瓦片并保留 © OpenStreetMap contributors 署名。本项目未引入 Cesium ion Token，也未把付费地形或在线建筑数据作为必要依赖。原有二维研究总览和其他功能不依赖 Cesium CDN。
 
 ## 三维专题表达
 
