@@ -15,11 +15,11 @@
 
 | 客户端 | 启动方式 |
 | --- | --- |
-| 网页、大屏 | 在仓库根目录运行下方命令，打开终端显示的本地地址 |
-| Android 8+ | 安装 [APK](downloads/cq-land-android.apk)，数据随安装包提供 |
-| iPhone | 用 Safari 打开 HTTPS 部署地址，添加到主屏幕 |
-| Windows x64 | 打开 [桌面程序](downloads/cq-land-windows.exe)，使用本机 Edge 或 Chrome 应用窗口 |
-| Linux x64 | 执行 [桌面程序](downloads/cq-land-linux)，使用本机 Chromium 或 Chrome 应用窗口 |
+| 网页、大屏 | 在仓库根目录运行下方命令，访问 `http://127.0.0.1:8000/` |
+| Android 8+ | 安装 [APK](downloads/cq-land-android.apk)，打开口袋区县档案。可离线查询、收藏、记笔记和导出 |
+| iPhone | 用 Safari 打开 HTTPS 部署地址的 `/mobile.html`，添加到主屏幕 |
+| Windows x64 | 打开 [桌面程序](downloads/cq-land-windows.exe)，使用本机 Edge 或 Chrome 应用窗口打开桌面分析台 |
+| Linux x64 | 执行 [桌面程序](downloads/cq-land-linux)，使用本机 Chromium 或 Chrome 应用窗口打开桌面分析台 |
 | Python 桌面 | 执行 `python downloads/cq-land-desktop.pyz`，需 Python 3.10+ 和 Tkinter |
 
 ```bash
@@ -30,7 +30,9 @@ python serve.py --results results/socioeconomic/four-year-exploratory
 
 网页可选接入本机 Ollama。启动 Ollama 并准备所需模型后，在上述命令末尾加 `--ollama-model MODEL`。摘要输入由研究台按当前数据计算，模型选出的相关证据单独显示。离线客户端内置统计问答。
 
-安装包复建方法、设计参考和验收范围见 [三端应用说明](docs/workbench.md)。
+网页版 `/mobile.html` 和 `/desktop.html` 可直接体验两个专用界面。网页研究简报随年份及区组更新，可加备注并打印为 PDF。桌面分析台支持跨年筛选、按列排序、保存评价方案、对照排名和导出差异。
+
+安装包复建方法、三端设计和数据口径见 [三端应用说明](docs/workbench.md)。
 
 ## 运行模拟数据
 

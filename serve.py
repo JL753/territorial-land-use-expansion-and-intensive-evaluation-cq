@@ -11,6 +11,10 @@ WEB = Path(__file__).resolve().parent / "web"
 ASSETS = {"/": ("index.html", "text/html"), "/app.js": ("app.js", "text/javascript"),
           "/style.css": ("style.css", "text/css")}
 for filename, mime in {
+    "mobile.html": "text/html", "desktop.html": "text/html",
+    "mobile.css": "text/css", "desktop.css": "text/css",
+    "mobile.js": "text/javascript", "desktop.js": "text/javascript",
+    "client-utils.js": "text/javascript", "mobile.webmanifest": "application/manifest+json",
     "analysis.js": "text/javascript", "manifest.webmanifest": "application/manifest+json",
     "sw.js": "text/javascript", "icon192.png": "image/png", "icon512.png": "image/png",
 }.items():

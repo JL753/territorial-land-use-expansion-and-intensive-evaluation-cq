@@ -32,7 +32,7 @@ def resources():
     return assets
 
 
-def local_server(assets):
+def local_server(assets, port=0):
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
             key = urlsplit(self.path).path.removeprefix("/") or "index.html"
@@ -51,7 +51,7 @@ def local_server(assets):
         def log_message(self, *_):
             pass
 
-    return ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    return ThreadingHTTPServer(("127.0.0.1", port), Handler)
 
 
 def browser_app(url):
@@ -93,13 +93,13 @@ def run():
     window = tk.Tk()
     window.title("山城地研 · 桌面研究台")
     window.geometry("1080x680")
-    server = local_server(assets)
+    server = local_server(assets, 38422)
     threading.Thread(target=server.serve_forever, daemon=True).start()
     toolbar = ttk.Frame(window, padding=14)
     toolbar.pack(fill="x")
     ttk.Label(toolbar, text="重庆土地利用研究台", font=("", 17, "bold")).pack(side="left")
-    ttk.Button(toolbar, text="打开地图、评价实验室与助手",
-               command=lambda: browser_app(f"http://127.0.0.1:{server.server_port}/")).pack(side="right")
+    ttk.Button(toolbar, text="打开桌面分析台",
+               command=lambda: browser_app(f"http://127.0.0.1:{server.server_port}/desktop.html")).pack(side="right")
     controls = ttk.Frame(window, padding=10)
     controls.pack(fill="x")
     year = tk.StringVar(value="2022")

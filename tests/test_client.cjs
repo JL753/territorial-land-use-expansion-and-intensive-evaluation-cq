@@ -33,3 +33,12 @@ test("district comparisons and missing periods are explicit", () => {
   assert.match(answer, /万元\/km²/);
   assert.match(context.researchAnswer("2024年谁最高", records, 2022, "", "built_km2"), /覆盖/);
 });
+
+test("derived indicators use the active denominator and preserve missing observations", () => {
+  const enriched=context.enrichObservations(records);
+  const row=enriched.find(r=>r.code==="500112"&&r.year===2022);
+  assert.ok(Math.abs(row.built_person_m2-row.built_km2*1e6/row.population)<1e-9);
+  assert.ok(Math.abs(row.expansion_cropland_share_pct-row.transition_km2[0][7]/row.added_km2*100)<1e-9);
+  assert.ok(Math.abs(row.coverage_gap_pct-row.nodata_area_km2/(row.valid_area_km2+row.nodata_area_km2)*100)<1e-9);
+  assert.equal(enriched.find(r=>r.year===2010).expansion_cropland_share_pct,null);
+});

@@ -10,7 +10,6 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -22,8 +21,8 @@ public class StudyActivity extends Activity {
     private static final int EXPORT = 21;
     private static final String HOST = "appassets.androidplatform.net";
     private static final Set<String> ASSETS = new HashSet<>(Arrays.asList(
-        "index.html","app.js","analysis.js","style.css","icon192.png","icon512.png",
-        "dashboard.json","districts.geojson","manifest.webmanifest"));
+        "mobile.html","mobile.js","analysis.js","mobile.css","client-utils.js","icon192.png","icon512.png",
+        "dashboard.json","mobile.webmanifest"));
     private String pendingCsv;
     private WebView web;
 
@@ -32,6 +31,7 @@ public class StudyActivity extends Activity {
         if (state != null) pendingCsv = state.getString("csv");
         web = new WebView(this);
         web.getSettings().setJavaScriptEnabled(true);
+        web.getSettings().setDomStorageEnabled(true);
         web.getSettings().setAllowFileAccess(false);
         web.getSettings().setAllowContentAccess(false);
         web.addJavascriptInterface(new ExportActions(), "CQLandAndroid");
@@ -43,9 +43,7 @@ public class StudyActivity extends Activity {
                 Uri uri = request.getUrl();
                 String path = uri.getPath();
                 if (HOST.equals(uri.getHost()) && "https".equals(uri.getScheme()) && path != null) {
-                    if (path.equals("/api/config"))
-                        return new WebResourceResponse("application/json","utf-8",new ByteArrayInputStream("{}".getBytes(StandardCharsets.UTF_8)));
-                    String file = path.equals("/") ? "index.html" : path.substring(1);
+                    String file = path.equals("/") ? "mobile.html" : path.substring(1);
                     if (ASSETS.contains(file)) {
                         String mime = file.endsWith(".js") ? "text/javascript" : file.endsWith(".css") ? "text/css" :
                             file.endsWith(".png") ? "image/png" : file.endsWith(".html") ? "text/html" : "application/json";
@@ -63,7 +61,7 @@ public class StudyActivity extends Activity {
             return insets;
         });
         setContentView(web);
-        web.loadUrl("https://" + HOST + "/");
+        web.loadUrl("https://" + HOST + "/mobile.html");
     }
 
     private class ExportActions {

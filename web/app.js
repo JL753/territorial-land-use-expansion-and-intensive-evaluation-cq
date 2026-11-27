@@ -5,11 +5,11 @@ let records=[], shapes=[], page="overview", selected="", zoom=1, focused=null, d
 let playback=null;
 let labRows=[], labYear=null, questionIssued=0, currentQuestion="", currentAnswer="";
 const weights=[30,45,25];
-const pages={overview:"空间总览",lab:"评价实验室",library:"数据查询",assistant:"研究助手"};
+const pages={overview:"空间总览",lab:"评价实验室",library:"数据查询",assistant:"研究助手",report:"研究简报"};
 const topics={
-  "扩张与形态":["built_km2","expansion_km2","annual_expansion_intensity_pct","annual_growth_pct","added_km2","lost_km2","adjacent_km2","nonadjacent_km2","adjacency_unknown_km2","centroid_displacement_km","centroid_bearing_deg"],
-  "土地覆盖":[...landTypes,"valid_area_km2","nodata_area_km2"],
-  "人口与经济":["population","gdp_10k_cny","primary_10k_yuan","secondary_10k_cny","tertiary_10k_yuan",...indicators],
+  "扩张与形态":["built_km2","expansion_km2","annual_expansion_intensity_pct","annual_growth_pct","added_km2","lost_km2","adjacent_km2","nonadjacent_km2","adjacency_unknown_km2","centroid_displacement_km","centroid_bearing_deg","expansion_cropland_share_pct"],
+  "土地覆盖":[...landTypes,"valid_area_km2","nodata_area_km2","impervious_share_pct","coverage_gap_pct"],
+  "人口与经济":["population","gdp_10k_cny","primary_10k_yuan","secondary_10k_cny","tertiary_10k_yuan","built_person_m2","nominal_gdp_person_yuan","secondary_share_pct",...indicators],
   "评价与质量":["intensive_score","rank","equal_weight_score","equal_weight_rank","quality_population","quality_gdp","quality_secondary","source_pop","source_gdp"]
 };
 const colors=["#bbab75","#4f8462","#de9667","#69aaba","#94aa67","#a8c779","#728eb0","#ada9a0","#d2e8ef"];
@@ -312,6 +312,38 @@ $("open-command").onclick=launchCommand;
 $("command-search").oninput=fillCommand;
 $("command-search").onkeydown=e=>{if(e.key==="Enter")$("command-results").querySelector("button")?.click();};
 document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();launchCommand();}});
+function report(){
+  const rows=yearRows(),year=$("year").value,group=$("group").value||"全域";
+  const scope=group+" · "+year+" 年 · "+rows.length+" 区";
+  const key="cq-web-report-"+group+"-"+year;
+  $("report-scope").textContent=scope;
+  const valid=sum(rows,"valid_area_km2"),built=sum(rows,"built_km2"),gap=sum(rows,"nodata_area_km2");
+  const net=sum(rows,"expansion_km2"),matrix=aggregateMatrix(rows);
+  const lead=rows.filter(r=>Number.isFinite(r.expansion_km2)).sort((a,b)=>b.expansion_km2-a.expansion_km2)[0];
+  const result=[
+    "不透水面 "+format(built)+" km²，占有效覆盖 "+format(valid>0?built/valid*100:null)+"%。",
+    net==null?"本期为基准期，缺少阶段扩张指标。":"阶段净扩张 "+format(net)+" km²，"+lead.district+"净扩张量最高（"+format(lead.expansion_km2)+" km²）。",
+    matrix?"耕地转入不透水面 "+format(matrix[0][7])+" km²。":"本期没有可用的地类转移矩阵。",
+    "常住人口 "+format(sum(rows,"population"))+" 人，地区生产总值 "+format(sum(rows,"gdp_10k_cny"))+" 万元（现价）。",
+    gap==null?"该面板缺少覆盖缺测数据。":"缺测面积 "+format(gap)+" km²，约占覆盖和缺测总面积的 "+format(valid+gap>0?gap/(valid+gap)*100:null)+"%。"
+  ];
+  $("report-findings").replaceChildren(...result.map(line=>node("p",line)));
+  $("report-sources").textContent=[
+    ...(rows.some(r=>r.data_kind==="demo")?["模拟观测，仅用于验证。"]:["数据口径为 CLCD 30 m 和固定区归属栅格。"]),
+    ...new Set(rows.flatMap(r=>[r.source_pop,r.source_gdp]).filter(Boolean)),
+    ...(rows.some(r=>r.provisional)?["同期部分经济数据待复核。"]:[])
+  ].join("\n");
+  const memo=$("report-note");
+  try{memo.value=localStorage.getItem(key)||"";}catch{memo.value="";}
+  $("report-note-print").textContent=memo.value;
+  $("report-note-status").textContent="";
+  memo.oninput=()=>{
+    $("report-note-print").textContent=memo.value;
+    try{localStorage.setItem(key,memo.value);$("report-note-status").textContent="已保存到本机。";}
+    catch{$("report-note-status").textContent="本机存储不可用。";}
+  };
+}
+$("print-report").onclick=()=>window.print();
 function render(){
   if(!datasetReady)return;
   $("map-focus").textContent="";
@@ -323,6 +355,7 @@ function render(){
   if(page==="overview")summary(yearRows());
   if(page==="lab")lab();
   if(page==="library")library();
+  if(page==="report")report();
   if(page==="assistant"&&currentQuestion)answer(currentQuestion);
 }
 for(const id of ["year","group","metric","basis","scheme","topic"])$(id).onchange=()=>{zoom=1;focused=null;render();};
@@ -357,7 +390,7 @@ for(const [id,title] of [["compare-a","对照区 A"],["compare-b","对照区 B"]
 for(const k of Object.keys(topics))option($("topic"),k,k);
 async function read(url){const r=await fetch(url);if(!r.ok)throw Error(String(r.status));return r.json();}
 Promise.all([read("/dashboard.json"),read("/districts.geojson")]).then(([data,boundaries])=>{
-  records=data.map(r=>({...r,code:String(r.code)}));buildPaths(boundaries.features);
+  records=enrichObservations(data);buildPaths(boundaries.features);
   [...new Set(records.map(r=>r.year))].sort((a,b)=>b-a).forEach(y=>option($("year"),y,y));
   for(const [key,[name,unit]] of Object.entries(fields))if(records.some(r=>Number.isFinite(r[key])))option($("metric"),key,name+(unit?" · "+unit:""));
   $("status").textContent=records.some(r=>r.data_kind==="demo")?"模拟数据与虚构几何，仅用于系统验证":

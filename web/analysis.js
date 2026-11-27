@@ -149,3 +149,27 @@ function researchAnswer(question,records,year,group,metric){
   else lines.push("依据：CLCD 与区年统计面板；GDP 为当年现价。"+(sample.some(r=>r.provisional)?"本年经济分项含待复核记录。":""));
   return lines.join("\n");
 }
+
+// Keep derived indicators attached to each observation so all clients use the same denominators.
+function enrichObservations(data) {
+  return data.map(row => {
+    const ratio = (numerator, denominator, scale=1) =>
+      Number.isFinite(numerator) && Number.isFinite(denominator) && denominator > 0
+        ? numerator * scale / denominator : null;
+    return {
+      ...row, code:String(row.code),
+      impervious_share_pct:ratio(row.built_km2,row.valid_area_km2,100),
+      coverage_gap_pct:ratio(row.nodata_area_km2,Number.isFinite(row.valid_area_km2)&&Number.isFinite(row.nodata_area_km2)
+        ? row.valid_area_km2+row.nodata_area_km2 : null,100),
+      built_person_m2:ratio(row.built_km2,row.population,1000000),
+      nominal_gdp_person_yuan:ratio(row.gdp_10k_cny,row.population,10000),
+      secondary_share_pct:ratio(row.secondary_10k_cny,row.gdp_10k_cny,100),
+      expansion_cropland_share_pct:ratio(row.transition_km2?.[0]?.[7],row.added_km2,100),
+    };
+  });
+}
+Object.assign(fields,{
+  impervious_share_pct:["不透水面占有效面积","%"],coverage_gap_pct:["覆盖缺测率","%"],
+  built_person_m2:["人均不透水面面积","m²/人"],nominal_gdp_person_yuan:["人均名义 GDP","元/人"],
+  secondary_share_pct:["二产占 GDP","%"],expansion_cropland_share_pct:["新增不透水面中耕地转入占比","%"]
+});

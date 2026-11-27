@@ -7,8 +7,8 @@ platform="$sdk/platforms/android-35/android.jar"
 build=$(mktemp -d)
 trap 'rm -rf "$build"' EXIT
 mkdir -p "$build"/{assets,res/drawable,classes} "$root/downloads"
-cp "$root"/web/{index.html,style.css,analysis.js,app.js,manifest.webmanifest,icon192.png,icon512.png} "$build/assets/"
-cp "$root"/results/socioeconomic/four-year-exploratory/{dashboard.json,districts.geojson} "$build/assets/"
+cp "$root"/web/{mobile.html,mobile.css,mobile.js,analysis.js,client-utils.js,mobile.webmanifest,icon192.png,icon512.png} "$build/assets/"
+cp "$root"/results/socioeconomic/four-year-exploratory/dashboard.json "$build/assets/"
 cp "$root/web/icon192.png" "$build/res/drawable/land_icon.png"
 "$tools/aapt2" compile --dir "$build/res" -o "$build/res.zip"
 "$tools/aapt2" link -o "$build/app.apk" -I "$platform" --manifest "$root/clients/android/AndroidManifest.xml" -A "$build/assets" "$build/res.zip"

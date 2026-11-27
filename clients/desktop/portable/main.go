@@ -43,13 +43,16 @@ func run() error {
         w.Header().Set("Content-Type","application/json")
         fmt.Fprint(w,"{}")
     })
-    listener,err := net.Listen("tcp","127.0.0.1:0")
+    check := len(os.Args)>1 && os.Args[1]=="--check"
+    address := "127.0.0.1:38421"
+    if check { address = "127.0.0.1:0" }
+    listener,err := net.Listen("tcp",address)
     if err != nil { return err }
     server := &http.Server{Handler:mux, ReadHeaderTimeout:5*time.Second}
     defer server.Close()
     go server.Serve(listener)
     url := "http://"+listener.Addr().String()+"/"
-    if len(os.Args)>1 && os.Args[1]=="--check" {
+    if check {
         resp,err:=http.Get(url+"dashboard.json")
         if err!=nil{return err}
         defer resp.Body.Close()
@@ -61,10 +64,11 @@ func run() error {
     }
     path,err:=browserPath()
     if err!=nil{return err}
-    profile,err:=os.MkdirTemp("","cq-land-desktop-")
+    config,err:=os.UserConfigDir()
     if err!=nil{return err}
-    defer os.RemoveAll(profile)
-    cmd:=exec.Command(path,"--app="+url,"--user-data-dir="+profile,"--no-first-run","--no-default-browser-check")
+    profile:=filepath.Join(config,"CQ Land Research","browser")
+    if err=os.MkdirAll(profile,0700);err!=nil{return err}
+    cmd:=exec.Command(path,"--app="+url+"desktop.html","--user-data-dir="+profile,"--no-first-run","--no-default-browser-check")
     return cmd.Run()
 }
 func main(){
