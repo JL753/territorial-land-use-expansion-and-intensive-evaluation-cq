@@ -60,11 +60,26 @@
     details.append(summary, list);
     sidebar.append(details);
   }
+  function closeSidebar() {
+    document.body.classList.remove("workspace-nav-open");
+    const toggle = document.querySelector(".workspace-menu-toggle");
+    if (toggle) {
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-label", "打开主导航");
+    }
+  }
+  function wireSidebar(sidebar) {
+    if (!sidebar) return;
+    sidebar.addEventListener("click", event => {
+      const item = event.target.closest("a,button");
+      if (item) closeSidebar();
+    });
+  }
   function addBackdrop() {
     const backdrop = make("button", "workspace-backdrop");
     backdrop.type = "button";
     backdrop.setAttribute("aria-label", "关闭导航");
-    backdrop.addEventListener("click", () => document.body.classList.remove("workspace-nav-open"));
+    backdrop.addEventListener("click", closeSidebar);
     document.body.append(backdrop);
     return backdrop;
   }
@@ -81,11 +96,7 @@
     });
     actions.prepend(toggle);
     document.addEventListener("keydown", event => {
-      if (event.key === "Escape") {
-        document.body.classList.remove("workspace-nav-open");
-        toggle.setAttribute("aria-expanded", "false");
-        toggle.setAttribute("aria-label", "打开主导航");
-      }
+      if (event.key === "Escape") closeSidebar();
     });
   }
   function createSidebar(isHome, moduleNav) {
@@ -117,6 +128,7 @@
     const foot = make("div", "workspace-sidebar-foot");
     foot.append(make("strong", "", "21 区县研究范围"), make("span", "", "中心城区 9 区 · 主城新区 12 区"), make("small", "", "数据口径以已发布研究版本为准"));
     sidebar.append(foot);
+    wireSidebar(sidebar);
     return sidebar;
   }
   function createTopbar(title, oldHeader, moduleNav, isHome) {
@@ -169,6 +181,7 @@
       nav.append(current);
       nav.querySelectorAll("button,a").forEach(item => { item.title = item.textContent.trim(); });
     }
+    wireSidebar(sidebar);
     addBackdrop();
   }
   function setupMobile() {

@@ -202,8 +202,19 @@ body.app-mobile-page .paper,body.app-mobile-page .tile{border-radius:13px;box-sh
   body.app-desktop-page{grid-template-columns:78px minmax(0,1fr)}
   body.app-desktop-page>.workspace-sidebar{padding:18px 8px}
   body.app-desktop-page>.workspace-sidebar h1,body.app-desktop-page>.workspace-sidebar p{display:none}
-  body.app-desktop-page>.workspace-sidebar nav a{font-size:0;text-align:center;padding:8px 2px}
-  body.app-desktop-page>.workspace-sidebar nav button{font-size:0;text-align:center;padding:8px 2px}
+  body.app-desktop-page>.workspace-sidebar nav a,body.app-desktop-page>.workspace-sidebar nav button{font-size:0;text-align:center;padding:5px 2px;display:grid;place-items:center}
+  body.app-desktop-page>.workspace-sidebar nav a::before,body.app-desktop-page>.workspace-sidebar nav button::before{content:"◈";display:grid;place-items:center;width:38px;height:38px;border-radius:9px;background:#ffffff0d;color:#a9d6df;font-size:18px}
+  body.app-desktop-page>.workspace-sidebar nav button[data-view="data"]::before{content:"▤"}
+  body.app-desktop-page>.workspace-sidebar nav button[data-view="work"]::before{content:"◈"}
+  body.app-desktop-page>.workspace-sidebar nav button[data-view="sensitivity"]::before{content:"⌁"}
+  body.app-desktop-page>.workspace-sidebar nav button[data-view="pairing"]::before{content:"↔"}
+  body.app-desktop-page>.workspace-sidebar nav a[href="/"]::before{content:"⌂"}
+  body.app-desktop-page>.workspace-sidebar nav a[href="/city.html"]::before{content:"⌖"}
+  body.app-desktop-page>.workspace-sidebar nav a[href="/dashboard3d.html"]::before{content:"◫"}
+  body.app-desktop-page>.workspace-sidebar nav a[href="/guide.html"]::before{content:"◇"}
+  body.app-desktop-page>.workspace-sidebar nav a[href="/district.html"]::before{content:"◎"}
+  body.app-desktop-page>.workspace-sidebar nav a[href="/data-center.html"]::before{content:"▥"}
+  body.app-desktop-page>.workspace-sidebar nav a[href="/desktop.html"]::before{content:"▧"}
 }
 @media(max-width:760px){
   .workspace-layout{display:block}
