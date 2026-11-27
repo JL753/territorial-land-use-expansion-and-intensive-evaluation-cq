@@ -1,12 +1,12 @@
 "use strict";
 (function(){
 const $=id=>document.getElementById(id),params=new URLSearchParams(location.search);
-const state={features:[],rows:[],selected:params.get("code")||"",year:null,metric:"built_km2",map:null,source:null};
+const state={features:[],rows:[],landcoverRows:[],selected:params.get("code")||"",year:null,metric:"built_km2",map:null,source:null};
 const metrics={built_km2:["不透水面面积","km²"],expansion_km2:["阶段净扩张","km²"],annual_expansion_intensity_pct:["年均扩张强度","%"],intensive_score:["集约利用得分","分"]};
 const fmt=(v,d=2)=>Number.isFinite(Number(v))?Number(v).toLocaleString("zh-CN",{maximumFractionDigits:d}):"—";
 const code=f=>String(f.properties.code),name=f=>f.properties.district;
 function bounds(geometry){const points=[];function walk(value){if(Array.isArray(value)&&typeof value[0]==="number"&&typeof value[1]==="number")points.push(value);else if(Array.isArray(value))value.forEach(walk);}walk(geometry.coordinates);return [[Math.min(...points.map(p=>p[0])),Math.min(...points.map(p=>p[1]))],[Math.max(...points.map(p=>p[0])),Math.max(...points.map(p=>p[1]))]];}
-function row(){return state.rows.find(r=>String(r.code)===state.selected&&Number(r.year)===Number(state.year));}
+function row(){const base=state.rows.find(r=>String(r.code)===state.selected&&Number(r.year)===Number(state.year));const lc=state.landcoverRows.find(r=>String(r.code)===state.selected&&Number(r.year)===Number(state.year));return base||lc?{...(base||{}),...(lc||{})}:null;}
 function profile(){
  const f=state.features.find(x=>code(x)===state.selected),r=row();
  $("district-heading").textContent=f?name(f)+" · 三维空间":"重庆区县三维空间";
@@ -15,7 +15,7 @@ function profile(){
  $("stat-built").textContent=r?fmt(r.built_km2)+" km²":"—";$("stat-growth").textContent=r?fmt(r.expansion_km2)+" km²":"—";$("stat-intensity").textContent=r?fmt(r.annual_expansion_intensity_pct)+"%":"—";$("stat-score").textContent=r?fmt(r.intensive_score,3):"—";
  $("map-year-label").textContent=state.year+" 年";$("map-metric-label").textContent=metrics[state.metric][0];
  const history=$("year-history");history.replaceChildren();
- state.rows.filter(x=>String(x.code)===state.selected).sort((a,b)=>a.year-b.year).forEach(x=>{const item=document.createElement("div");item.className="history-row";const left=document.createElement("span"),right=document.createElement("strong");left.textContent=x.year+" 年";right.textContent=fmt(x[state.metric])+" "+metrics[state.metric][1];item.append(left,right);history.append(item);});
+ [...state.rows,...state.landcoverRows].filter(x=>String(x.code)===state.selected).sort((a,b)=>a.year-b.year).forEach(x=>{const item=document.createElement("div");item.className="history-row";const left=document.createElement("span"),right=document.createElement("strong");left.textContent=x.year+" 年";right.textContent=fmt(x[state.metric])+" "+metrics[state.metric][1];item.append(left,right);history.append(item);});
 }
 function selectDistrict(value,fly=true){
  const f=state.features.find(x=>code(x)===String(value));if(!f)return;state.selected=String(value);$("district-select").value=state.selected;
@@ -34,12 +34,12 @@ function initMap(){
 function selectors(){
  $("district-select").replaceChildren();$("district-list").replaceChildren();
  state.features.forEach(f=>{const option=document.createElement("option");option.value=code(f);option.textContent=name(f);$("district-select").append(option);const button=document.createElement("button");button.type="button";button.dataset.code=code(f);button.textContent=name(f);button.addEventListener("click",()=>selectDistrict(code(f)));$("district-list").append(button);});
- const years=[...new Set(state.rows.map(r=>Number(r.year)))].sort((a,b)=>a-b);state.year=years.includes(2022)?2022:years.at(-1);$("year-select").replaceChildren();years.forEach(y=>{const option=document.createElement("option");option.value=y;option.textContent=y;$("year-select").append(option);});$("year-select").value=String(state.year);
+ const years=[...new Set([...state.rows,...state.landcoverRows].map(r=>Number(r.year)))].sort((a,b)=>a-b);state.year=years.includes(2022)?2022:years.at(-1);$("year-select").replaceChildren();years.forEach(y=>{const option=document.createElement("option");option.value=y;option.textContent=y;$("year-select").append(option);});$("year-select").value=String(state.year);
 }
 async function start(){
  try{
-  const [geo,panel]=await Promise.all([fetch("/districts.geojson").then(r=>{if(!r.ok)throw Error("区县边界读取失败");return r.json();}),fetch("/api/v1/research/panel/").then(r=>{if(!r.ok)throw Error("研究面板读取失败");return r.json();})]);
-  state.features=geo.features;state.rows=panel.observations;selectors();initMap();profile();
+  const [geo,panel,landcover]=await Promise.all([fetch("/districts.geojson").then(r=>{if(!r.ok)throw Error("区县边界读取失败");return r.json();}),fetch("/api/v1/research/panel/").then(r=>{if(!r.ok)throw Error("研究面板读取失败");return r.json();}),fetch("/api/v1/landcover-series/").then(r=>r.ok?r.json():{rows:[]}).catch(()=>({rows:[]}))]);
+  state.features=geo.features;state.rows=panel.observations;state.landcoverRows=landcover.rows||[];selectors();initMap();profile();
   $("district-select").addEventListener("change",e=>selectDistrict(e.target.value));
   $("year-select").addEventListener("change",e=>{state.year=Number(e.target.value);profile();});
   $("metric-select").addEventListener("change",e=>{state.metric=e.target.value;profile();});

@@ -69,3 +69,5 @@ article h2{font:700 1.2rem/1.4 var(--serif)}
 .head-actions .city-entry{display:inline-block;padding:.42rem .52rem;border:1px solid #8fab95;border-radius:6px;color:#285947;background:#edf3e5}
 .screen .head-actions .city-entry{color:#142e29}
 @media(max-width:520px){.head-actions .city-entry{font-size:.68rem;padding:.34rem}.head-actions{flex-wrap:wrap}}
+
+.heading.landscape{position:relative;isolation:isolate;min-height:150px;padding:24px 28px;border:1px solid #d4e2ed;border-radius:16px;background:linear-gradient(90deg,#e8f2f8f5 0%,#e8f2f8e8 55%,#e8f2f8b8 100%),url("/chongqing-relief-bg.svg") center/cover;box-shadow:0 8px 26px #315a7510}.heading.landscape .landscape-seal{background:#ffffffb8;border-color:#c5d9e8;color:#2866a8}

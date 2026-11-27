@@ -71,6 +71,14 @@ python manage.py runserver
 
 [新版界面预览](docs/landscape-interface.md) · 安装包复建方法、三端设计和数据口径见 [三端应用说明](docs/workbench.md)。
 
+## 长期年度遥感数据（新增）
+
+- CLCD 1985—2025 年度产品可用年份以 Zenodo 实际文件清单为准；系统提供远程 COG 窗口统计脚本，不下载整幅中国栅格。
+- 先试运行：`python tools/build_clcd_district_series.py --years 2010,2015,2020,2025`；完整处理：`python tools/build_clcd_district_series.py`。
+- 结果写入 `state/clcd-district-series.json`，通过 `/api/v1/landcover-series/` 提供给区县三维页、Cesium 年度时间轴和研究助手。遥感单源年份不生成虚假的人口、GDP 或集约利用得分。
+- 21 区县均可进入独立三维地形场景；当前地形来自在线 DEM 瓦片，虎溪精细建筑数据不能代表其他区县建筑模型已覆盖。
+- 详细数据处理与口径见 [长期数据流水线](docs/long-term-data-pipeline.md)。
+
 ## 动态科研平台
 
 全站「问山城」支持带版本查询、查看发布与刷新记录。定时任务每六小时检查虎溪 OSM 图层和 CLCD 年度产品元数据，经过审定的区年包可发布、重算和恢复。 [配置数据源、调度与回滚](docs/live-research.md)

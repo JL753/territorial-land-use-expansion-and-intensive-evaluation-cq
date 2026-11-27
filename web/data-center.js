@@ -25,10 +25,11 @@ function renderRuns(runs){
 }
 async function load(){
  const response=await fetch("/api/v1/data-sources/");if(!response.ok)throw new Error("数据源目录读取失败");
- const data=await response.json();$("source-count").textContent=data.sources.length;
+ const data=await response.json();const lcResponse=await fetch("/api/v1/landcover-series/").catch(()=>null);const lc=lcResponse&&lcResponse.ok?await lcResponse.json():{status:"not_built",years:[]};$("source-count").textContent=data.sources.length+2;
  $("year-count").textContent=data.research.years.length;$("year-list").textContent=data.research.years.join("、");
  $("research-version").textContent=data.research.version?"#"+data.research.version:"基线";$("research-source").textContent=data.research.source;
- $("source-grid").replaceChildren();data.sources.forEach(addCard);renderRuns(data.runs);
+ $("year-list").textContent=data.research.years.join("、")+(lc.years?.length?"；CLCD 遥感："+lc.years[0]+"—"+lc.years.at(-1)+"（"+lc.years.length+"期）":"；CLCD 年度栅格尚未生成");
+ $("source-grid").replaceChildren();data.sources.forEach(addCard);addCard({key:"clcd-derived",name:"CLCD 21 区县年度统计",category:"年度遥感处理",coverage:lc.years?.length?lc.years[0]+"—"+lc.years.at(-1)+"；"+lc.years.length+" 个可用年份":"等待执行年度栅格处理",resolution:"30 m 原始像元",freshness:"年度产品发布后更新",mode:"远程 COG 窗口读取；不下载整幅中国栅格",status:lc.status==="ready"?"已生成 "+(lc.rows||[]).length+" 条区年遥感记录":"尚未生成；运行 tools/build_clcd_district_series.py",url:"https://zenodo.org/records/18180184"});addCard({key:"geofabrik",name:"Geofabrik 重庆 OSM 区域快照",category:"建筑道路设施",coverage:"重庆区域 PBF；按 21 区县边界裁剪",resolution:"要素级",freshness:"每日快照",mode:"区域快照下载后解析；需检查 OSM 覆盖",status:"待接入全域建筑/道路解析流水线",url:"https://download.geofabrik.de/asia/china.html"});renderRuns(data.runs);
 }
 $("check-updates").addEventListener("click",async()=>{
  const button=$("check-updates");button.disabled=true;button.textContent="正在检查…";$("dc-status").textContent="正在连接 Zenodo 检查 CLCD 最新公开版本。";

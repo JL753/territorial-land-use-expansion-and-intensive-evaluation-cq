@@ -1,13 +1,13 @@
 "use strict";
 (function(){
 const $=id=>document.getElementById(id), years=[2010,2015,2020,2022];
-const state={rows:[],recent:[],features:null,viewer:null,source:null,rivers:null,selected:"",year:2022,group:"",metric:"built_km2",playing:false,timer:null,charts:{}};
+const state={rows:[],recent:[],landcoverRows:[],features:null,viewer:null,source:null,rivers:null,selected:"",year:2022,group:"",metric:"built_km2",playing:false,timer:null,charts:{}};
 const metrics={built_km2:["不透水面面积","km²"],expansion_km2:["阶段净扩张面积","km²"],annual_expansion_intensity_pct:["年均扩张强度","%"],intensive_score:["集约利用得分","分"],population_density:["人口承载密度","人/km²"],gdp_density:["单位用地 GDP","万元/km²"],secondary_density:["单位用地二产增加值","万元/km²"]};
 const numeric=["year","admin_km2","valid_area_km2","nodata_area_km2","built_km2","population","gdp_10k_cny","secondary_10k_cny","added_km2","lost_km2","expansion_km2","annual_growth_pct","annual_expansion_intensity_pct","population_density","gdp_density","secondary_density","intensive_score","rank","equal_weight_score","equal_weight_rank","cropland_km2","forest_km2","water_km2","grassland_km2","shrub_km2","barren_km2","wetland_km2","snow_km2"];
 function num(v){if(v===null||v===undefined||v==="")return null;const n=Number(v);return Number.isFinite(n)?n:null}
 function normalize(row){const out={...row};numeric.forEach(k=>out[k]=num(out[k]));return out}
 function fmt(v,d=2){return Number.isFinite(v)?v.toLocaleString("zh-CN",{maximumFractionDigits:d,minimumFractionDigits:d}):"—"}
-function rowsFor(year){let base=state.rows.filter(r=>r.year===year);if(state.group)base=base.filter(r=>r.group===state.group);
+function rowsFor(year){let base=state.rows.filter(r=>r.year===year);const lc=state.landcoverRows.filter(r=>r.year===year);if(lc.length){const byCode=new Map(lc.map(r=>[String(r.code),r]));base=base.length?base.map(r=>({...r,...(byCode.get(String(r.code))||{})})):lc;}if(state.group)base=base.filter(r=>r.group===state.group);
  if(state.metric==="intensive_score"&&(year===2020||year===2022)){const primary=new Map(state.recent.filter(r=>r.year===year).map(r=>[String(r.code),r]));base=base.map(r=>{const p=primary.get(String(r.code));return p?{...r,intensive_score:p.intensive_score,rank:p.rank,equal_weight_score:p.equal_weight_score,equal_weight_rank:p.equal_weight_rank}:r;});}
  return base}
 function values(rows,key){return rows.map(r=>r[key]).filter(Number.isFinite)}
@@ -21,7 +21,7 @@ function initCharts(){
  window.addEventListener("resize",()=>Object.values(state.charts).forEach(c=>c.resize()));
 }
 function renderTrend(){
- if(!state.charts.trend)return;const totals=years.map(y=>sum(state.rows.filter(r=>r.year===y),"built_km2"));
+ if(!state.charts.trend)return;const totals=years.map(y=>sum(rowsFor(y),"built_km2"));
  state.charts.trend.setOption({grid:{left:42,right:12,top:18,bottom:24},tooltip:{trigger:"axis"},xAxis:{type:"category",data:years,axisLabel:{color:"#91adbd"},axisLine:{lineStyle:{color:"#31536a"}}},yAxis:{type:"value",axisLabel:{color:"#7899aa"},splitLine:{lineStyle:{color:"#244157"}}},series:[{type:"line",smooth:true,data:totals,showSymbol:true,symbolSize:7,lineStyle:{width:3,color:"#5de0e7"},itemStyle:{color:"#f1c875"},areaStyle:{color:"rgba(50,176,190,.18)"}}]});
 }
 function renderCover(rows){
@@ -36,7 +36,7 @@ function renderKpis(rows){
  $("kpi-built").textContent=fmt(sum(rows,"built_km2"));
  $("kpi-growth").textContent=state.year===2010?"基期":fmt(sum(rows,"expansion_km2"));
  const score=mean(rows,"intensive_score");$("kpi-score").textContent=fmt(score,3);
- const hasPrimary=state.recent.some(r=>r.year===state.year);$("kpi-score-note").textContent=(state.year>=2020&&hasPrimary?"主要比较 · A 级样本":"四期探索 · 含早期待核验数据");
+ const hasPrimary=state.recent.some(r=>r.year===state.year);$("kpi-score-note").textContent=Number.isFinite(score)?(state.year>=2020&&hasPrimary?"主要比较 · A 级样本":"社会经济评价样本"):"该年度仅有遥感土地覆盖数据，未计算集约得分";
  $("kpi-records").textContent=String(rows.length);
 }
 function renderDetail(){
@@ -71,7 +71,7 @@ function applyMap(){
 function render(){
  const rows=currentRows();renderKpis(rows);renderCover(rows);renderRanking(rows);renderDetail();applyMap();
  document.querySelectorAll("[data-year]").forEach(b=>b.classList.toggle("selected",Number(b.dataset.year)===state.year));
- $("year").value=String(state.year);$("group").value=state.group;$("metric").value=state.metric;
+ $("year").value=String(state.year);$("group").value=state.group;$("metric").value=state.metric;if($("year-slider")){$("year-slider").max=String(Math.max(0,years.length-1));$("year-slider").value=String(Math.max(0,years.indexOf(state.year)));$("year-slider-value").textContent=String(state.year);}
  const prior=years[years.indexOf(state.year)-1];
  $("timeline-caption").textContent=prior?`${prior}—${state.year} 年阶段变化`:"基期观测 · 不计算阶段扩张";
 }
@@ -97,6 +97,7 @@ function stopPlay(){state.playing=false;if(state.timer)clearInterval(state.timer
 function play(){if(state.playing){stopPlay();return}state.playing=true;$("play-years").textContent="Ⅱ 暂停";let i=years.indexOf(state.year);state.timer=setInterval(()=>{i=(i+1)%years.length;state.year=years[i];render()},2600)}
 function bind(){
  $("year").addEventListener("change",e=>{state.year=Number(e.target.value);render()});
+ if($("year-slider"))$("year-slider").addEventListener("input",e=>{state.year=years[Number(e.target.value)]??years.at(-1);render()});
  $("group").addEventListener("change",e=>{state.group=e.target.value;render()});
  $("metric").addEventListener("change",e=>{state.metric=e.target.value;render()});
  $("play-years").addEventListener("click",play);
@@ -108,20 +109,13 @@ function bind(){
 async function start(){
  initCharts();
  try{
-  const results=await Promise.all([fetch("/dashboard.json").then(r=>{if(!r.ok)throw new Error("研究面板读取失败");return r.json()}),fetch("/districts.geojson").then(r=>{if(!r.ok)throw new Error("区县边界读取失败");return r.json()}),fetch("/api/v1/recent-observations/").then(r=>r.ok?r.json():{results:[]}).catch(()=>({results:[]}))]);
-  state.rows=results[0].map(normalize);state.features=results[1];state.recent=(results[2].results||[]).map(normalize);
-  years.splice(0,years.length,...new Set(state.rows.map(r=>r.year).sort((a,b)=>a-b)));
+  const results=await Promise.all([fetch("/dashboard.json").then(r=>{if(!r.ok)throw new Error("研究面板读取失败");return r.json()}),fetch("/districts.geojson").then(r=>{if(!r.ok)throw new Error("区县边界读取失败");return r.json()}),fetch("/api/v1/recent-observations/").then(r=>r.ok?r.json():{results:[]}).catch(()=>({results:[]})),fetch("/api/v1/landcover-series/").then(r=>r.ok?r.json():{rows:[]}).catch(()=>({rows:[]}))]);
+  state.rows=results[0].map(normalize);state.features=results[1];state.recent=(results[2].results||[]).map(normalize);state.landcoverRows=(results[3].rows||[]).map(normalize);
+  years.splice(0,years.length,...new Set([...state.rows,...state.landcoverRows].map(r=>r.year).sort((a,b)=>a-b)));
   state.year=years.at(-1);
   $("year").replaceChildren(...years.map(y=>new Option(y,y)));
-  const first=document.querySelector("[data-year]");
-  if(first){
-   const fragment=document.createDocumentFragment();
-   for(const y of years){
-    const button=first.cloneNode();button.dataset.year=y;button.textContent=y;fragment.append(button);
-   }
-   for(const node of [...document.querySelectorAll("[data-year]")].slice(1))node.remove();
-   first.replaceWith(fragment);
-  }
+  document.querySelectorAll("[data-year]").forEach(button=>{button.hidden=!years.includes(Number(button.dataset.year));});
+  if($("year-slider")){$("year-slider").min="0";$("year-slider").max=String(Math.max(0,years.length-1));$("year-slider").value=String(Math.max(0,years.indexOf(state.year)));}
   bind();
   $("kpi-districts").textContent=String(state.features.features.length);$("kpi-records").textContent=String(state.rows.length);
   renderTrend();await initMap();render();

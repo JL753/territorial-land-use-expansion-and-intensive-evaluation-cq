@@ -25,6 +25,7 @@ urlpatterns = [
     path("api/v1/research/panel/", views.live_panel),
     path("api/v1/research/map/", views.live_map),
     path("api/v1/data-sources/", views.data_sources),
+    path("api/v1/landcover-series/", views.landcover_series),
     path("api/v1/data-updates/check/", views.check_data_updates),
     path("api/config", views.config),
     path("api/interpret", views.interpret),

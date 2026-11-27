@@ -332,3 +332,27 @@ def check_data_updates(request):
         detail = f"CLCD version check: {type(exc).__name__}: {str(exc)[:300]}"
         RefreshRun.objects.create(feed="clcd", status="failed", detail=detail)
         return JsonResponse({"error": "CLCD 版本检查失败；现有已发布数据保持不变。", "detail": detail}, status=502)
+
+
+@require_GET
+def landcover_series(request):
+    """Return the separately audited CLCD remote-sensing series, if generated."""
+    path = settings.CLCD_SERIES_PATH
+    if not path.is_file():
+        return JsonResponse({
+            "schema": 1, "status": "not_built", "years": [], "rows": [],
+            "message": "CLCD 年度栅格尚未处理。运行 python tools/build_clcd_district_series.py。",
+        }, json_dumps_params={"ensure_ascii": False})
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if payload.get("schema") != 1 or payload.get("status") != "ready":
+            raise ValueError("Unsupported CLCD series schema.")
+        rows = payload.get("rows", [])
+        years = payload.get("source", {}).get("years", [])
+        if not rows or not years or len(rows) != len(years) * 21:
+            raise ValueError("CLCD series is incomplete; expected 21 districts for every selected year.")
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        return JsonResponse({"status": "invalid", "error": str(exc)}, status=503)
+    response = JsonResponse(payload, json_dumps_params={"ensure_ascii": False})
+    response["Cache-Control"] = "no-store"
+    return response

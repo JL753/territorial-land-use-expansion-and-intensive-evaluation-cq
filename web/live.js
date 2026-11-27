@@ -58,9 +58,13 @@
   async function retrieve(){
     try{
       const data=await getJSON("/api/v1/research/panel/");
+      const lc=await getJSON("/api/v1/landcover-series/").catch(()=>({rows:[]}));
       if(savedPanel.version&&savedPanel.version!==data.version)refresh.hidden=false;
-      savedPanel.version=data.version;savedPanel.rows=enrichObservations(data.observations);
-      return {rows:savedPanel.rows,source:data.version==="base"?"仓库基线":"研究版本 #"+data.version};
+      savedPanel.version=data.version;
+      const merged=new Map();
+      [...enrichObservations(data.observations),...(lc.rows||[])].forEach(row=>{const key=String(row.code)+":"+row.year;merged.set(key,{...(merged.get(key)||{}),...row});});
+      savedPanel.rows=[...merged.values()];
+      return {rows:savedPanel.rows,source:(data.version==="base"?"仓库基线":"研究版本 #"+data.version)+(lc.years?.length?" + CLCD "+lc.years[0]+"—"+lc.years.at(-1):"")};
     }catch{
       if(savedPanel.rows.length)return {rows:savedPanel.rows,source:"最近读取的"+(savedPanel.version==="base"?"仓库基线":"研究版本 #"+savedPanel.version)};
       const rows=enrichObservations(await getJSON("/dashboard.json"));

@@ -59,6 +59,13 @@ class StudyViewsTests(TestCase):
         self.assertEqual(District.objects.count(), 21)
         self.assertEqual(Observation.objects.count(), 84)
 
+    @override_settings(CLCD_SERIES_PATH=Path("/tmp/shancheng-test-clcd-series-missing.json"))
+    def test_clcd_series_endpoint_is_explicit_when_not_processed(self):
+        response = self.client.get("/api/v1/landcover-series/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["status"], "not_built")
+        self.assertEqual(response.json()["rows"], [])
+
     @override_settings(OLLAMA_MODEL="test")
     def test_csrf_and_json_validation(self):
         browser = Client(enforce_csrf_checks=True)

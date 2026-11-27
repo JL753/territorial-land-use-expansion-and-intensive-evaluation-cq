@@ -71,3 +71,6 @@ USE_POSTGIS = os.environ.get("CQ_POSTGIS") == "1"
 OLLAMA_MODEL = os.environ.get("CQ_OLLAMA_MODEL")
 ANALYSIS_REPORT = Path(os.environ.get("CQ_ANALYSIS_REPORT", str(ROOT / "results" / "analysis" / "report.json")))
 RESEARCH_FEED_URL = os.environ.get("CQ_RESEARCH_FEED_URL")
+
+# Optional locally generated CLCD district-year series; kept outside the source tree.
+CLCD_SERIES_PATH = Path(os.environ.get("CQ_CLCD_SERIES_PATH", str(ROOT / "state" / "clcd-district-series.json")))
