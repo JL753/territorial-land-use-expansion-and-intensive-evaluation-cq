@@ -22,7 +22,7 @@ public class StudyActivity extends Activity {
     private static final String HOST = "appassets.androidplatform.net";
     private static final Set<String> ASSETS = new HashSet<>(Arrays.asList(
         "mobile.html","mobile.js","analysis.js","mobile.css","client-utils.js","icon192.png","icon512.png",
-        "dashboard.json","mobile.webmanifest"));
+        "dashboard.json","mobile.webmanifest","river-ink.webp"));
     private String pendingCsv;
     private WebView web;
 
@@ -46,7 +46,7 @@ public class StudyActivity extends Activity {
                     String file = path.equals("/") ? "mobile.html" : path.substring(1);
                     if (ASSETS.contains(file)) {
                         String mime = file.endsWith(".js") ? "text/javascript" : file.endsWith(".css") ? "text/css" :
-                            file.endsWith(".png") ? "image/png" : file.endsWith(".html") ? "text/html" : "application/json";
+                            file.endsWith(".png") ? "image/png" : file.endsWith(".webp") ? "image/webp" : file.endsWith(".html") ? "text/html" : "application/json";
                         try { return new WebResourceResponse(mime, "utf-8", getAssets().open(file)); }
                         catch (IOException ignored) { }
                     }

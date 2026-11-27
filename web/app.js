@@ -5,7 +5,7 @@ let records=[], shapes=[], page="overview", selected="", zoom=1, focused=null, d
 let playback=null;
 let labRows=[], labYear=null, questionIssued=0, currentQuestion="", currentAnswer="";
 const weights=[30,45,25];
-const pages={overview:"空间总览",lab:"评价实验室",library:"数据查询",assistant:"研究助手",report:"研究简报"};
+const pages={overview:"空间总览",lab:"评价实验室",relations:"指标关系",library:"数据查询",assistant:"研究助手",report:"研究简报"};
 const topics={
   "扩张与形态":["built_km2","expansion_km2","annual_expansion_intensity_pct","annual_growth_pct","added_km2","lost_km2","adjacent_km2","nonadjacent_km2","adjacency_unknown_km2","centroid_displacement_km","centroid_bearing_deg","expansion_cropland_share_pct"],
   "土地覆盖":[...landTypes,"valid_area_km2","nodata_area_km2","impervious_share_pct","coverage_gap_pct"],
@@ -344,6 +344,72 @@ function report(){
   };
 }
 $("print-report").onclick=()=>window.print();
+const relationKeys=["annual_expansion_intensity_pct","intensive_score","built_km2","impervious_share_pct","population_density",
+  "gdp_density","secondary_density","built_person_m2","nominal_gdp_person_yuan","secondary_share_pct","expansion_cropland_share_pct"];
+const relationChart=$("relation-chart"), relationPen=relationChart.getContext("2d");
+let chartPoints=[];
+function relationView(){
+  const xKey=$("relation-x").value,yKey=$("relation-y").value;
+  const list=yearRows().filter(r=>Number.isFinite(r[xKey])&&Number.isFinite(r[yKey]));
+  const width=relationChart.width,height=relationChart.height;
+  const x0=105,y0=height-85,x1=width-42,y1=37;
+  const pen=relationPen;
+  pen.clearRect(0,0,width,height);
+  chartPoints=[];
+  if(!list.length){
+    pen.font="21px sans-serif";pen.fillStyle="#4d695d";pen.textAlign="center";pen.fillText("本期缺少两项指标的共同观测",width/2,height/2);
+  }else{
+    const xs=list.map(r=>r[xKey]),ys=list.map(r=>r[yKey]);
+    const range=values=>{
+      const lo=Math.min(...values),hi=Math.max(...values),padding=(hi-lo||Math.abs(hi)||1)*.08;
+      return [lo-padding,hi+padding];
+    };
+    const [xl,xh]=range(xs),[yl,yh]=range(ys);
+    const px=v=>x0+(v-xl)/(xh-xl)*(x1-x0),py=v=>y0-(v-yl)/(yh-yl)*(y0-y1);
+    pen.font="17px sans-serif";pen.lineWidth=1;pen.strokeStyle="#d9ddd0";pen.fillStyle="#466457";
+    for(let i=0;i<=4;i++){
+      const x=x0+(x1-x0)*i/4,y=y0-(y0-y1)*i/4;
+      pen.beginPath();pen.moveTo(x,y1);pen.lineTo(x,y0);pen.moveTo(x0,y);pen.lineTo(x1,y);pen.stroke();
+      pen.textAlign="center";pen.fillText(format(xl+(xh-xl)*i/4,2),x,y0+27);
+      pen.textAlign="right";pen.fillText(format(yl+(yh-yl)*i/4,2),x0-13,y+5);
+    }
+    pen.setLineDash([6,4]);pen.strokeStyle="#8b927d";
+    pen.beginPath();pen.moveTo(px(median(xs)),y0);pen.lineTo(px(median(xs)),y1);pen.moveTo(x0,py(median(ys)));pen.lineTo(x1,py(median(ys)));pen.stroke();pen.setLineDash([]);
+    pen.textAlign="center";pen.fillText(fields[xKey].join(" "), (x0+x1)/2,height-18);pen.textAlign="left";pen.fillText(fields[yKey].join(" "),x0,24);
+    chartPoints=list.map(r=>({r,x:px(r[xKey]),y:py(r[yKey])}));
+    for(const {r,x,y} of chartPoints){
+      const radius=r.code===selected?9:6;
+      pen.beginPath();
+      if(r.group==="中心城区")pen.arc(x,y,radius,0,Math.PI*2);
+      else{pen.moveTo(x,y-radius);pen.lineTo(x+radius,y);pen.lineTo(x,y+radius);pen.lineTo(x-radius,y);pen.closePath();}
+      pen.fillStyle=r.group==="中心城区"?"#246354":"#a56437";pen.fill();
+      if(r.code===selected){pen.strokeStyle="#9d3a2f";pen.lineWidth=3;pen.stroke();}
+    }
+  }
+  const picker=$("relation-district");picker.replaceChildren(new Option("选择区县",""));
+  list.forEach(r=>option(picker,r.code,r.district));picker.value=list.some(r=>r.code===selected)?selected:"";
+  const r=list.find(r=>r.code===selected);
+  $("relation-detail").textContent=r?`${r.district} · ${format(r[xKey],4)} ${fields[xKey][1]} / ${format(r[yKey],4)} ${fields[yKey][1]}`:"请选择散点或区县。";
+  $("relation-map").disabled=!r;$("relation-export").disabled=!list.length;
+  const rho=spearman(list.map(r=>r[xKey]),list.map(r=>r[yKey]));
+  $("relation-stats").replaceChildren(...[["共同观测",list.length+" 区"],["Spearman ρ",format(rho,3)],
+    ["横轴中位数",format(median(list.map(r=>r[xKey])),4)],["纵轴中位数",format(median(list.map(r=>r[yKey])),4)]]
+    .flatMap(([name,val])=>[node("dt",name),node("dd",val)]));
+  $("relation-legend").textContent="● 中心城区　◆ 主城新区 · 朱砂描边为所选区县";
+  $("relation-export").onclick=()=>csv("指标关系-"+$("year").value+".csv",list.map(r=>({...r,rho})),
+    [...new Set(["code","district","group","year",xKey,yKey,"rho","provisional"])]);
+}
+relationChart.onclick=event=>{
+  const box=relationChart.getBoundingClientRect(),x=(event.clientX-box.left)/box.width*relationChart.width,
+    y=(event.clientY-box.top)/box.height*relationChart.height;
+  const hit=chartPoints.map(p=>({p,d:Math.hypot(p.x-x,p.y-y)})).sort((a,b)=>a.d-b.d)[0];
+  if(hit&&hit.d<22){selected=hit.p.r.code;relationView();}
+};
+$("relation-district").onchange=()=>{selected=$("relation-district").value;relationView();};
+$("relation-map").onclick=()=>tab("overview");
+for(const id of ["relation-x","relation-y"])$(id).onchange=relationView;
+for(const k of relationKeys)for(const id of ["relation-x","relation-y"])option($(id),k,fields[k][0]);
+$("relation-x").value="annual_expansion_intensity_pct";$("relation-y").value="intensive_score";
 function render(){
   if(!datasetReady)return;
   $("map-focus").textContent="";
@@ -355,6 +421,7 @@ function render(){
   if(page==="overview")summary(yearRows());
   if(page==="lab")lab();
   if(page==="library")library();
+  if(page==="relations")relationView();
   if(page==="report")report();
   if(page==="assistant"&&currentQuestion)answer(currentQuestion);
 }

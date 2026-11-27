@@ -2,13 +2,16 @@
 if(window.CQLandAndroid)document.querySelector("header a").hidden=true;
 let observations=[],districts=[],selected,year,tab="explore";
 let favorites=new Set(readLocal("cq-pocket-favorites",[]));
-const pages=["explore","profile","saved","pocket-assistant"];
+let review=new Set(readLocal("cq-pocket-review",[]));
+let referenceYear=null;
+const pages=["explore","profile","saved","review","pocket-assistant"];
 function show(next){
   tab=next;
   for(const id of pages)get(id).hidden=id!==tab;
   for(const button of document.querySelectorAll("nav button")){
     button.setAttribute("aria-current",button.dataset.mobile===(tab==="profile"?"explore":tab)?"page":"false");
   }
+  if(next==="review")showReview();
   if(next==="saved")list(get("favorites"),districts.filter(r=>favorites.has(r.code)));
   window.scrollTo(0,0);
 }
@@ -20,7 +23,7 @@ function list(element,items){
     button.onclick=()=>{selected=r.code;profile();show("profile");};
     return button;
   }));
-  if(!items.length)element.textContent=element.id==="favorites"?"收藏的区县会显示在这里。":"没有匹配区县。";
+  if(!items.length)element.textContent=element.id==="favorites"?"收藏的区县会显示在这里。":(element.id==="review-list"?"当前没有待核对区县。":"没有匹配区县。");
 }
 function explore(){
   const q=get("find").value.trim();
@@ -33,6 +36,8 @@ function profile(){
   get("district-title").textContent=row.district;
   get("area").textContent=row.group+" · "+row.code;
   get("favorite").textContent=favorites.has(row.code)?"★ 已收藏":"☆ 收藏";
+  get("review-toggle").textContent=review.has(row.code)?"移出核对":"加入核对";
+  get("review-toggle").setAttribute("aria-pressed",String(review.has(row.code)));
   get("favorite").setAttribute("aria-pressed",String(favorites.has(row.code)));
   get("years").replaceChildren(...rows.map(r=>{
     const b=make("button",r.year);b.setAttribute("aria-pressed",String(r.year===year));b.onclick=()=>{year=r.year;profile();};return b;
@@ -48,6 +53,15 @@ function profile(){
     bar.style.width=(r.built_km2/peak*100)+"%";
     line.append(make("span",r.year),bar,make("b",format(r.built_km2)+" km²"));return line;
   }));
+  const base=get("mobile-base");
+  const choices=rows.filter(r=>r.year<row.year);
+  base.replaceChildren(...choices.map(r=>new Option(r.year,r.year)));base.disabled=!choices.length;
+  const prior=choices.find(r=>r.year===referenceYear)??choices.at(-1);
+  if(prior)base.value=prior.year;
+  const diff=prior?row.built_km2-prior.built_km2:null;
+  get("mobile-change").textContent=prior
+    ? `${prior.year}—${row.year} 年 · 不透水面变化 ${diff>=0?"+":""}${format(diff)} km²${prior.built_km2>0?"（"+format(diff/prior.built_km2*100)+"%）":""}`
+    : "本期没有更早观测可对照。";
   const matrix=row.transition_km2;
   get("flow-mobile").textContent=matrix?matrix.map((values,i)=>[classNames[i],i===7?0:values[7]])
     .filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]).slice(0,3)
@@ -68,6 +82,20 @@ get("favorite").onclick=()=>{
   profile();
   if(!stored)get("mobile-status").textContent="设备存储不可用，收藏暂时保留在当前会话。";
 };
+get("mobile-base").onchange=e=>{referenceYear=Number(e.target.value);profile();};
+get("review-toggle").onclick=()=>{
+  if(review.has(selected))review.delete(selected);else review.add(selected);
+  if(!writeLocal("cq-pocket-review",[...review]))get("mobile-status").textContent="设备存储不可用，核对清单暂保留在当前会话。";
+  profile();
+};
+function showReview(){
+  const items=districts.filter(r=>review.has(r.code));
+  list(get("review-list"),items);
+  get("export-review").disabled=!items.length;
+  get("export-review").onclick=()=>saveTable("区县核对清单.csv",items.map(r=>({
+    code:r.code,district:r.district,group:r.group,note:readLocal("cq-pocket-note-"+r.code,"")
+  })),["code","district","group","note"]);
+}
 get("memo").oninput=()=>{
   get("memo-status").textContent=writeLocal("cq-pocket-note-"+selected,get("memo").value)?"已保存到本设备":"设备存储不可用";
 };

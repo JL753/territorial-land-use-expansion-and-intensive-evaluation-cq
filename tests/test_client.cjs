@@ -42,3 +42,21 @@ test("derived indicators use the active denominator and preserve missing observa
   assert.ok(Math.abs(row.coverage_gap_pct-row.nodata_area_km2/(row.valid_area_km2+row.nodata_area_km2)*100)<1e-9);
   assert.equal(enriched.find(r=>r.year===2010).expansion_cropland_share_pct,null);
 });
+
+test("rank correlation handles ties and constant indicators", () => {
+  assert.ok(Math.abs(context.spearman([1,2,2,4],[8,5,5,1])+1)<1e-12);
+  assert.equal(context.spearman([2,2,2],[1,2,3]),null);
+  const year=records.filter(r=>r.year===2022);
+  assert.ok(Math.abs(context.spearman(year.map(r=>r.annual_expansion_intensity_pct),
+    year.map(r=>r.intensive_score))+0.4181818181818182)<1e-12);
+});
+
+test("sensitivity scan covers 66 feasible weight triples and all districts", () => {
+  const envelope=context.weightSensitivity(records.filter(r=>r.year>=2020),2022);
+  assert.equal(envelope.scenarios,66);
+  assert.equal(envelope.rows.length,21);
+  const jiangbei=envelope.rows.find(r=>r.code==="500105");
+  assert.equal(jiangbei.best,4);
+  assert.equal(jiangbei.worst,20);
+  assert.ok(envelope.rows.every(r=>r.best>=1&&r.worst<=21&&r.topFivePct>=0&&r.topFivePct<=100));
+});

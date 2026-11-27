@@ -32,7 +32,9 @@ python serve.py --results results/socioeconomic/four-year-exploratory
 
 网页版 `/mobile.html` 和 `/desktop.html` 可直接体验两个专用界面。网页研究简报随年份及区组更新，可加备注并打印为 PDF。桌面分析台支持跨年筛选、按列排序、保存评价方案、对照排名和导出差异。
 
-安装包复建方法、三端设计和数据口径见 [三端应用说明](docs/workbench.md)。
+新版采用重庆两江与山城为题的淡墨卷首。网页可在指标关系图中选择两项变量并联动地图，桌面可批量扫描 66 套权重，手机可建立待核对清单并按年份比较不透水面变化。
+
+[新版界面预览](docs/landscape-interface.md) · 安装包复建方法、三端设计和数据口径见 [三端应用说明](docs/workbench.md)。
 
 ## 运行模拟数据
 

@@ -14,11 +14,12 @@ function table(headers,rows){
   return t;
 }
 function showPage(view){
-  const names={data:"区年数据",work:"评价方案",pairing:"区县对照"};
+  const names={data:"区年数据",work:"评价方案",sensitivity:"敏感性扫描",pairing:"区县对照"};
   for(const key of Object.keys(names))get(key).hidden=view!==key;
   for(const b of document.querySelectorAll("nav button"))b.setAttribute("aria-current",b.dataset.view===view?"page":"false");
   get("desktop-title").textContent=names[view];
   if(view==="work"&&data.length)rank();
+  if(view==="sensitivity"&&data.length&&!get("s-year").options.length)scanYears();
   if(view==="pairing"&&data.length)pair();
 }
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>showPage(b.dataset.view));
@@ -151,6 +152,34 @@ function pair(){
   get("d-export-pair").onclick=()=>saveTable("区县四期对照.csv",rows,Object.keys(rows[0]));
 }
 for(const id of ["district-a","district-b","pair-metric"])get(id).onchange=pair;
+function scanYears(){
+  const picker=get("s-year"),prior=Number(picker.value),range=years.filter(y=>get("s-basis").value==="full"||y>=2020);
+  picker.replaceChildren(...range.map(y=>new Option(y,y)));picker.value=range.includes(prior)?prior:range.at(-1);
+  clearScan();
+}
+function clearScan(){
+  get("s-result").textContent="请选择年份并运行。";get("s-table").replaceChildren();get("s-export").disabled=true;
+}
+get("s-basis").onchange=scanYears;
+get("s-year").onchange=clearScan;
+get("s-run").onclick=()=>{
+  const year=Number(get("s-year").value),basis=get("s-basis").value;
+  try{
+    const scan=weightSensitivity(data.filter(r=>basis==="full"||r.year>=2020),year);
+    const rows=scan.rows.sort((a,b)=>b.span-a.span||a.scenarioRank-b.scenarioRank);
+    if(!rows.length)throw Error("该年份没有可扫描的观测。");
+    get("s-result").textContent=`${year} 年 · ${scan.scenarios} 套权重 · ${rows.length} 区 · 最大名次跨度 ${rows[0].span} 位`;
+    const result=table(["区县","熵权名次","最好","最差","跨度","进入前五"],rows.map(r=>
+      [r.district,r.scenarioRank,r.best,r.worst,r.span,format(r.topFivePct)+"%"]));
+    [...result.tBodies[0].rows].forEach((tr,i)=>{
+      const bar=make("span",null,"s-bar");bar.style.width=(rows[i].span/Math.max(rows.length-1,1)*64)+"px";
+      tr.cells[4].prepend(bar);
+    });
+    get("s-table").replaceChildren(result);get("s-export").disabled=false;
+    get("s-export").onclick=()=>saveTable("权重扫描-"+year+".csv",rows.map(r=>({...r,basis,scenarios:scan.scenarios})),
+      ["code","district","year","basis","scenarios","scenarioRank","best","worst","span","topFivePct","provisional"]);
+  }catch(e){clearScan();get("s-result").textContent=e.message;}
+};
 studyData().then(rows=>{
   data=rows;years=[...new Set(rows.map(r=>r.year))].sort();
   years.forEach(y=>addOption(get("d-year"),y,y));

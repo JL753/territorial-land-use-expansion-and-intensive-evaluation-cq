@@ -173,3 +173,51 @@ Object.assign(fields,{
   built_person_m2:["人均不透水面面积","m²/人"],nominal_gdp_person_yuan:["人均名义 GDP","元/人"],
   secondary_share_pct:["二产占 GDP","%"],expansion_cropland_share_pct:["新增不透水面中耕地转入占比","%"]
 });
+
+function median(values) {
+  const v=[...values].sort((a,b)=>a-b), n=v.length;
+  return n ? (v[Math.floor((n-1)/2)]+v[Math.floor(n/2)])/2 : null;
+}
+
+function averageRanks(values) {
+  const sorted=values.map((value,i)=>({value,i})).sort((a,b)=>a.value-b.value);
+  const ranks=Array(values.length);
+  for(let first=0;first<sorted.length;){
+    let end=first+1;
+    while(end<sorted.length&&sorted[end].value===sorted[first].value)end++;
+    for(let j=first;j<end;j++)ranks[sorted[j].i]=(first+1+end)/2;
+    first=end;
+  }
+  return ranks;
+}
+
+function spearman(left,right) {
+  if(left.length<3||left.length!==right.length)return null;
+  const x=averageRanks(left), y=averageRanks(right), center=(x.length+1)/2;
+  let covariance=0,vx=0,vy=0;
+  for(let i=0;i<x.length;i++){
+    const a=x[i]-center,b=y[i]-center;
+    covariance+=a*b;vx+=a*a;vy+=b*b;
+  }
+  return vx&&vy ? covariance/Math.sqrt(vx*vy) : null;
+}
+
+function weightSensitivity(sample,year) {
+  const base=evaluateRows(sample).rows.filter(r=>r.year===year);
+  const envelope=new Map(base.map(r=>[r.code,{...r,best:Infinity,worst:0,topFive:0}]));
+  let scenarios=0;
+  for(let a=0;a<=10;a++){
+    for(let b=0;b<=10-a;b++){
+      const weights=[a,b,10-a-b];
+      const selected=evaluateRows(sample,"custom",weights).rows.filter(r=>r.year===year);
+      scenarios++;
+      for(const row of selected){
+        const item=envelope.get(row.code);
+        item.best=Math.min(item.best,row.scenarioRank);
+        item.worst=Math.max(item.worst,row.scenarioRank);
+        if(row.scenarioRank<=5)item.topFive++;
+      }
+    }
+  }
+  return {scenarios,rows:[...envelope.values()].map(r=>({...r,span:r.worst-r.best,topFivePct:r.topFive/scenarios*100}))};
+}

@@ -41,7 +41,7 @@ def local_server(assets, port=0):
                 self.send_error(404)
                 return
             types = {".js": "text/javascript", ".css": "text/css", ".html": "text/html",
-                     ".png": "image/png", ".webmanifest": "application/manifest+json"}
+                     ".png": "image/png", ".webp": "image/webp", ".webmanifest": "application/manifest+json"}
             self.send_response(200)
             self.send_header("Content-Type", types.get(Path(key).suffix, "application/json"))
             self.send_header("Content-Length", str(len(data)))
