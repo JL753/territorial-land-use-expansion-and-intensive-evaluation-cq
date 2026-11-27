@@ -1,5 +1,5 @@
-const CACHE="cq-land-study-v9";
-const assets=["/","/style.css","/analysis.js","/app.js","/manifest.webmanifest","/icon192.png","/icon512.png","/dashboard.json","/districts.geojson","/client-utils.js","/mobile.html","/mobile.css","/mobile.js","/mobile.webmanifest","/desktop.html","/desktop.css","/desktop.js","/river-ink.webp","/rivers.geojson","/charts.js","/vendor/echarts-6.0.0.min.js"];
+const CACHE="cq-land-study-v10";
+const assets=["/","/style.css","/analysis.js","/app.js","/manifest.webmanifest","/icon192.png","/icon512.png","/dashboard.json","/districts.geojson","/client-utils.js","/mobile.html","/mobile.css","/mobile.js","/mobile.webmanifest","/desktop.html","/desktop.css","/desktop.js","/river-ink.webp","/rivers.geojson","/charts.js","/vendor/echarts-6.0.0.min.js","/dashboard3d.html","/dashboard3d.css","/dashboard3d.js","/guide.html","/guide.css","/guide.js","/api/v1/recent-observations/"];
 self.addEventListener("install",event=>event.waitUntil((async()=>{
   const cache=await caches.open(CACHE);
   await cache.addAll(assets);

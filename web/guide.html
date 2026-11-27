@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#122d29"><title>山城地研 · 毕业设计工作台</title><link rel="stylesheet" href="/guide.css"><script defer src="/guide.js"></script></head>
+<body>
+<header><a class="brand" href="/"><span>渝</span><b>山城地研<small>GRADUATION PROJECT WORKBENCH</small></b></a><nav><a href="/">研究总览</a><a href="/dashboard3d.html">三维大屏</a><a href="/desktop.html">桌面分析</a></nav><button id="export-progress">导出进度</button></header>
+<main>
+<section class="hero"><div><p class="eyebrow">PROJECT GUIDE · 16-WEEK ROADMAP</p><h1>毕业设计全过程工作台</h1><p>围绕重庆市主城都市区 21 区建设用地扩张与集约利用评价，串联研究任务、数据处理、算法实现、系统开发、论文写作与答辩交付。</p><div class="hero-actions"><a href="/dashboard3d.html">进入三维可视化大屏 ↗</a><a href="https://github.com/JL753/territorial-land-use-expansion-and-intensive-evaluation-cq/blob/main/docs/graduation-guide.md">查看完整指导方案</a></div></div><div class="progress-card"><span>毕业设计总体进度</span><strong id="progress-number">0%</strong><div class="progress-track"><i id="progress-bar"></i></div><small id="progress-caption">0 / 0 项任务完成</small></div></section>
+<section class="section"><div class="section-head"><div><p class="eyebrow">RESEARCH ROUTE</p><h2>五项核心研究任务</h2></div><p>按研究逻辑推进，所有任务均有可检查的成果。</p></div><div id="stage-grid" class="stage-grid"></div></section>
+<section class="section"><div class="section-head"><div><p class="eyebrow">SYSTEM MODULES</p><h2>六大系统功能模块</h2></div><p>研究方法与软件功能一一对应，避免系统沦为只有展示效果的空壳。</p></div><div class="module-grid">
+<article><span>01</span><h3>数据管理</h3><p>四期 CLCD、21 区边界、统计面板、数据字典、质量等级、来源追溯、文件指纹与导入校验。</p><small>输入：栅格 / GeoJSON / CSV</small></article>
+<article><span>02</span><h3>空间可视化</h3><p>二维区县专题图、CesiumJS 三维拉伸地图、河流水系、时序播放、图层切换、区县点选和详情联动。</p><small>输出：2D / 3D WebGIS</small></article>
+<article><span>03</span><h3>扩张分析</h3><p>面积变化、新增与减少、净扩张、年均扩张强度、邻接形态、重心位移、地类转移矩阵。</p><small>输出：区级指标 / 转移矩阵</small></article>
+<article><span>04</span><h3>集约利用评价</h3><p>人口密度、单位建设用地 GDP、二产增加值密度、熵权 TOPSIS、等权对照、自定义权重和情景试算。</p><small>输出：得分 / 排名 / 权重</small></article>
+<article><span>05</span><h3>综合分析</h3><p>中心城区与主城新区对比、扩张—集约关联、Spearman 描述统计、权重敏感性、时间留出回测。</p><small>输出：图表 / 统计解释</small></article>
+<article><span>06</span><h3>成果输出</h3><p>地图截图、统计图、CSV/JSON、研究简报、数据审计报告、论文图表、答辩展示和复现说明。</p><small>输出：可复核研究成果</small></article>
+</div></section>
+<section class="section"><div class="section-head"><div><p class="eyebrow">WEEKLY PLAN</p><h2>16 周实施计划与过程打卡</h2></div><p>勾选已完成任务，进度保存在当前浏览器，可导出备份。</p></div><div id="week-grid" class="week-grid"></div></section>
+<section class="section"><div class="section-head"><div><p class="eyebrow">THESIS STRUCTURE</p><h2>毕业论文建议结构</h2></div><p>论文写作与系统实现同步推进，不要等系统完成后才开始写论文。</p></div><div id="chapter-grid" class="chapter-grid"></div></section>
+<section class="section"><div class="section-head"><div><p class="eyebrow">DELIVERY CHECKLIST</p><h2>最终交付物清单</h2></div><p>答辩前逐项核对。</p></div><div id="deliverable-grid" class="deliverable-grid"></div></section>
+<section class="section notes-section"><div><p class="eyebrow">SUPERVISOR / STUDENT NOTES</p><h2>研究过程记录</h2><p>记录导师意见、数据待核查项、实验变更和下一步计划。内容仅保存在当前浏览器。</p></div><div><textarea id="project-note" rows="5" placeholder="例如：本周完成 2020/2022 年 A 级样本复核；待补充 CLCD 版本说明和年鉴原始页码……"></textarea><p id="save-status" role="status">自动保存在本机浏览器</p></div></section>
+<section class="section warning"><h2>必须遵守的数据与学术边界</h2><ul>
+<li>研究范围为中心城区 9 区 + 主城新区 12 区，共 21 区，不代表重庆全域 38 区县。</li>
+<li>遥感建设用地以 CLCD 类别 8 不透水面作为操作化指标，不等同于法定建设用地或统计建成区面积。</li>
+<li>面积计算使用 30 m Albers 等积原生网格及区归属栅格；WGS84 GeoJSON 用于地图展示。</li>
+<li>2020、2022 年 42 条 A 级观测作为集约利用主要比较；2010、2015 年含 B/C 级数据，仅作探索性分析。</li>
+<li>GDP 和第二产业增加值为当年现价时，跨年变化含价格因素；Spearman 相关是描述统计，不可写成因果结论。</li>
+<li>3D 区县拉伸高度为指标归一化的视觉编码，不代表真实建筑物高度或 DEM 地形高程。</li>
+</ul></section>
+<footer>山城地研 · 毕业设计指导与研究复现工作台 <a href="/">返回研究系统</a></footer>
+</main></body></html>

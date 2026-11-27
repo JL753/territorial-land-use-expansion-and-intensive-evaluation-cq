@@ -10,7 +10,7 @@
 |---|---|---|---|
 | 1. 工程基础与部署 | Django 检查、迁移、导入、健康检查、CI、生产配置、Docker 构建 | CI 已覆盖 Python/Django/浏览器测试；Docker 构建新增为必跑 job | 最新 PR 两个 job 全绿；正式域名、TLS、生产密钥、持久化数据库和主机 |
 | 2. 核心研究算法 | 栅格面积、地类转移、扩张形态、重心、熵权 TOPSIS、等权/权重敏感性、时间留出回测 | 已有算法实现；新增 TOPSIS 数值性质和异常面板回归测试 | 导师确认指标体系、原始分类版本及独立样本验证 |
-| 3. WebGIS 与三端应用 | Web、大屏、移动端、桌面端、地图筛选、图表、矩阵、情景试算、导出、研究助手 | 保留既有功能；新增三端页面、资源白名单和只读接口测试 | 不同浏览器、手机、Windows 实机验收 |
+| 3. WebGIS 与三端应用 | Web、二维/三维大屏（CesiumJS）、移动端、桌面端、地图筛选、图表、矩阵、情景试算、导出、研究助手、16 周毕设工作台 | 保留既有功能；新增三端页面、资源白名单和只读接口测试 | 不同浏览器、手机、Windows 实机验收 |
 | 4. 数据质量与研究复核 | 21 区 × 4 期面板、63 条变化、5,103 个转移单元、84 条经济面板、GeoJSON 和 SHA-256 审计 | 自动化内部一致性审计已提供；已知质量限制显式保留 | 年鉴原始页、统计修订记录、历史区划合并凭证、CLCD 原始发布件/许可 |
 | 5. 成果交付 | 源代码、部署说明、数据字典、论文 Markdown/Word、测试与审计报告生成命令 | 文档、复现入口、CI 报告和客户端构建源码已入库 | 生产部署、Android/Windows/iOS 实机验收、答辩版本签收 |
 
@@ -40,13 +40,15 @@ node --test tests/test_client.cjs
 
 ## 交付物索引
 
-- 应用入口：/、/mobile.html、/desktop.html
+- 应用入口：/、/mobile.html、/desktop.html、/dashboard3d.html、/guide.html
 - 健康检查：/healthz
 - 区年数据：/dashboard.json、/districts.geojson、/api/v1/observations/
 - 分析 API：/api/v1/analysis/
 - 部署：deployment.md
 - 数据口径：data.md
 - 算法平台：data-platform.md
+- 毕业设计指导：graduation-guide.md
+- 三维大屏：3d-dashboard.md
 - 实证结果：landcover-results.md、socioeconomic-results.md
 - 论文：thesis.md
 - 数据审计：执行 audit_study.py 生成 Markdown 与 JSON 报告
