@@ -48,7 +48,7 @@ docker run --rm -p 8000:8000 \\
 | `CQ_POSTGIS` | 从 PostGIS 快照读取数据 | 设为 `1` 并提供 PostgreSQL 连接环境变量 |
 | `CQ_OLLAMA_MODEL` | 启用本机 Ollama 证据选择 | 可选，需保证模型服务可访问 |
 
-## 健康检查与手工验证
+## 数据审计与手工验证\n\n在部署前可运行以下命令，对随仓库发布的研究面板、转移矩阵、评价结果和展示边界进行一致性检查。报告会输出 Markdown/JSON，并为每个输入文件记录 SHA-256。\n\n~~~bash\npython audit_study.py --output outputs/data-audit\n~~~\n\n审计状态为 passed_with_warnings 是当前数据预期状态：它表示内部一致性通过，但仍保留早期经济数据等级、名义价格及原始凭证归档等限制。\n\n## 健康检查与手工验证
 
 ```bash
 curl --fail http://127.0.0.1:8000/healthz

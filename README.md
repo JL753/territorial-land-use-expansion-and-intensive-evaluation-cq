@@ -22,7 +22,7 @@
 - [四期不透水面扩张实证结果](docs/landcover-results.md)
 - [集约利用实证和三份数据交付](docs/socioeconomic-results.md)
 
-## 运行山城地研
+## 工程验收与数据审计\n\n- [五阶段实施与验收清单](docs/acceptance.md)\n- [数据质量与可追溯性验证](docs/validation.md)\n- [部署与运行手册](docs/deployment.md)\n\n运行 **python audit_study.py --output outputs/data-audit** 可对 21 区、84 条区年记录、63 条扩张记录、5,103 个地类转移单元、评价结果和展示边界执行一致性检查，并生成带 SHA-256 输入指纹的 JSON/Markdown 报告。审计通过不替代年鉴原件、CLCD 原始版本和行政边界基准的外部核验。\n\n## 运行山城地研
 
 | 客户端 | 启动方式 |
 | --- | --- |
