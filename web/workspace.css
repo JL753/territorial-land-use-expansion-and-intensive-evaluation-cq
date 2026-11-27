@@ -281,3 +281,10 @@ body[data-app-page="city"] .tool-accordion[open] summary::after{content:"−"}
 body[data-app-page="city"] .tool-accordion[open] summary{margin-bottom:.55rem}
 body[data-app-page="city"] .tool-accordion .layer-list{margin:0}
 body[data-app-page="city"] .tool-accordion>label{margin:.55rem 0}
+
+@media(max-width:520px){
+  body[data-app-page="home"] .workspace-topbar-actions #platform-screen,
+  body[data-app-page="home"] .workspace-topbar-actions #fullscreen{display:none}
+  body[data-app-page="home"] .workspace-topbar-actions #open-command{width:36px;height:36px;padding:0;font-size:0}
+  body[data-app-page="home"] .workspace-topbar-actions #open-command::before{content:"⌕";font-size:20px}
+}
