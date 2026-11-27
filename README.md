@@ -11,15 +11,26 @@
 - [四期不透水面扩张实证结果](docs/landcover-results.md)
 - [集约利用实证和三份数据交付](docs/socioeconomic-results.md)
 
-## 启动实测 WebGIS
+## 运行山城地研
 
-从仓库根目录执行，Python 3.12 即可运行已生成的实测地图和表格。
+| 客户端 | 启动方式 |
+| --- | --- |
+| 网页、大屏 | 在仓库根目录运行下方命令，打开终端显示的本地地址 |
+| Android 8+ | 安装 [APK](downloads/cq-land-android.apk)，数据随安装包提供 |
+| iPhone | 用 Safari 打开 HTTPS 部署地址，添加到主屏幕 |
+| Windows x64 | 打开 [桌面程序](downloads/cq-land-windows.exe)，使用本机 Edge 或 Chrome 应用窗口 |
+| Linux x64 | 执行 [桌面程序](downloads/cq-land-linux)，使用本机 Chromium 或 Chrome 应用窗口 |
+| Python 桌面 | 执行 `python downloads/cq-land-desktop.pyz`，需 Python 3.10+ 和 Tkinter |
 
 ```bash
 python serve.py --results results/socioeconomic/four-year-exploratory
 ```
 
-浏览器打开 `http://127.0.0.1:8000/`。选择年份、区组和指标，点击区县查看历年明细，或导出当前筛选结果。页面展示四期探索性得分。论文主要采用附件质量等级较高的 2020、2022 年单独拟合结果。
+快捷查找支持 Ctrl+K 或 ⌘K。大屏支持四期轮播、地图点选与缩放、地类构成和逐区地类转移矩阵。评价实验室支持熵权、等权、自定义权重和单区情景试算。研究助手可检索区县、对照指标、解释矩阵和试算结果。网页在 HTTPS 或本机地址上支持离线缓存。
+
+网页可选接入本机 Ollama。启动 Ollama 并准备所需模型后，在上述命令末尾加 `--ollama-model MODEL`。摘要输入由研究台按当前数据计算，模型选出的相关证据单独显示。离线客户端内置统计问答。
+
+安装包复建方法、设计参考和验收范围见 [三端应用说明](docs/workbench.md)。
 
 ## 运行模拟数据
 

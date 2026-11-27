@@ -4,10 +4,18 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 from pathlib import Path
 from urllib.parse import urlsplit
+from urllib.request import Request, urlopen
+from urllib.error import URLError
 
 WEB = Path(__file__).resolve().parent / "web"
 ASSETS = {"/": ("index.html", "text/html"), "/app.js": ("app.js", "text/javascript"),
           "/style.css": ("style.css", "text/css")}
+for filename, mime in {
+    "analysis.js": "text/javascript", "manifest.webmanifest": "application/manifest+json",
+    "sw.js": "text/javascript", "icon192.png": "image/png", "icon512.png": "image/png",
+}.items():
+    ASSETS["/" + filename] = (filename, mime)
+
 QUERIES = {
     "/dashboard.json": """
         SELECT jsonb_agg(properties ORDER BY code, year) FROM land_use.observation
@@ -29,6 +37,7 @@ def main():
     source.add_argument("--postgis", action="store_true", help="Use standard PostgreSQL PG* variables.")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
+    parser.add_argument("--ollama-model", help="Enable summaries with an installed local Ollama model.")
     args = parser.parse_args()
     if args.postgis:
         import psycopg
@@ -39,8 +48,69 @@ def main():
         parser.error("Results directory must contain dashboard.json and districts.geojson.")
 
     class Handler(BaseHTTPRequestHandler):
+        def json_response(self, status, value):
+            body = json.dumps(value, ensure_ascii=False).encode()
+            self.send_response(status)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def do_POST(self):
+            if self.path != "/api/interpret" or not args.ollama_model:
+                self.send_error(404)
+                return
+            origin = urlsplit(self.headers.get("Origin", ""))
+            if origin.netloc != self.headers.get("Host") or self.headers.get_content_type() != "application/json":
+                self.send_error(403)
+                return
+            try:
+                size = int(self.headers.get("Content-Length", "0"))
+                if not 0 < size <= 16000:
+                    raise ValueError
+                payload = json.loads(self.rfile.read(size))
+                question, evidence = payload["question"], payload["evidence"]
+                if not isinstance(question, str) or not isinstance(evidence, str):
+                    raise ValueError
+            except (ValueError, TypeError, KeyError):
+                self.json_response(400, {"error": "请求内容无效"})
+                return
+            lines = [line.strip() for line in evidence.splitlines() if line.strip()][:40]
+            if not lines:
+                self.json_response(400, {"error": "没有可解读的计算依据"})
+                return
+            request = Request("http://127.0.0.1:11434/api/chat", data=json.dumps({
+                "model": args.ollama_model, "stream": False, "think": False,
+                "format": {"type": "object", "properties": {"lines": {
+                    "type": "array", "items": {"type": "integer", "minimum": 1, "maximum": len(lines)},
+                    "minItems": 1, "maxItems": 4,
+                }}, "required": ["lines"]},
+                "options": {"temperature": 0, "num_predict": 96},
+                "messages": [
+                    {"role": "system", "content": "按用户问题从计算依据中选择最相关的行编号，返回 {\"lines\":[编号]}。保留范围与单位，最多四行。"},
+                    {"role": "user", "content": question + "\n" + "\n".join(
+                        f"{i}. {line}" for i, line in enumerate(lines, 1)
+                    )},
+                ],
+            }).encode(), headers={"Content-Type": "application/json"})
+            try:
+                with urlopen(request, timeout=45) as response:
+                    raw = json.load(response)["message"]["content"]
+                chosen = json.loads(raw)["lines"]
+                if not isinstance(chosen, list) or not 1 <= len(chosen) <= 4 or any(
+                    type(i) is not int or not 1 <= i <= len(lines) for i in chosen
+                ):
+                    raise ValueError("Invalid evidence selection")
+                indices = sorted({1, *chosen})
+                self.json_response(200, {"answer": "\n".join(lines[i-1] for i in indices)})
+            except (URLError, TimeoutError, ValueError, KeyError, TypeError, OSError):
+                self.json_response(503, {"error": "请检查本机 Ollama 服务和模型名称"})
+
         def do_GET(self):
             path = urlsplit(self.path).path
+            if path == "/api/config":
+                self.json_response(200, {"model": args.ollama_model})
+                return
             if path in ASSETS:
                 filename, content_type = ASSETS[path]
                 body = (WEB / filename).read_bytes()

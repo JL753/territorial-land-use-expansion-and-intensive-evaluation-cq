@@ -98,6 +98,17 @@ def run(args):
     # All four years share the exploratory normalization and ideal points.
     dashboard = args.output / "four-year-exploratory"
     full["evaluation_basis"] = "nominal_four_year_exploratory"
+    transition_file = args.landcover / "class_transitions.csv"
+    if transition_file.exists():
+        transitions = pd.read_csv(transition_file, dtype={"adcode": str})
+        matrices = {}
+        for key, cells in transitions.groupby(["adcode", "end"]):
+            matrix = cells.pivot(index="from_class", columns="to_class", values="area_km2")
+            if list(matrix.index) != list(range(1, 10)) or list(matrix.columns) != list(range(1, 10)) or matrix.isna().any().any():
+                raise ValueError(f"Incomplete transition matrix for {key}")
+            matrices[key] = matrix.to_numpy().tolist()
+        full["transition_km2"] = [None if pd.isna(row.interval_start) else matrices[(row.code, row.year)]
+                                  for row in full.itertuples()]
     (dashboard / "dashboard.json").write_text(full.to_json(orient="records", force_ascii=False), encoding="utf-8")
     (dashboard / "districts.geojson").write_text(json.dumps(geometry, ensure_ascii=False), encoding="utf-8")
 

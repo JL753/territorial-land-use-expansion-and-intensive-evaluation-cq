@@ -86,7 +86,7 @@ def analyze(source, output):
                 prior_cells = cells
 
     pixel_area = 30 ** 2 / 1e6
-    panel, change = [], []
+    panel, change, flows = [], [], []
     for row in identities.itertuples(index=False):
         district_id = row.raster_id
         previous_centroid = np.array([np.nan, np.nan])
@@ -106,6 +106,15 @@ def analyze(source, output):
             })
             if index:
                 matrix = transitions[index - 1, district_id]
+                valid = matrix[1:, 1:]
+                if not (np.array_equal(valid.sum(axis=1), counts[index-1, district_id, 1:])
+                        and np.array_equal(valid.sum(axis=0), counts[index, district_id, 1:])):
+                    raise ValueError("Transition matrix margins do not match annual class counts.")
+                for origin in CLASSES:
+                    for destination in CLASSES:
+                        pixels_changed = int(matrix[origin, destination])
+                        flows.append((row.code, row.district, row.group, YEARS[index-1], year,
+                                      origin, destination, pixels_changed, pixels_changed * pixel_area))
                 added = int(matrix[1:8, 8].sum() + matrix[9, 8])
                 lost = int(matrix[8, 1:8].sum() + matrix[8, 9])
                 if added - lost != counts[index, district_id, 8] - counts[index - 1, district_id, 8]:
@@ -146,6 +155,10 @@ def analyze(source, output):
     if max_error > 0.000051:
         raise ValueError(f"Recomputed values disagree with the delivered table by {max_error:.6f} km².")
     output.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(flows, columns=["adcode","district","group","start","end","from_class",
+                                 "to_class","pixel_count","area_km2"]).to_csv(
+        output / "class_transitions.csv", index=False, float_format="%.6f"
+    )
     panel.to_csv(output / "landcover_recomputed.csv", index=False, float_format="%.6f")
     change.to_csv(output / "impervious_change.csv", index=False, float_format="%.6f")
     panel.groupby(["group", "year"])[columns].sum().to_csv(output / "landcover_groups.csv", float_format="%.6f")
