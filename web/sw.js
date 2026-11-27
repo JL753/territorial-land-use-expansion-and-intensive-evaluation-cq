@@ -1,9 +1,9 @@
-const CACHE="cq-land-study-v15";
+const CACHE="cq-land-study-v16";
 const cityAssets=["/city.html","/city.js","/city.css","/vendor/maplibre-5.16.0.js","/vendor/maplibre-5.16.0.css",
   "/city/manifest.json","/city/buildings.geojson","/city/poi.geojson","/city/roads.geojson",
   ...[2010,2015,2020,2022].map(y=>"/city/cover-"+y+".png"),
   ...[2015,2020,2022].map(y=>"/city/change-"+y+".png")];
-const assets=["/","/live.js","/live.css","/style.css","/analysis.js","/app.js","/manifest.webmanifest","/icon192.png","/icon512.png","/dashboard.json","/districts.geojson","/client-utils.js","/mobile.html","/mobile.css","/mobile.js","/mobile.webmanifest","/desktop.html","/desktop.css","/desktop.js","/river-ink.webp","/rivers.geojson","/charts.js","/vendor/echarts-6.0.0.min.js","/dashboard3d.html","/dashboard3d.css","/dashboard3d.js","/guide.html","/guide.css","/guide.js","/data-center.html","/data-center.css","/data-center.js","/district.html","/district.css","/district.js","/chongqing-relief-bg.svg"];
+const assets=["/","/workspace.js","/workspace.css","/live.js","/live.css","/style.css","/analysis.js","/app.js","/manifest.webmanifest","/icon192.png","/icon512.png","/dashboard.json","/districts.geojson","/client-utils.js","/mobile.html","/mobile.css","/mobile.js","/mobile.webmanifest","/desktop.html","/desktop.css","/desktop.js","/river-ink.webp","/rivers.geojson","/charts.js","/vendor/echarts-6.0.0.min.js","/dashboard3d.html","/dashboard3d.css","/dashboard3d.js","/guide.html","/guide.css","/guide.js","/data-center.html","/data-center.css","/data-center.js","/district.html","/district.css","/district.js","/chongqing-relief-bg.svg"];
 self.addEventListener("install",event=>event.waitUntil((async()=>{
   const cache=await caches.open(CACHE);
   await cache.addAll(assets);

@@ -12,7 +12,9 @@
 <script defer src="/analysis.js"></script>
 <script defer src="/client-utils.js"></script>
 <script defer src="/city.js"></script>
-<link rel="stylesheet" href="/live.css"><script defer src="/live.js"></script></head>
+<link rel="stylesheet" href="/live.css"><script defer src="/live.js"></script> <link rel="stylesheet" href="/workspace.css">
+ <script defer src="/workspace.js"></script>
+</head>
 <body>
 <header>
   <a class="brand" href="/"><img src="/icon192.png" alt="">山城地研</a>
@@ -27,20 +29,33 @@
       <div class="preset"><button id="all-view">21 区全域</button><button id="campus-view">虎溪建筑</button></div>
       <label>定位区县<select id="city-district"></select></label>
       <label>搜虎溪建筑或设施<input id="site-search" type="search" placeholder="例如 重庆大学"><select id="site-matches" aria-label="片区搜索结果"><option value="">输入名称以检索</option></select></label>
-      <h2>专题图层</h2>
-      <div class="layer-list">
-        <label><input id="layer-district" type="checkbox" checked>区县边界与指标</label>
-        <label><input id="layer-volume" type="checkbox">区县指标立体柱面</label><label><input id="layer-river" type="checkbox" checked>长江、嘉陵江</label>
-        <label><input id="layer-cover" type="checkbox">阶段末土地覆盖</label>
-        <label><input id="layer-compare" type="checkbox">叠加对照年份</label>
-        <label><input id="layer-change" type="checkbox">阶段不透水面变化</label>
-        <label><input id="layer-buildings" type="checkbox" checked>虎溪建筑轮廓</label>
-        <label><input id="layer-envelope" type="checkbox" checked>虎溪快照覆盖框</label><label><input id="layer-road" type="checkbox" checked>虎溪道路</label>
-        <label><input id="layer-poi" type="checkbox" checked>虎溪配套设施</label>
-      </div>
+      <details class="tool-accordion" open>
+        <summary>全域专题图层</summary>
+        <div class="layer-list">
+          <label><input id="layer-district" type="checkbox" checked>区县边界与指标</label>
+          <label><input id="layer-volume" type="checkbox">区县指标立体柱面</label>
+          <label><input id="layer-river" type="checkbox" checked>长江、嘉陵江</label>
+          <label><input id="layer-cover" type="checkbox">阶段末土地覆盖</label>
+          <label><input id="layer-compare" type="checkbox">叠加对照年份</label>
+          <label><input id="layer-change" type="checkbox">阶段不透水面变化</label>
+        </div>
+      </details>
+      <details class="tool-accordion">
+        <summary>虎溪精细图层</summary>
+        <div class="layer-list">
+          <label><input id="layer-buildings" type="checkbox" checked>虎溪建筑轮廓</label>
+          <label><input id="layer-envelope" type="checkbox" checked>虎溪快照覆盖框</label>
+          <label><input id="layer-road" type="checkbox" checked>虎溪道路</label>
+          <label><input id="layer-poi" type="checkbox" checked>虎溪配套设施</label>
+        </div>
+      </details>
       <label>区县专题<select id="district-metric"><option value="built_km2">不透水面面积</option><option value="expansion_km2">阶段净扩张</option><option value="intensive_score">集约利用得分</option><option value="population_density">人口承载密度</option></select></label>
       <label>对照年份<select id="compare-year"></select></label>
-      <label>虎溪建筑高度显示倍率 <input id="height-scale" type="range" min="1" max="4" step="0.5" value="2.5"><output id="height-value">2.5×</output></label><label>对照图透明度 <input id="compare-opacity" type="range" min="0" max="100" value="50"></label>
+      <details class="tool-accordion">
+        <summary>显示与拉伸设置</summary>
+        <label>虎溪建筑高度显示倍率 <input id="height-scale" type="range" min="1" max="4" step="0.5" value="2.5"><output id="height-value">2.5×</output></label>
+        <label>对照图透明度 <input id="compare-opacity" type="range" min="0" max="100" value="50"></label>
+      </details>
       <div class="sources">区县统计与 CLCD 按观测年切换。虎溪建筑、道路和设施来自当前发布的 OSM 快照。</div>
     </aside>
     <section class="stage" aria-label="三维研究地图">

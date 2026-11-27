@@ -56,7 +56,8 @@ jobs:
           node --check web/district.js
           node --check web/live.js
           node --check web/data-center.js
-          node --test tests/test_client.cjs
+          node --check web/workspace.js
+          node --test tests/test_client.cjs tests/test_workspace_shell.cjs
       - name: Upload reproducibility reports
         if: always()
         uses: actions/upload-artifact@v4
