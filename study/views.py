@@ -1,3 +1,4 @@
+import csv
 import json
 import mimetypes
 from pathlib import Path
@@ -15,12 +16,13 @@ from .ollama import choose_evidence
 from .postgis import published_data
 
 WEB = settings.ROOT / "web"
-PAGES = {"/": "index.html", "/mobile.html": "mobile.html", "/desktop.html": "desktop.html"}
+PAGES = {"/": "index.html", "/mobile.html": "mobile.html", "/desktop.html": "desktop.html", "/dashboard3d.html": "dashboard3d.html", "/guide.html": "guide.html"}
 ASSETS = {
     "app.js", "style.css", "analysis.js", "client-utils.js", "sw.js", "manifest.webmanifest",
     "mobile.js", "mobile.css", "mobile.webmanifest", "desktop.js", "desktop.css", "river-ink.webp", "rivers.geojson",
     "icon192.png", "icon512.png", "charts.js", "analytics-page.js",
     "vendor/echarts-6.0.0.min.js", "vendor/echarts-LICENSE.txt", "vendor/echarts-NOTICE.txt",
+    "dashboard3d.js", "dashboard3d.css", "guide.js", "guide.css",
 }
 
 
@@ -117,6 +119,24 @@ def observations(request):
     except (DatabaseError, ValueError, OSError):
         return JsonResponse({"error": "研究数据暂不可用。"}, status=503)
     return JsonResponse({"count": len(rows), "results": rows}, json_dumps_params={"ensure_ascii": False})
+
+
+@require_GET
+def recent_observations(request):
+    """Return the independently quality-screened 2020/2022 evaluation sample."""
+    source = (
+        settings.ROOT / "results" / "socioeconomic"
+        / "recent-year-comparison" / "district_year.csv"
+    )
+    try:
+        with source.open("r", encoding="utf-8-sig", newline="") as handle:
+            rows = list(csv.DictReader(handle))
+    except (OSError, csv.Error):
+        return JsonResponse({"error": "主要比较样本暂不可用。"}, status=503)
+    return JsonResponse(
+        {"count": len(rows), "results": rows},
+        json_dumps_params={"ensure_ascii": False},
+    )
 
 
 @require_GET

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071522">
+<title>山城地研 · 三维专题指挥大屏</title>
+<link rel="stylesheet" href="https://cesium.com/downloads/cesiumjs/releases/1.147/Build/Cesium/Widgets/widgets.css">
+<link rel="stylesheet" href="/dashboard3d.css">
+<script defer src="https://cesium.com/downloads/cesiumjs/releases/1.147/Build/Cesium/Cesium.js"></script>
+<script defer src="/vendor/echarts-6.0.0.min.js"></script>
+<script defer src="/dashboard3d.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="/"><span class="brand-mark">渝</span><span>山城地研<small>CHONGQING LAND USE INTELLIGENCE</small></span></a>
+  <div class="headline"><span class="eyebrow">3D GIS · SPATIO-TEMPORAL ANALYSIS</span><h1>重庆市主城都市区建设用地扩张与集约利用</h1></div>
+  <nav><a class="active" href="/dashboard3d.html">三维大屏</a><a href="/">研究总览</a><a href="/guide.html">毕设工作台</a><a href="/desktop.html">数据分析</a></nav>
+  <button id="fullscreen" class="outline">全屏展示</button>
+</header>
+<main class="screen">
+  <section class="kpis">
+    <article><span>研究区县</span><strong id="kpi-districts">21</strong><small>中心城区 9 · 主城新区 12</small></article>
+    <article><span>建设用地面积</span><strong id="kpi-built">—</strong><small>当前年份 · km²</small></article>
+    <article><span>阶段净扩张</span><strong id="kpi-growth">—</strong><small>相对上一观测期 · km²</small></article>
+    <article><span>集约利用均分</span><strong id="kpi-score">—</strong><small id="kpi-score-note">TOPSIS · 0—1</small></article>
+    <article><span>数据观测</span><strong id="kpi-records">84</strong><small>21 区 × 4 期</small></article>
+  </section>
+  <section class="workspace">
+    <aside class="column left-column">
+      <article class="panel controls">
+        <div class="panel-title"><span class="signal"></span><h2>研究参数</h2><small>STUDY CONTROL</small></div>
+        <label>观测年份<select id="year"><option>2010</option><option>2015</option><option>2020</option><option selected>2022</option></select></label>
+        <label>区县范围<select id="group"><option value="">全域 · 21 区</option><option value="中心城区">中心城区 · 9 区</option><option value="主城新区">主城新区 · 12 区</option></select></label>
+        <label>三维表达指标<select id="metric"><option value="built_km2">不透水面面积</option><option value="expansion_km2">阶段净扩张面积</option><option value="annual_expansion_intensity_pct">年均扩张强度</option><option value="intensive_score">集约利用得分</option><option value="population_density">人口承载密度</option><option value="gdp_density">单位用地 GDP</option><option value="secondary_density">单位用地二产增加值</option></select></label>
+        <div class="toggle-row"><label class="switch-label"><input id="river-toggle" type="checkbox" checked><span>长江 / 嘉陵江水系</span></label><span class="live-dot">DATA LINK</span></div>
+        <div class="button-row"><button id="play-years" class="primary">▶ 播放四期</button><button id="reset-camera" class="outline">复位视角</button></div>
+        <p class="micro-note">区块高度按当前指标归一化拉伸，仅用于专题对比，不代表真实建筑高度或地形高程。</p>
+      </article>
+      <article class="panel chart-panel"><div class="panel-title"><span class="signal"></span><h2>建设用地演变</h2><small>2010—2022</small></div><div id="trend-chart" class="chart"></div></article>
+      <article class="panel chart-panel"><div class="panel-title"><span class="signal"></span><h2>土地覆盖构成</h2><small>KM²</small></div><div id="cover-chart" class="chart"></div></article>
+    </aside>
+    <section class="map-panel">
+      <div class="map-head"><div><span class="eyebrow">SPATIAL DIGITAL ATLAS</span><strong id="map-title">2022 · 不透水面面积</strong></div><div class="map-tools"><span id="engine-status">正在初始化三维场景…</span><span class="map-pill">WGS84 · 21 DISTRICTS</span></div></div>
+      <div id="cesiumContainer" aria-label="重庆主城都市区三维区县专题地图"></div>
+      <div class="map-bottom"><div class="legend"><span>低值</span><i></i><span>高值</span><small id="legend-range">等待数据</small></div><div id="map-hint">鼠标拖动旋转 · 滚轮缩放 · 点击区县查看档案</div></div>
+      <div id="map-error" class="map-error" hidden></div>
+    </section>
+    <aside class="column right-column">
+      <article class="panel ranking-panel"><div class="panel-title"><span class="signal"></span><h2>区县指标排行</h2><small>TOP DISTRICTS</small></div><div id="ranking-chart" class="chart ranking-chart"></div></article>
+      <article class="panel detail-panel"><div class="panel-title"><span class="signal"></span><h2>区县专题档案</h2><small>SELECTED DISTRICT</small></div><div id="district-empty" class="empty">点击三维地图中的区县，查看该区数据</div><div id="district-detail" hidden></div></article>
+      <article class="panel method-panel"><div class="panel-title"><span class="signal"></span><h2>研究口径提示</h2><small>DATA NOTES</small></div><ul id="quality-notes"><li>遥感建设用地采用 CLCD 类别 8 不透水面作为操作化指标。</li><li>2020、2022 年集约评价为主要比较；2010、2015 年仅作探索性参考。</li><li>现价 GDP 跨年变化包含价格因素，不作实际生产率解释。</li></ul></article>
+    </aside>
+  </section>
+  <footer class="timeline">
+    <div><strong>历史时序</strong><span>LAND-COVER OBSERVATION</span></div>
+    <div class="year-buttons"><button data-year="2010">2010</button><i></i><button data-year="2015">2015</button><i></i><button data-year="2020">2020</button><i></i><button class="selected" data-year="2022">2022</button></div>
+    <div class="timeline-caption" id="timeline-caption">四期遥感观测 · 三个变化阶段</div>
+  </footer>
+</main>
+</body>
+</html>
