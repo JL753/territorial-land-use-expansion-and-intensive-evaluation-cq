@@ -1,0 +1,2164 @@
+{
+  "schema_version": 1,
+  "counts": {
+    "cover": 84,
+    "change": 63,
+    "flow": 5103,
+    "socio": 84
+  },
+  "sources": {
+    "cover": {
+      "file": "landcover_recomputed.csv",
+      "sha256": "42c71114903d3dbfbd7158991a4f49656d9ecac46ec764d30b947b26f489cab3"
+    },
+    "change": {
+      "file": "impervious_change.csv",
+      "sha256": "af1bd88791cc87da371cdda3ec215402543d53090dbc6d5b8dc277a80cf13894"
+    },
+    "flow": {
+      "file": "class_transitions.csv",
+      "sha256": "87c929fe65ec9144fbdf4406e74781b1ab5db18b148a30be756cd76d1c43eade"
+    },
+    "socio": {
+      "file": "socio_21district_4year.csv",
+      "sha256": "3898745c4a94e450d8418104a01bcb5aec57c594d1c76845aa360c5a3aa3e2ec"
+    }
+  },
+  "panel_fingerprint": "93a6453fb1b7d4db1312f090a5e66f1853f4f6da3e3256b51c24cc72aa48e8bd",
+  "yearly": [
+    {
+      "year": 2010,
+      "built_km2": 668.8755,
+      "valid_km2": 28519.1964,
+      "missing_km2": 167.0256
+    },
+    {
+      "year": 2015,
+      "built_km2": 976.7943,
+      "valid_km2": 28519.1964,
+      "missing_km2": 167.0256
+    },
+    {
+      "year": 2020,
+      "built_km2": 1234.2014999999997,
+      "valid_km2": 28519.1964,
+      "missing_km2": 167.0256
+    },
+    {
+      "year": 2022,
+      "built_km2": 1293.8787,
+      "valid_km2": 28519.1964,
+      "missing_km2": 167.0256
+    }
+  ],
+  "flows": [
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 1,
+      "to_class": 1,
+      "area_km2": 17990.3448
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 1,
+      "to_class": 2,
+      "area_km2": 749.268
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 1,
+      "to_class": 3,
+      "area_km2": 1.5875999999999997
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 1,
+      "to_class": 4,
+      "area_km2": 14.9499
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 1,
+      "to_class": 5,
+      "area_km2": 34.2207
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 1,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 1,
+      "to_class": 7,
+      "area_km2": 0.0189
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 1,
+      "to_class": 8,
+      "area_km2": 305.7345
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 1,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 2,
+      "to_class": 1,
+      "area_km2": 785.0439
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 2,
+      "to_class": 2,
+      "area_km2": 7272.8217
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 2,
+      "to_class": 3,
+      "area_km2": 2.4957000000000003
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 2,
+      "to_class": 4,
+      "area_km2": 0.0648
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 2,
+      "to_class": 5,
+      "area_km2": 0.0108
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 2,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 2,
+      "to_class": 7,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 2,
+      "to_class": 8,
+      "area_km2": 3.7629
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 2,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 3,
+      "to_class": 1,
+      "area_km2": 40.87080000000001
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 3,
+      "to_class": 2,
+      "area_km2": 48.384
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 3,
+      "to_class": 3,
+      "area_km2": 36.1305
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 3,
+      "to_class": 4,
+      "area_km2": 0.0945
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 3,
+      "to_class": 5,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 3,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 3,
+      "to_class": 7,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 3,
+      "to_class": 8,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 3,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 4,
+      "to_class": 1,
+      "area_km2": 1.4256000000000002
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 4,
+      "to_class": 2,
+      "area_km2": 0.0468
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 4,
+      "to_class": 3,
+      "area_km2": 0.0045
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 4,
+      "to_class": 4,
+      "area_km2": 7.742700000000001
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 4,
+      "to_class": 5,
+      "area_km2": 0.042300000000000004
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 4,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 4,
+      "to_class": 7,
+      "area_km2": 0.054
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 4,
+      "to_class": 8,
+      "area_km2": 4.3605
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 4,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 5,
+      "to_class": 1,
+      "area_km2": 19.988100000000003
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 5,
+      "to_class": 2,
+      "area_km2": 1.0944
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 5,
+      "to_class": 3,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 5,
+      "to_class": 4,
+      "area_km2": 0.0198
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 5,
+      "to_class": 5,
+      "area_km2": 524.2527
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 5,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 5,
+      "to_class": 7,
+      "area_km2": 0.0009
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 5,
+      "to_class": 8,
+      "area_km2": 5.3748000000000005
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 5,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 6,
+      "to_class": 1,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 6,
+      "to_class": 2,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 6,
+      "to_class": 3,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 6,
+      "to_class": 4,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 6,
+      "to_class": 5,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 6,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 6,
+      "to_class": 7,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 6,
+      "to_class": 8,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 6,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 7,
+      "to_class": 1,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 7,
+      "to_class": 2,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 7,
+      "to_class": 3,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 7,
+      "to_class": 4,
+      "area_km2": 0.027
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 7,
+      "to_class": 5,
+      "area_km2": 0.0072
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 7,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 7,
+      "to_class": 7,
+      "area_km2": 0.06570000000000001
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 7,
+      "to_class": 8,
+      "area_km2": 0.0099
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 7,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 8,
+      "to_class": 1,
+      "area_km2": 0.0459
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 8,
+      "to_class": 2,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 8,
+      "to_class": 3,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 8,
+      "to_class": 4,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 8,
+      "to_class": 5,
+      "area_km2": 11.277899999999997
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 8,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 8,
+      "to_class": 7,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 8,
+      "to_class": 8,
+      "area_km2": 657.5517
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 8,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 9,
+      "to_class": 1,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 9,
+      "to_class": 2,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 9,
+      "to_class": 3,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 9,
+      "to_class": 4,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 9,
+      "to_class": 5,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 9,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 9,
+      "to_class": 7,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 9,
+      "to_class": 8,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2010,
+      "end": 2015,
+      "from_class": 9,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 1,
+      "to_class": 1,
+      "area_km2": 17870.6466
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 1,
+      "to_class": 2,
+      "area_km2": 704.3535
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 1,
+      "to_class": 3,
+      "area_km2": 1.2590999999999999
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 1,
+      "to_class": 4,
+      "area_km2": 3.587400000000001
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 1,
+      "to_class": 5,
+      "area_km2": 12.6513
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 1,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 1,
+      "to_class": 7,
+      "area_km2": 0.0828
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 1,
+      "to_class": 8,
+      "area_km2": 245.13840000000005
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 1,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 2,
+      "to_class": 1,
+      "area_km2": 674.4582
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 2,
+      "to_class": 2,
+      "area_km2": 7390.749599999999
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 2,
+      "to_class": 3,
+      "area_km2": 3.4308
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 2,
+      "to_class": 4,
+      "area_km2": 0.052199999999999996
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 2,
+      "to_class": 5,
+      "area_km2": 0.0747
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 2,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 2,
+      "to_class": 7,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 2,
+      "to_class": 8,
+      "area_km2": 2.8493999999999997
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 2,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 3,
+      "to_class": 1,
+      "area_km2": 7.2531
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 3,
+      "to_class": 2,
+      "area_km2": 18.5445
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 3,
+      "to_class": 3,
+      "area_km2": 14.2641
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 3,
+      "to_class": 4,
+      "area_km2": 0.15480000000000002
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 3,
+      "to_class": 5,
+      "area_km2": 0.0018
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 3,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 3,
+      "to_class": 7,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 3,
+      "to_class": 8,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 3,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 4,
+      "to_class": 1,
+      "area_km2": 3.794400000000001
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 4,
+      "to_class": 2,
+      "area_km2": 0.0405
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 4,
+      "to_class": 3,
+      "area_km2": 0.0045
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 4,
+      "to_class": 4,
+      "area_km2": 6.6105
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 4,
+      "to_class": 5,
+      "area_km2": 0.0063
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 4,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 4,
+      "to_class": 7,
+      "area_km2": 0.7443000000000001
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 4,
+      "to_class": 8,
+      "area_km2": 11.698199999999998
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 4,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 5,
+      "to_class": 1,
+      "area_km2": 31.292099999999998
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 5,
+      "to_class": 2,
+      "area_km2": 0.22230000000000003
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 5,
+      "to_class": 3,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 5,
+      "to_class": 4,
+      "area_km2": 0.009899999999999999
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 5,
+      "to_class": 5,
+      "area_km2": 534.9897
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 5,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 5,
+      "to_class": 7,
+      "area_km2": 0.0072
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 5,
+      "to_class": 8,
+      "area_km2": 3.290399999999999
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 5,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 6,
+      "to_class": 1,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 6,
+      "to_class": 2,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 6,
+      "to_class": 3,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 6,
+      "to_class": 4,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 6,
+      "to_class": 5,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 6,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 6,
+      "to_class": 7,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 6,
+      "to_class": 8,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 6,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 7,
+      "to_class": 1,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 7,
+      "to_class": 2,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 7,
+      "to_class": 3,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 7,
+      "to_class": 4,
+      "area_km2": 0.0036
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 7,
+      "to_class": 5,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 7,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 7,
+      "to_class": 7,
+      "area_km2": 0.10709999999999999
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 7,
+      "to_class": 8,
+      "area_km2": 0.028800000000000006
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 7,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 8,
+      "to_class": 1,
+      "area_km2": 0.0351
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 8,
+      "to_class": 2,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 8,
+      "to_class": 3,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 8,
+      "to_class": 4,
+      "area_km2": 0.0009
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 8,
+      "to_class": 5,
+      "area_km2": 5.562
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 8,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 8,
+      "to_class": 7,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 8,
+      "to_class": 8,
+      "area_km2": 971.1963000000002
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 8,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 9,
+      "to_class": 1,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 9,
+      "to_class": 2,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 9,
+      "to_class": 3,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 9,
+      "to_class": 4,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 9,
+      "to_class": 5,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 9,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 9,
+      "to_class": 7,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 9,
+      "to_class": 8,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2015,
+      "end": 2020,
+      "from_class": 9,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 1,
+      "to_class": 1,
+      "area_km2": 18127.7613
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 1,
+      "to_class": 2,
+      "area_km2": 393.9093
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 1,
+      "to_class": 3,
+      "area_km2": 0.29969999999999997
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 1,
+      "to_class": 4,
+      "area_km2": 2.6613
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 1,
+      "to_class": 5,
+      "area_km2": 4.3065
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 1,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 1,
+      "to_class": 7,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 1,
+      "to_class": 8,
+      "area_km2": 58.5414
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 1,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 2,
+      "to_class": 1,
+      "area_km2": 286.3791
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 2,
+      "to_class": 2,
+      "area_km2": 7825.737600000001
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 2,
+      "to_class": 3,
+      "area_km2": 0.936
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 2,
+      "to_class": 4,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 2,
+      "to_class": 5,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 2,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 2,
+      "to_class": 7,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 2,
+      "to_class": 8,
+      "area_km2": 0.8576999999999999
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 2,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 3,
+      "to_class": 1,
+      "area_km2": 1.4499
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 3,
+      "to_class": 2,
+      "area_km2": 6.338699999999999
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 3,
+      "to_class": 3,
+      "area_km2": 11.1663
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 3,
+      "to_class": 4,
+      "area_km2": 0.0036
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 3,
+      "to_class": 5,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 3,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 3,
+      "to_class": 7,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 3,
+      "to_class": 8,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 3,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 4,
+      "to_class": 1,
+      "area_km2": 1.6208999999999996
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 4,
+      "to_class": 2,
+      "area_km2": 0.026099999999999998
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 4,
+      "to_class": 3,
+      "area_km2": 0.0018
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 4,
+      "to_class": 4,
+      "area_km2": 7.433100000000001
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 4,
+      "to_class": 5,
+      "area_km2": 0.08729999999999999
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 4,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 4,
+      "to_class": 7,
+      "area_km2": 0.15839999999999999
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 4,
+      "to_class": 8,
+      "area_km2": 1.0917000000000001
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 4,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 5,
+      "to_class": 1,
+      "area_km2": 33.228
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 5,
+      "to_class": 2,
+      "area_km2": 0.14850000000000002
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 5,
+      "to_class": 3,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 5,
+      "to_class": 4,
+      "area_km2": 0.0018
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 5,
+      "to_class": 5,
+      "area_km2": 518.7257999999999
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 5,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 5,
+      "to_class": 7,
+      "area_km2": 0.0234
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 5,
+      "to_class": 8,
+      "area_km2": 1.1583
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 5,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 6,
+      "to_class": 1,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 6,
+      "to_class": 2,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 6,
+      "to_class": 3,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 6,
+      "to_class": 4,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 6,
+      "to_class": 5,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 6,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 6,
+      "to_class": 7,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 6,
+      "to_class": 8,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 6,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 7,
+      "to_class": 1,
+      "area_km2": 0.0018
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 7,
+      "to_class": 2,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 7,
+      "to_class": 3,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 7,
+      "to_class": 4,
+      "area_km2": 0.06480000000000001
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 7,
+      "to_class": 5,
+      "area_km2": 0.0009
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 7,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 7,
+      "to_class": 7,
+      "area_km2": 0.8181
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 7,
+      "to_class": 8,
+      "area_km2": 0.0558
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 7,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 8,
+      "to_class": 1,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 8,
+      "to_class": 2,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 8,
+      "to_class": 3,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 8,
+      "to_class": 4,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 8,
+      "to_class": 5,
+      "area_km2": 2.0277
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 8,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 8,
+      "to_class": 7,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 8,
+      "to_class": 8,
+      "area_km2": 1232.1737999999998
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 8,
+      "to_class": 9,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 9,
+      "to_class": 1,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 9,
+      "to_class": 2,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 9,
+      "to_class": 3,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 9,
+      "to_class": 4,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 9,
+      "to_class": 5,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 9,
+      "to_class": 6,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 9,
+      "to_class": 7,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 9,
+      "to_class": 8,
+      "area_km2": 0.0
+    },
+    {
+      "start": 2020,
+      "end": 2022,
+      "from_class": 9,
+      "to_class": 9,
+      "area_km2": 0.0
+    }
+  ],
+  "model": {
+    "features": {
+      "baseline_area_km2": "期初不透水面面积",
+      "forest_share": "期初林地比例",
+      "cropland_share": "期初耕地比例",
+      "water_share": "期初水体比例",
+      "baseline_population": "期初常住人口"
+    },
+    "train_years": [
+      [
+        2010,
+        2015
+      ],
+      [
+        2015,
+        2020
+      ]
+    ],
+    "holdout_years": [
+      2020,
+      2022
+    ],
+    "train_count": 42,
+    "holdout_count": 21,
+    "target_unit": "km²/年",
+    "validation": "同一批区县的时间留出检验。模型仅用期初土地覆盖和人口变量。结果用于回测。",
+    "scores": {
+      "median": {
+        "mae": 0.968897,
+        "rmse": 1.118734
+      },
+      "ridge": {
+        "mae": 2.171797,
+        "rmse": 2.647062
+      },
+      "random_forest": {
+        "mae": 1.957817,
+        "rmse": 2.368788
+      }
+    },
+    "predictions": [
+      {
+        "code": "500102",
+        "district": "涪陵区",
+        "region": "主城新区",
+        "actual": 1.71855,
+        "median": 2.16108,
+        "ridge": 3.572134,
+        "random_forest": 3.081708
+      },
+      {
+        "code": "500103",
+        "district": "渝中区",
+        "region": "中心城区",
+        "actual": 0.04005,
+        "median": 2.16108,
+        "ridge": 0.458595,
+        "random_forest": 0.832925
+      },
+      {
+        "code": "500104",
+        "district": "大渡口区",
+        "region": "中心城区",
+        "actual": 0.44775,
+        "median": 2.16108,
+        "ridge": 1.130937,
+        "random_forest": 0.880488
+      },
+      {
+        "code": "500105",
+        "district": "江北区",
+        "region": "中心城区",
+        "actual": 0.56385,
+        "median": 2.16108,
+        "ridge": 3.469467,
+        "random_forest": 4.342939
+      },
+      {
+        "code": "500106",
+        "district": "沙坪坝区",
+        "region": "中心城区",
+        "actual": 2.39625,
+        "median": 2.16108,
+        "ridge": 5.677283,
+        "random_forest": 5.411449
+      },
+      {
+        "code": "500107",
+        "district": "九龙坡区",
+        "region": "中心城区",
+        "actual": 1.13355,
+        "median": 2.16108,
+        "ridge": 5.852452,
+        "random_forest": 5.31164
+      },
+      {
+        "code": "500108",
+        "district": "南岸区",
+        "region": "中心城区",
+        "actual": 0.72225,
+        "median": 2.16108,
+        "ridge": 3.914676,
+        "random_forest": 4.70459
+      },
+      {
+        "code": "500109",
+        "district": "北碚区",
+        "region": "中心城区",
+        "actual": 1.21725,
+        "median": 2.16108,
+        "ridge": 3.206678,
+        "random_forest": 2.977888
+      },
+      {
+        "code": "500110",
+        "district": "綦江区",
+        "region": "主城新区",
+        "actual": 0.64845,
+        "median": 2.16108,
+        "ridge": 3.20975,
+        "random_forest": 2.613859
+      },
+      {
+        "code": "500111",
+        "district": "大足区",
+        "region": "主城新区",
+        "actual": 1.6092,
+        "median": 2.16108,
+        "ridge": 2.855992,
+        "random_forest": 2.590964
+      },
+      {
+        "code": "500112",
+        "district": "渝北区",
+        "region": "中心城区",
+        "actual": 3.6549,
+        "median": 2.16108,
+        "ridge": 9.930589,
+        "random_forest": 5.455743
+      },
+      {
+        "code": "500113",
+        "district": "巴南区",
+        "region": "中心城区",
+        "actual": 1.47645,
+        "median": 2.16108,
+        "ridge": 4.274607,
+        "random_forest": 4.723973
+      },
+      {
+        "code": "500115",
+        "district": "长寿区",
+        "region": "主城新区",
+        "actual": 1.18215,
+        "median": 2.16108,
+        "ridge": 3.219672,
+        "random_forest": 4.1619
+      },
+      {
+        "code": "500116",
+        "district": "江津区",
+        "region": "主城新区",
+        "actual": 1.93185,
+        "median": 2.16108,
+        "ridge": 5.327779,
+        "random_forest": 5.413591
+      },
+      {
+        "code": "500117",
+        "district": "合川区",
+        "region": "主城新区",
+        "actual": 0.7389,
+        "median": 2.16108,
+        "ridge": 3.92534,
+        "random_forest": 3.768876
+      },
+      {
+        "code": "500118",
+        "district": "永川区",
+        "region": "主城新区",
+        "actual": 2.32065,
+        "median": 2.16108,
+        "ridge": 4.043717,
+        "random_forest": 4.583333
+      },
+      {
+        "code": "500119",
+        "district": "南川区",
+        "region": "主城新区",
+        "actual": 1.10835,
+        "median": 2.16108,
+        "ridge": 2.022421,
+        "random_forest": 1.528961
+      },
+      {
+        "code": "500120",
+        "district": "璧山区",
+        "region": "主城新区",
+        "actual": 2.6739,
+        "median": 2.16108,
+        "ridge": 2.633209,
+        "random_forest": 2.750492
+      },
+      {
+        "code": "500151",
+        "district": "铜梁区",
+        "region": "主城新区",
+        "actual": 1.25235,
+        "median": 2.16108,
+        "ridge": 2.285093,
+        "random_forest": 2.306467
+      },
+      {
+        "code": "500152",
+        "district": "潼南区",
+        "region": "主城新区",
+        "actual": 2.0529,
+        "median": 2.16108,
+        "ridge": 2.23457,
+        "random_forest": 1.921643
+      },
+      {
+        "code": "500153",
+        "district": "荣昌区",
+        "region": "主城新区",
+        "actual": 0.94905,
+        "median": 2.16108,
+        "ridge": 2.119984,
+        "random_forest": 1.326807
+      }
+    ],
+    "clusters": {
+      "year": 2020,
+      "k": 3,
+      "silhouette": 0.360554,
+      "rows": [
+        {
+          "district": "涪陵区",
+          "code": "500102",
+          "region": "主城新区",
+          "cluster": 2,
+          "baseline_area_km2": 48.8646,
+          "baseline_population": 1118000
+        },
+        {
+          "district": "渝中区",
+          "code": "500103",
+          "region": "中心城区",
+          "cluster": 3,
+          "baseline_area_km2": 15.2316,
+          "baseline_population": 587200
+        },
+        {
+          "district": "大渡口区",
+          "code": "500104",
+          "region": "中心城区",
+          "cluster": 3,
+          "baseline_area_km2": 29.3184,
+          "baseline_population": 423000
+        },
+        {
+          "district": "江北区",
+          "code": "500105",
+          "region": "中心城区",
+          "cluster": 3,
+          "baseline_area_km2": 69.4917,
+          "baseline_population": 926500
+        },
+        {
+          "district": "沙坪坝区",
+          "code": "500106",
+          "region": "中心城区",
+          "cluster": 2,
+          "baseline_area_km2": 96.4971,
+          "baseline_population": 1480000
+        },
+        {
+          "district": "九龙坡区",
+          "code": "500107",
+          "region": "中心城区",
+          "cluster": 2,
+          "baseline_area_km2": 100.2186,
+          "baseline_population": 1529900
+        },
+        {
+          "district": "南岸区",
+          "code": "500108",
+          "region": "中心城区",
+          "cluster": 2,
+          "baseline_area_km2": 61.6932,
+          "baseline_population": 1200200
+        },
+        {
+          "district": "北碚区",
+          "code": "500109",
+          "region": "中心城区",
+          "cluster": 2,
+          "baseline_area_km2": 53.154,
+          "baseline_population": 836300
+        },
+        {
+          "district": "綦江区",
+          "code": "500110",
+          "region": "主城新区",
+          "cluster": 2,
+          "baseline_area_km2": 41.7195,
+          "baseline_population": 1011800
+        },
+        {
+          "district": "大足区",
+          "code": "500111",
+          "region": "主城新区",
+          "cluster": 1,
+          "baseline_area_km2": 43.5978,
+          "baseline_population": 836100
+        },
+        {
+          "district": "渝北区",
+          "code": "500112",
+          "region": "中心城区",
+          "cluster": 2,
+          "baseline_area_km2": 176.7735,
+          "baseline_population": 2198700
+        },
+        {
+          "district": "巴南区",
+          "code": "500113",
+          "region": "中心城区",
+          "cluster": 2,
+          "baseline_area_km2": 64.2681,
+          "baseline_population": 1180800
+        },
+        {
+          "district": "长寿区",
+          "code": "500115",
+          "region": "主城新区",
+          "cluster": 1,
+          "baseline_area_km2": 61.4808,
+          "baseline_population": 692100
+        },
+        {
+          "district": "江津区",
+          "code": "500116",
+          "region": "主城新区",
+          "cluster": 2,
+          "baseline_area_km2": 86.1588,
+          "baseline_population": 1360900
+        },
+        {
+          "district": "合川区",
+          "code": "500117",
+          "region": "主城新区",
+          "cluster": 1,
+          "baseline_area_km2": 55.5165,
+          "baseline_population": 1244900
+        },
+        {
+          "district": "永川区",
+          "code": "500118",
+          "region": "主城新区",
+          "cluster": 1,
+          "baseline_area_km2": 62.2215,
+          "baseline_population": 1149900
+        },
+        {
+          "district": "南川区",
+          "code": "500119",
+          "region": "主城新区",
+          "cluster": 2,
+          "baseline_area_km2": 28.0998,
+          "baseline_population": 573300
+        },
+        {
+          "district": "璧山区",
+          "code": "500120",
+          "region": "主城新区",
+          "cluster": 1,
+          "baseline_area_km2": 40.6233,
+          "baseline_population": 758000
+        },
+        {
+          "district": "铜梁区",
+          "code": "500151",
+          "region": "主城新区",
+          "cluster": 1,
+          "baseline_area_km2": 34.245,
+          "baseline_population": 687500
+        },
+        {
+          "district": "潼南区",
+          "code": "500152",
+          "region": "主城新区",
+          "cluster": 1,
+          "baseline_area_km2": 33.7203,
+          "baseline_population": 689000
+        },
+        {
+          "district": "荣昌区",
+          "code": "500153",
+          "region": "主城新区",
+          "cluster": 1,
+          "baseline_area_km2": 31.3074,
+          "baseline_population": 669200
+        }
+      ]
+    }
+  }
+}

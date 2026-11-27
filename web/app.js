@@ -3,9 +3,10 @@ const $=id=>document.getElementById(id);
 const map=$("map"), ctx=map.getContext("2d");
 let records=[], shapes=[], page="overview", selected="", zoom=1, focused=null, datasetReady=false;
 let playback=null;
+let geographicProject, riverPaths=[];
 let labRows=[], labYear=null, questionIssued=0, currentQuestion="", currentAnswer="";
 const weights=[30,45,25];
-const pages={overview:"空间总览",lab:"评价实验室",relations:"指标关系",library:"数据查询",assistant:"研究助手",report:"研究简报"};
+const pages={overview:"空间总览",lab:"评价实验室",relations:"指标关系",analytics:"分析中心",library:"数据查询",assistant:"研究助手",report:"研究简报"};
 const topics={
   "扩张与形态":["built_km2","expansion_km2","annual_expansion_intensity_pct","annual_growth_pct","added_km2","lost_km2","adjacent_km2","nonadjacent_km2","adjacency_unknown_km2","centroid_displacement_km","centroid_bearing_deg","expansion_cropland_share_pct"],
   "土地覆盖":[...landTypes,"valid_area_km2","nodata_area_km2","impervious_share_pct","coverage_gap_pct"],
@@ -36,6 +37,7 @@ function buildPaths(features){
   const cos=Math.cos((n+s)*Math.PI/360);
   const scale=Math.min((map.width-100)/((e-w)*cos),(map.height-52)/(n-s));
   const project=([x,y])=>[map.width/2+(x-(w+e)/2)*cos*scale,map.height/2-(y-(s+n)/2)*scale];
+  geographicProject=project;
   shapes=features.map((f,i)=>{
     const path=new Path2D();let bestArea=0,anchor;
     for(const polygon of polys[i]){
@@ -66,6 +68,10 @@ function paint(rows){
     ctx.fillStyle=Number.isFinite(v)?`rgb(${Math.round(36+t*165)},${Math.round(98+t*136)},${Math.round(91+t*25)})`:"#2b4945";
     ctx.fill(f.path,"evenodd");ctx.strokeStyle="#173e36";ctx.lineWidth=1.3/zoom;ctx.stroke(f.path);
   }
+  if($("rivers-toggle").getAttribute("aria-pressed")==="true"){
+    ctx.strokeStyle="#83c9e1";ctx.lineWidth=2.25/zoom;
+    for(const path of riverPaths)ctx.stroke(path);
+  }
   const choice=shapes.find(f=>f.code===selected);
   if(choice){ctx.lineWidth=2.5/zoom;ctx.strokeStyle="#f6d880";ctx.stroke(choice.path);}
   ctx.textAlign="center";ctx.textBaseline="middle";ctx.font=`bold ${14/Math.sqrt(zoom)}px sans-serif`;
@@ -93,6 +99,10 @@ map.onclick=e=>{
 };
 $("zoom-in").onclick=()=>{zoom=Math.min(4,zoom*1.4);focused=shapes.find(f=>f.code===selected)?.anchor;render();};
 $("zoom-out").onclick=()=>{zoom=Math.max(1,zoom/1.4);if(zoom===1)focused=null;render();};
+$("rivers-toggle").onclick=()=>{
+  const button=$("rivers-toggle");
+  button.setAttribute("aria-pressed",String(button.getAttribute("aria-pressed")!=="true"));render();
+};
 $("reset-map").onclick=()=>{zoom=1;focused=null;render();};
 function summary(rows){
   const previous=Math.max(...scoped().map(r=>r.year).filter(y=>y<Number($("year").value)));
@@ -422,6 +432,7 @@ function render(){
   if(page==="lab")lab();
   if(page==="library")library();
   if(page==="relations")relationView();
+  if(page==="analytics")openAnalytics();
   if(page==="report")report();
   if(page==="assistant"&&currentQuestion)answer(currentQuestion);
 }
@@ -433,7 +444,7 @@ $("enhance").onclick=async()=>{
   if(!currentAnswer)return;
   const id=questionIssued;$("generated").textContent="正在调用本机模型…";
   try{
-    const resp=await fetch("/api/interpret",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:currentQuestion,evidence:currentAnswer})});
+    const resp=await fetch("/api/interpret",{method:"POST",headers:{"Content-Type":"application/json","X-CSRFToken":document.cookie.match(/(?:^|; )csrftoken=([^;]+)/)?.[1]||""},body:JSON.stringify({question:currentQuestion,evidence:currentAnswer})});
     const data=await resp.json();if(!resp.ok)throw Error(data.error||"请求失败");
     if(id===questionIssued)$("generated").textContent="模型解读 · "+data.answer;
   }catch(e){if(id===questionIssued)$("generated").textContent="本机模型暂不可用："+e.message;}
@@ -464,6 +475,14 @@ Promise.all([read("/dashboard.json"),read("/districts.geojson")]).then(([data,bo
     `${new Set(records.map(r=>r.code)).size} 个区县 · ${records.length} 条区年观测 · CLCD 30 m ｜ 经济指标为现价，四期评价含早期待复核记录`;
   for(const [code,name] of new Map(records.map(r=>[r.code,r.district])))option($("scenario-code"),code,name);
   datasetReady=true;render();
+  if(records.every(r=>r.data_kind==="observed"))read("/rivers.geojson").then(data=>{
+    riverPaths=data.features.map(f=>{
+      const path=new Path2D(), lines=f.geometry.type==="LineString"?[f.geometry.coordinates]:f.geometry.coordinates;
+      for(const line of lines)line.forEach((point,i)=>{const [x,y]=geographicProject(point);if(i)path.lineTo(x,y);else path.moveTo(x,y);});
+      return path;
+    });
+    $("rivers-toggle").disabled=!riverPaths.length;
+  }).catch(()=>{});
   read("/api/config").then(config=>{$("enhance").hidden=!config.model;}).catch(()=>{});
   if("serviceWorker" in navigator)navigator.serviceWorker.register("/sw.js").catch(()=>{});
 }).catch(e=>{$("status").textContent="数据加载失败："+e.message;});

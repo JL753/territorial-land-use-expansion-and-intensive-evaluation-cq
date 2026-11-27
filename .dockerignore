@@ -1,0 +1,8 @@
+.git
+.venv
+.cache
+**/__pycache__
+inputs
+outputs
+downloads
+db.sqlite3

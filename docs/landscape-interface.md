@@ -17,3 +17,15 @@
 比较区县在不同权重下的名次上下限，并导出可复核的结果表。
 
 ![桌面敏感性扫描](previews/desktop.webp)
+
+## 统计与模型报表
+
+Django 提供经过版本绑定的报告数据，ECharts 绘制趋势、转移与模型回测。
+
+![Django 分析中心](previews/analysis.webp)
+
+## 两江水系
+
+浅蓝中心线显示公开的长江、嘉陵江地理参照，卷首绘画表现山城地域景观。
+
+![重庆两江水系](previews/rivers.webp)

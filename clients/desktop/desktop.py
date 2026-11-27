@@ -26,7 +26,9 @@ def resources():
         with zipfile.ZipFile(archive) as z:
             return {path.removeprefix("assets/"): z.read(path) for path in z.namelist()
                     if path.startswith("assets/") and not path.endswith("/")}
-    assets = {p.name: p.read_bytes() for p in (ROOT / "web").iterdir() if p.is_file()}
+    web = ROOT / "web"
+    assets = {p.relative_to(web).as_posix(): p.read_bytes() for p in web.rglob("*") if p.is_file()}
+    assets["analysis-report.json"] = (ROOT / "results/analysis/report.json").read_bytes()
     for name in ("dashboard.json", "districts.geojson"):
         assets[name] = (ROOT / RESULTS / name).read_bytes()
     return assets
@@ -36,6 +38,8 @@ def local_server(assets, port=0):
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
             key = urlsplit(self.path).path.removeprefix("/") or "index.html"
+            if key == "api/v1/analysis/":
+                key = "analysis-report.json"
             data = b"{}" if key == "api/config" else assets.get(key)
             if data is None:
                 self.send_error(404)

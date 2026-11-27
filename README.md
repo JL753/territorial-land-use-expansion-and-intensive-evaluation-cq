@@ -23,18 +23,27 @@
 | Python 桌面 | 执行 `python downloads/cq-land-desktop.pyz`，需 Python 3.10+ 和 Tkinter |
 
 ```bash
-python serve.py --results results/socioeconomic/four-year-exploratory
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python manage.py migrate
+python manage.py import_study
+python manage.py runserver
 ```
 
 快捷查找支持 Ctrl+K 或 ⌘K。大屏支持四期轮播、地图点选与缩放、地类构成和逐区地类转移矩阵。评价实验室支持熵权、等权、自定义权重和单区情景试算。研究助手可检索区县、对照指标、解释矩阵和试算结果。网页在 HTTPS 或本机地址上支持离线缓存。
 
-网页可选接入本机 Ollama。启动 Ollama 并准备所需模型后，在上述命令末尾加 `--ollama-model MODEL`。摘要输入由研究台按当前数据计算，模型选出的相关证据单独显示。离线客户端内置统计问答。
+网页可选接入本机 Ollama。启动 Ollama 并准备模型后，设置 `CQ_OLLAMA_MODEL` 并启动 Django。摘要输入由研究台按当前数据计算，模型选出的相关证据单独显示。离线客户端内置统计问答。
 
 网页版 `/mobile.html` 和 `/desktop.html` 可直接体验两个专用界面。网页研究简报随年份及区组更新，可加备注并打印为 PDF。桌面分析台支持跨年筛选、按列排序、保存评价方案、对照排名和导出差异。
 
 新版采用重庆两江与山城为题的淡墨卷首。网页可在指标关系图中选择两项变量并联动地图，桌面可批量扫描 66 套权重，手机可建立待核对清单并按年份比较不透水面变化。
 
 [新版界面预览](docs/landscape-interface.md) · 安装包复建方法、三端设计和数据口径见 [三端应用说明](docs/workbench.md)。
+
+## 数据处理与机器学习
+
+Django 分析中心使用 ECharts 展示全域趋势、地类转移热图、时间留出的回测对照和聚类结果。使用仓库中的数据或原始 GeoTIFF 复算研究结果，详见 [技术栈、部署与分析复现](docs/data-platform.md)。生成的表、模型误差和逐区回测值位于 [results/analysis](results/analysis)。
 
 ## 运行模拟数据
 

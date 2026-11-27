@@ -7,9 +7,11 @@ target = root / "downloads/cq-land-desktop.pyz"
 target.parent.mkdir(exist_ok=True)
 with ZipFile(target, "w", compression=ZIP_DEFLATED) as archive:
     archive.write(Path(__file__).with_name("desktop.py"), "__main__.py")
-    for asset in sorted((root / "web").iterdir()):
+    web = root / "web"
+    for asset in sorted(web.rglob("*")):
         if asset.is_file():
-            archive.write(asset, "assets/" + asset.name)
+            archive.write(asset, "assets/" + asset.relative_to(web).as_posix())
     for name in ("dashboard.json", "districts.geojson"):
         archive.write(root / "results/socioeconomic/four-year-exploratory" / name, "assets/" + name)
+    archive.write(root / "results/analysis/report.json", "assets/analysis-report.json")
 print(target.name)

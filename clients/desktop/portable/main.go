@@ -17,7 +17,7 @@ import (
     "time"
 )
 
-//go:embed assets/*
+//go:embed assets
 var bundle embed.FS
 
 func browserPath() (string, error) {
@@ -46,6 +46,9 @@ func run() error {
     check := len(os.Args)>1 && os.Args[1]=="--check"
     address := "127.0.0.1:38421"
     if check { address = "127.0.0.1:0" }
+    mux.HandleFunc("/api/v1/analysis/",func(w http.ResponseWriter,r *http.Request){
+        http.ServeFileFS(w,r,files,"analysis-report.json")
+    })
     listener,err := net.Listen("tcp",address)
     if err != nil { return err }
     server := &http.Server{Handler:mux, ReadHeaderTimeout:5*time.Second}
