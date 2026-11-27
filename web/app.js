@@ -474,7 +474,16 @@ Promise.all([read("/dashboard.json"),read("/districts.geojson")]).then(([data,bo
   $("status").textContent=records.some(r=>r.data_kind==="demo")?"模拟数据与虚构几何，仅用于系统验证":
     `${new Set(records.map(r=>r.code)).size} 个区县 · ${records.length} 条区年观测 · CLCD 30 m ｜ 经济指标为现价，四期评价含早期待复核记录`;
   for(const [code,name] of new Map(records.map(r=>[r.code,r.district])))option($("scenario-code"),code,name);
-  datasetReady=true;render();
+  datasetReady=true;
+  const route=new URLSearchParams(location.search);
+  const routeYear=route.get("year"),routeDistrict=route.get("district"),routeView=route.get("view");
+  if([...$("year").options].some(option=>option.value===routeYear))$("year").value=routeYear;
+  if(records.some(row=>row.code===routeDistrict))selected=routeDistrict;
+  if(routeView==="lab"){
+    $("basis").value=Number($("year").value)<2020?"full":"recent";
+    if([...$("scenario-code").options].some(option=>option.value===routeDistrict))$("scenario-code").value=routeDistrict;
+    tab("lab");
+  }else render();
   if(records.every(r=>r.data_kind==="observed"))read("/rivers.geojson").then(data=>{
     riverPaths=data.features.map(f=>{
       const path=new Path2D(), lines=f.geometry.type==="LineString"?[f.geometry.coordinates]:f.geometry.coordinates;

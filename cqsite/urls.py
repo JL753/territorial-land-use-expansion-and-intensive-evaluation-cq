@@ -8,6 +8,7 @@ from study import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.page),
+    path("city.html", views.page),
     path("mobile.html", views.page),
     path("desktop.html", views.page),
     path("healthz", views.health),

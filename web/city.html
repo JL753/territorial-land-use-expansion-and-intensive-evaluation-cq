@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>两江立体图 · 山城地研</title>
+<link rel="icon" href="/icon192.png">
+<link rel="stylesheet" href="/vendor/maplibre-5.16.0.css">
+<link rel="stylesheet" href="/city.css">
+<script defer src="/vendor/maplibre-5.16.0.js"></script>
+<script defer src="/vendor/echarts-6.0.0.min.js"></script>
+<script defer src="/analysis.js"></script>
+<script defer src="/client-utils.js"></script>
+<script defer src="/city.js"></script>
+</head>
+<body>
+<header>
+  <a class="brand" href="/"><img src="/icon192.png" alt="">山城地研</a>
+  <div><p>重庆主城都市区</p><h1>两江立体图</h1></div>
+  <nav><a href="/">研究台</a><a href="/desktop.html">分析台</a><button id="city-fullscreen">全屏</button></nav>
+</header>
+<main>
+  <p id="city-status" role="status">正在加载三维地图和土地观测…</p>
+  <div id="city-body" class="workspace">
+    <aside class="panel tools">
+      <h2>地图工作台</h2>
+      <div class="preset"><button id="all-view">21 区全域</button><button id="campus-view">虎溪建筑</button></div>
+      <label>定位区县<select id="city-district"></select></label>
+      <label>搜虎溪建筑或设施<input id="site-search" type="search" placeholder="例如 重庆大学"><select id="site-matches" aria-label="片区搜索结果"><option value="">输入名称以检索</option></select></label>
+      <h2>专题图层</h2>
+      <div class="layer-list">
+        <label><input id="layer-district" type="checkbox" checked>区县边界与指标</label>
+        <label><input id="layer-volume" type="checkbox">区县指标立体柱面</label><label><input id="layer-river" type="checkbox" checked>长江、嘉陵江</label>
+        <label><input id="layer-cover" type="checkbox">阶段末土地覆盖</label>
+        <label><input id="layer-compare" type="checkbox">叠加对照年份</label>
+        <label><input id="layer-change" type="checkbox">阶段不透水面变化</label>
+        <label><input id="layer-buildings" type="checkbox" checked>虎溪建筑轮廓</label>
+        <label><input id="layer-envelope" type="checkbox" checked>虎溪快照覆盖框</label><label><input id="layer-road" type="checkbox" checked>虎溪道路</label>
+        <label><input id="layer-poi" type="checkbox" checked>虎溪配套设施</label>
+      </div>
+      <label>区县专题<select id="district-metric"><option value="built_km2">不透水面面积</option><option value="expansion_km2">阶段净扩张</option><option value="intensive_score">集约利用得分</option><option value="population_density">人口承载密度</option></select></label>
+      <label>对照年份<select id="compare-year"></select></label>
+      <label>虎溪建筑高度显示倍率 <input id="height-scale" type="range" min="1" max="4" step="0.5" value="2.5"><output id="height-value">2.5×</output></label><label>对照图透明度 <input id="compare-opacity" type="range" min="0" max="100" value="50"></label>
+      <div class="sources">区县统计与 CLCD 按观测年切换。虎溪建筑、道路和设施来自 2026 年 OSM 快照。</div>
+    </aside>
+    <section class="stage" aria-label="三维研究地图">
+      <div id="city-map"></div>
+      <div class="map-top"><button id="city-3d" aria-pressed="true">三维</button><button id="pick-radius" aria-pressed="false">选周边中心</button><button id="clear-radius">清除范围</button></div>
+      <div id="city-legend"></div>
+      <div class="timeline"><button id="city-play">播放</button><div id="city-years" aria-label="观测年份"></div><span id="period-note"></span></div>
+    </section>
+    <aside class="panel report-panel">
+      <div class="tabs" role="group" aria-label="分析面板"><button data-pane="overview" aria-pressed="true">区县现状</button><button data-pane="nearby" aria-pressed="false">周边分析</button><button data-pane="work" aria-pressed="false">成果</button></div>
+      <section class="pane" id="pane-overview">
+        <p class="caption" id="city-scope"></p><h2 id="city-name"></h2>
+        <div class="city-kpi" id="city-kpi"></div>
+        <div class="dashboard-chart" id="city-chart" aria-label="区县不透水面趋势"></div>
+        <h3>新增不透水面的期初地类</h3><div id="city-sources"></div>
+        <h3>经济与社会口径</h3><div id="city-provenance"></div>
+        <a id="city-scenario" href="/">进入评价试算</a>
+      </section>
+      <section class="pane" id="pane-nearby" hidden>
+        <h2>设施与建筑现况</h2>
+        <p>地图选点或点选建筑、设施后，可以比较 500 米与 1 公里直线范围。统计覆盖虎溪快照。</p>
+        <p id="poi-coverage" role="status"></p>
+        <label>显示半径<select id="city-radius"><option value="500">500 米</option><option value="1000">1 公里</option></select></label>
+        <label>设施类型<select id="poi-type"><option value="">全部类型</option></select></label>
+        <label>建筑着色<select id="building-color"><option value="type">按用途标签</option><option value="basis">按高度依据</option></select></label>
+        <div id="building-key"></div><div class="city-scroll" id="city-nearby-table"></div>
+        <h3>建筑用途构成</h3><p id="building-scope"></p><div id="building-chart" class="dashboard-chart" aria-label="建筑用途构成环形图"></div>
+        <h3>楼层标签分布</h3><div id="floor-table" class="city-scroll"></div>
+        <button id="city-tally-export" disabled>导出周边统计</button>
+      </section>
+      <section class="pane" id="pane-work" hidden>
+        <h2>研究成果</h2>
+        <p>保存当前地图视角、观测年份和图层状态，便于重开同一分析。成果保存在本机。</p>
+        <label>视图名称<input id="city-task-name" maxlength="48" placeholder="例如 2022 年虎溪设施核查"></label><button id="save-city-task">保存视图</button>
+        <div id="city-tasks"></div><p id="city-task-status" role="status"></p>
+        <button id="city-district-export">导出区县四期数据</button>
+        <button id="city-map-export">导出地图 PNG</button><button id="city-print">打印研究简报</button>
+        <div id="city-summary"></div>
+      </section>
+    </aside>
+  </div>
+</main>
+<footer>建筑与设施 © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap 贡献者</a> · 土地覆盖 CLCD · 水系 Natural Earth。建筑拉伸高度以点选结果的高度依据为准。</footer>
+</body>
+</html>

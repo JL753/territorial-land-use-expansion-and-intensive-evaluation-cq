@@ -1,4 +1,8 @@
-const CACHE="cq-land-study-v9";
+const CACHE="cq-land-study-v11";
+const cityAssets=["/city.html","/city.js","/city.css","/vendor/maplibre-5.16.0.js","/vendor/maplibre-5.16.0.css",
+  "/city/manifest.json","/city/buildings.geojson","/city/poi.geojson","/city/roads.geojson",
+  ...[2010,2015,2020,2022].map(y=>"/city/cover-"+y+".png"),
+  ...[2015,2020,2022].map(y=>"/city/change-"+y+".png")];
 const assets=["/","/style.css","/analysis.js","/app.js","/manifest.webmanifest","/icon192.png","/icon512.png","/dashboard.json","/districts.geojson","/client-utils.js","/mobile.html","/mobile.css","/mobile.js","/mobile.webmanifest","/desktop.html","/desktop.css","/desktop.js","/river-ink.webp","/rivers.geojson","/charts.js","/vendor/echarts-6.0.0.min.js"];
 self.addEventListener("install",event=>event.waitUntil((async()=>{
   const cache=await caches.open(CACHE);
@@ -8,9 +12,12 @@ self.addEventListener("install",event=>event.waitUntil((async()=>{
   await self.skipWaiting();
 })()));
 self.addEventListener("activate",event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith("cq-land-study-")&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener("message",event=>{
+  if(event.data==="cache-city")event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(cityAssets)).catch(()=>{}));
+});
 self.addEventListener("fetch",event=>{
   const url=new URL(event.request.url);
-  if(event.request.method!=="GET"||url.origin!==self.location.origin||(!assets.includes(url.pathname)&&url.pathname!=="/api/v1/analysis/"))return;
+  if(event.request.method!=="GET"||url.origin!==self.location.origin||(!assets.includes(url.pathname)&&!cityAssets.includes(url.pathname)&&url.pathname!=="/api/v1/analysis/"))return;
   event.respondWith((async()=>{
     const cache=await caches.open(CACHE);
     try{

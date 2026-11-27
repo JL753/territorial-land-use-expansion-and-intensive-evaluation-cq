@@ -60,6 +60,10 @@ python manage.py runserver
 
 [新版界面预览](docs/landscape-interface.md) · 安装包复建方法、三端设计和数据口径见 [三端应用说明](docs/workbench.md)。
 
+## 重庆三维大屏
+
+「两江立体图」提供区县画像、四期土地覆盖、增减变化、虎溪三维建筑、设施周边分析、视图保存、CSV 和 PNG 导出。网页地址为 `/city.html`，桌面端可从侧栏进入。 [操作与数据来源](docs/city-atlas.md) · [三维界面预览](docs/landscape-interface.md#两江立体图)
+
 ## 数据处理与机器学习
 
 Django 分析中心使用 ECharts 展示全域趋势、地类转移热图、时间留出的回测对照和聚类结果。使用仓库中的数据或原始 GeoTIFF 复算研究结果，详见 [技术栈、部署与分析复现](docs/data-platform.md)。生成的表、模型误差和逐区回测值位于 [results/analysis](results/analysis)。

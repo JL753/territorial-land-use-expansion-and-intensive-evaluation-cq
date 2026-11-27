@@ -66,3 +66,6 @@ article h2{font:700 1.2rem/1.4 var(--serif)}
 #rivers-toggle[aria-pressed=true]{background:#c3e6ee;color:#143e47;border-color:#a4d9e4}
 #rivers-toggle:disabled{opacity:.45;cursor:default}
 @media(max-width:520px){.report-chart{height:290px}}
+.head-actions .city-entry{display:inline-block;padding:.42rem .52rem;border:1px solid #8fab95;border-radius:6px;color:#285947;background:#edf3e5}
+.screen .head-actions .city-entry{color:#142e29}
+@media(max-width:520px){.head-actions .city-entry{font-size:.68rem;padding:.34rem}.head-actions{flex-wrap:wrap}}

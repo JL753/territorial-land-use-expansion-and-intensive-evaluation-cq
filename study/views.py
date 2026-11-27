@@ -15,11 +15,15 @@ from .ollama import choose_evidence
 from .postgis import published_data
 
 WEB = settings.ROOT / "web"
-PAGES = {"/": "index.html", "/mobile.html": "mobile.html", "/desktop.html": "desktop.html"}
+PAGES = {"/": "index.html", "/mobile.html": "mobile.html", "/desktop.html": "desktop.html", "/city.html": "city.html"}
 ASSETS = {
     "app.js", "style.css", "analysis.js", "client-utils.js", "sw.js", "manifest.webmanifest",
     "mobile.js", "mobile.css", "mobile.webmanifest", "desktop.js", "desktop.css", "river-ink.webp", "rivers.geojson",
     "icon192.png", "icon512.png", "charts.js", "analytics-page.js",
+    "city.js", "city.css", "vendor/maplibre-5.16.0.css", "vendor/maplibre-5.16.0.js", "vendor/maplibre-LICENSE.txt",
+    "city/manifest.json", "city/buildings.geojson", "city/poi.geojson", "city/roads.geojson",
+    "city/cover-2010.png", "city/cover-2015.png", "city/cover-2020.png", "city/cover-2022.png",
+    "city/change-2015.png", "city/change-2020.png", "city/change-2022.png",
     "vendor/echarts-6.0.0.min.js", "vendor/echarts-LICENSE.txt", "vendor/echarts-NOTICE.txt",
 }
 
