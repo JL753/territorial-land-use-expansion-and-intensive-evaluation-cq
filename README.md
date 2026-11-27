@@ -22,16 +22,24 @@
 - [四期不透水面扩张实证结果](docs/landcover-results.md)
 - [集约利用实证和三份数据交付](docs/socioeconomic-results.md)
 
-## 工程验收与数据审计\n\n- [五阶段实施与验收清单](docs/acceptance.md)\n- [数据质量与可追溯性验证](docs/validation.md)\n- [部署与运行手册](docs/deployment.md)\n\n运行 **python audit_study.py --output outputs/data-audit** 可对 21 区、84 条区年记录、63 条扩张记录、5,103 个地类转移单元、评价结果和展示边界执行一致性检查，并生成带 SHA-256 输入指纹的 JSON/Markdown 报告。审计通过不替代年鉴原件、CLCD 原始版本和行政边界基准的外部核验。\n\n## 运行山城地研
+## 工程验收与数据审计
+
+- [五阶段实施与验收清单](docs/acceptance.md)
+- [数据质量与可追溯性验证](docs/validation.md)
+- [部署与运行手册](docs/deployment.md)
+
+运行 **python audit_study.py --output outputs/data-audit** 可对 21 区、84 条区年记录、63 条扩张记录、5,103 个地类转移单元、评价结果和展示边界执行一致性检查，并生成带 SHA-256 输入指纹的 JSON/Markdown 报告。审计通过不替代年鉴原件、CLCD 原始版本和行政边界基准的外部核验。
+
+## 运行山城地研
 
 | 客户端 | 启动方式 |
 | --- | --- |
 | 网页、大屏 | 在仓库根目录运行下方命令，访问 `http://127.0.0.1:8000/` |
-| Android 8+ | 安装 [APK](downloads/cq-land-android.apk)，打开口袋区县档案。可离线查询、收藏、记笔记和导出 |
+| Android 8+ | 执行 `bash clients/android/build.sh`（需 Android SDK API 35）构建；生成的 APK 位于本机 downloads 目录，当前仓库不跟踪该二进制 |
 | iPhone | 用 Safari 打开 HTTPS 部署地址的 `/mobile.html`，添加到主屏幕 |
-| Windows x64 | 打开 [桌面程序](downloads/cq-land-windows.exe)，使用本机 Edge 或 Chrome 应用窗口打开桌面分析台 |
-| Linux x64 | 执行 [桌面程序](downloads/cq-land-linux)，使用本机 Chromium 或 Chrome 应用窗口打开桌面分析台 |
-| Python 桌面 | 执行 `python downloads/cq-land-desktop.pyz`，需 Python 3.10+ 和 Tkinter |
+| Windows x64 | 执行 `sh clients/desktop/portable/build.sh`（需 Go 1.24）构建 Windows x64 与 Linux x64 程序 |
+| Linux x64 | 使用仓库内 [Linux 桌面程序](downloads/cq-land-linux)，或重新执行上述构建脚本 |
+| Python 桌面 | 执行 `python clients/desktop/package.py` 生成 pyz，再运行生成文件；需 Python 3.10+ 和 Tkinter |
 
 ```bash
 python -m venv .venv
