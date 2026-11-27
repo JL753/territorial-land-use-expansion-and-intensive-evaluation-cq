@@ -70,6 +70,21 @@ def building_properties(tags):
     return {"height_m":round(height,2),"height_source":source,
             "building_levels":levels,"building":tags.get("building","yes")}
 
+
+class FeatureCollectionWriter:
+    """Write valid GeoJSON without fragile text-stream seeks."""
+    def __init__(self, stream):
+        self.stream = stream
+        self.first = True
+        self.stream.write('{"type":"FeatureCollection","features":[')
+    def write(self, feature):
+        if not self.first:
+            self.stream.write(",")
+        self.first = False
+        self.stream.write(json.dumps(feature, ensure_ascii=False, separators=(",", ":")))
+    def finish(self):
+        self.stream.write("]}")
+
 class Extractor(osmium.SimpleHandler):
     def __init__(self,outputs,polygons,tree,manifest):
         super().__init__()
@@ -94,10 +109,8 @@ class Extractor(osmium.SimpleHandler):
                         "amenity","shop","tourism","leisure","office","healthcare","surface","oneway"):
                 if tags.get(key): props[key]=tags[key]
             if layer=="buildings": props.update(building_properties(tags))
-            stream=self.outputs[(layer,props["district_code"])]
-            stream.write(json.dumps({"type":"Feature","geometry":mapping(clipped),"properties":props},
-                                    ensure_ascii=False,separators=(",",":")))
-            stream.write(",")
+            writer=self.outputs[(layer,props["district_code"])]
+            writer.write({"type":"Feature","geometry":mapping(clipped),"properties":props})
             self.manifest["counts"][layer][props["district_code"]]+=1
     def area(self,a):
         tags=tags_dict(a.tags)
@@ -127,10 +140,10 @@ def build(pbf,output_dir,district_path,snapshot_date=None):
     tree=STRtree(polygons)
     output_dir.mkdir(parents=True,exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="osm21-",dir=output_dir) as tmp:
-        temp=Path(tmp); streams={}; manifest={
+        temp=Path(tmp); streams={}; writers={}; manifest={
             "schema":1,"source_url":URL,"license":"Open Database License 1.0 (ODbL)",
-            "attribution":"© OpenStreetMap contributors","snapshot_date":None,
-            "pbf_sha256":hashlib.sha256(pbf.read_bytes()).hexdigest(),
+            "attribution":"© OpenStreetMap contributors",
+            "pbf_sha256":None,
             "generated_at":datetime.now(timezone.utc).isoformat(),"snapshot_date":snapshot_date,
             "districts":[{"code":d["code"],"name":d["name"],"group":d["group"]} for d in districts],
             "counts":{layer:{d["code"]:0 for d in districts} for layer in LAYERS}}
@@ -138,20 +151,27 @@ def build(pbf,output_dir,district_path,snapshot_date=None):
             for d in districts:
                 path=temp/f"{layer}_{d['code']}.geojson"
                 stream=path.open("w",encoding="utf-8")
-                stream.write('{"type":"FeatureCollection","features":[')
                 streams[(layer,d["code"])]=(stream,path)
-        handler=Extractor({k:v[0] for k,v in streams.items()},polygons,tree,manifest)
-        handler.apply_file(str(pbf),locations=True,idx="flex_mem")
-        for (layer,code),(stream,path) in streams.items():
-            if manifest["counts"][layer][code]: stream.seek(stream.tell()-1)
-            stream.write("]}")
-            stream.close()
+                writers[(layer,d["code"])]=FeatureCollectionWriter(stream)
+        handler=Extractor(writers,polygons,tree,manifest)
+        try:
+            handler.apply_file(str(pbf),locations=True,idx="flex_mem")
+        finally:
+            for writer in writers.values(): writer.finish()
+            for stream,_ in streams.values(): stream.close()
         manifest["files"]={f"{layer}_{d['code']}.geojson":{
             "features":manifest["counts"][layer][d["code"]]} for layer in LAYERS for d in districts}
+        digest=hashlib.sha256()
+        with pbf.open("rb") as source:
+            for chunk in iter(lambda: source.read(1024*1024), b""):
+                digest.update(chunk)
+        manifest["pbf_sha256"]=digest.hexdigest()
         (temp/"manifest.json").write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding="utf-8")
+        (output_dir/"manifest.json").unlink(missing_ok=True)
         for path in temp.iterdir():
-            target=output_dir/path.name
-            os.replace(path,target)
+            if path.name != "manifest.json":
+                os.replace(path, output_dir/path.name)
+        os.replace(temp/"manifest.json", output_dir/"manifest.json")
     return manifest
 
 def main():
@@ -161,8 +181,7 @@ def main():
     parser.add_argument("--districts",type=Path,default=Path("results/socioeconomic/four-year-exploratory/districts.geojson"))
     parser.add_argument("--force",action="store_true")
     args=parser.parse_args()
-    if args.force and args.pbf.exists(): args.pbf.unlink()
-    if not args.pbf.exists():
+    if args.force or not args.pbf.exists():
         args.pbf.parent.mkdir(parents=True,exist_ok=True)
         print("Downloading Geofabrik Chongqing regional snapshot…",flush=True)
         modified=download(URL,args.pbf)

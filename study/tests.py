@@ -71,6 +71,22 @@ class StudyViewsTests(TestCase):
         self.assertEqual(self.client.get("/api/v1/osm-status/").json()["status"], "not_built")
         self.assertEqual(self.client.get("/api/v1/osm-layers/buildings/500105.geojson").status_code, 404)
 
+    @override_settings(OSM_OUTPUT_DIR=Path("/tmp/shancheng-test-osm-incomplete"))
+    def test_osm_status_rejects_incomplete_publication_manifest(self):
+        from tempfile import TemporaryDirectory
+        with TemporaryDirectory() as temp:
+            root = Path(temp)
+            manifest = {
+                "schema": 1,
+                "districts": [{"code": f"{500100 + index:06d}"} for index in range(21)],
+                "files": {},
+            }
+            (root / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+            with override_settings(OSM_OUTPUT_DIR=root):
+                response = self.client.get("/api/v1/osm-status/")
+                self.assertEqual(response.status_code, 503)
+                self.assertEqual(response.json()["status"], "invalid")
+
     @override_settings(OLLAMA_MODEL="test")
     def test_csrf_and_json_validation(self):
         browser = Client(enforce_csrf_checks=True)

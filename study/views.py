@@ -367,6 +367,12 @@ def osm_status(request):
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         if manifest.get("schema") != 1 or len(manifest.get("districts", [])) != 21:
             raise ValueError("Invalid 21-district OSM manifest.")
+        expected = {f"{layer}_{code}.geojson" for layer in ("buildings", "roads", "poi")
+                    for code in (str(d.get("code", "")) for d in manifest["districts"])}
+        published = manifest.get("files", {})
+        if not expected.issubset(published) or any(not (settings.OSM_OUTPUT_DIR / name).is_file()
+                                                    for name in expected):
+            raise ValueError("OSM layer publication is incomplete.")
         return JsonResponse({
             "status": "ready", "snapshot_date": manifest.get("snapshot_date"),
             "generated_at": manifest.get("generated_at"), "license": manifest.get("license"),
@@ -380,10 +386,18 @@ def osm_status(request):
 def osm_layer(request, layer, code):
     if layer not in {"buildings", "roads", "poi"} or not re.fullmatch(r"\d{6}", code):
         raise Http404
+    manifest_path = settings.OSM_OUTPUT_DIR / "manifest.json"
     path = settings.OSM_OUTPUT_DIR / f"{layer}_{code}.geojson"
-    if not path.is_file():
+    if not manifest_path.is_file() or not path.is_file():
+        raise Http404
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        key = f"{layer}_{code}.geojson"
+        if key not in manifest.get("files", {}):
+            raise Http404
+    except (OSError, ValueError, TypeError):
         raise Http404
     response = FileResponse(path.open("rb"), content_type="application/geo+json")
-    response["Cache-Control"] = "public, max-age=3600"
+    response["Cache-Control"] = "no-store"
     response["X-Content-Type-Options"] = "nosniff"
     return response

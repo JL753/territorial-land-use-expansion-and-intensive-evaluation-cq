@@ -75,11 +75,9 @@ python manage.py runserver
 
 - CLCD 1985—2025 年度产品可用年份以 Zenodo 实际文件清单为准；系统提供远程 COG 窗口统计脚本，不下载整幅中国栅格。
 - 先试运行：`python tools/build_clcd_district_series.py --years 2010,2015,2020,2025`；完整处理：`python tools/build_clcd_district_series.py`。
-- 全域建筑/道路/POI：`python tools/build_chongqing_osm_layers.py`，按 21 区县输出独立 GeoJSON，并由区县三维页按需加载。
 - 结果写入 `state/clcd-district-series.json`，通过 `/api/v1/landcover-series/` 提供给区县三维页、Cesium 年度时间轴和研究助手。遥感单源年份不生成虚假的人口、GDP 或集约利用得分。
-- 全域建筑/道路/POI：`python tools/build_chongqing_osm_layers.py`，按 21 区县输出独立 GeoJSON，区县三维页按需加载。
 - Docker 一次性构建两类空间数据：先 `docker compose build web`，再执行 `docker compose --profile data-build run --rm spatial-data-build`。结果持久化到 `study-state` 卷，Web 页面会自动读取。
-- 21 区县均可进入独立三维地形场景；当前地形来自在线 DEM 瓦片，虎溪精细建筑数据不能代表其他区县建筑模型已覆盖。
+- 21 区县均可进入独立三维地形场景；生成 OSM 派生图层后可查看各区县建筑轮廓、道路和 POI。建筑高度缺失时使用有来源标记的估算值，不能当作实测高度。
 - 详细数据处理与口径见 [长期数据流水线](docs/long-term-data-pipeline.md)。
 
 ## 动态科研平台
