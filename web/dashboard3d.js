@@ -36,7 +36,7 @@ function renderKpis(rows){
  $("kpi-built").textContent=fmt(sum(rows,"built_km2"));
  $("kpi-growth").textContent=state.year===2010?"基期":fmt(sum(rows,"expansion_km2"));
  const score=mean(rows,"intensive_score");$("kpi-score").textContent=fmt(score,3);
- $("kpi-score-note").textContent=(state.year>=2020?"主要比较 · A 级样本":"四期探索 · 含早期待核验数据");
+ const hasPrimary=state.recent.some(r=>r.year===state.year);$("kpi-score-note").textContent=(state.year>=2020&&hasPrimary?"主要比较 · A 级样本":"四期探索 · 含早期待核验数据");
  $("kpi-records").textContent=String(rows.length);
 }
 function renderDetail(){
@@ -49,7 +49,7 @@ function renderDetail(){
  $("district-detail").querySelector(".district-meta").textContent=row.group+" · "+row.code+" · "+state.year;
  const grid=$("district-detail").querySelector(".detail-grid");
  metricsToShow.forEach(([label,v,unit])=>{const cell=document.createElement("div");cell.className="detail-cell";const a=document.createElement("span"),b=document.createElement("strong");a.textContent=label;b.textContent=fmt(v,v===row.intensive_score?3:2)+(Number.isFinite(v)?" "+unit:"");cell.append(a,b);grid.append(cell)});
- const note=state.year<2020?"本期经济指标包含 B/C 级待复核记录，四期得分仅作探索性分析。":(state.year===2020||state.year===2022?"集约利用得分采用 2020、2022 年 42 条 A 级样本的主要比较口径。":"该字段按当前发布数据口径展示。");
+ const hasPrimary=state.recent.some(r=>r.year===state.year);const note=state.year<2020?"本期经济指标包含 B/C 级待复核记录，四期得分仅作探索性分析。":((state.year===2020||state.year===2022)&&hasPrimary?"集约利用得分采用 2020、2022 年 42 条 A 级样本的主要比较口径。":((state.year===2020||state.year===2022)?"主要比较样本当前不可用，本页回退显示四期探索性评价值。":"该字段按当前发布数据口径展示。"));
  $("district-detail").querySelector(".detail-note").textContent=note;
 }
 function applyMap(){

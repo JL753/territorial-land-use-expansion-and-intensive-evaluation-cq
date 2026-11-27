@@ -124,6 +124,11 @@ def observations(request):
 @require_GET
 def recent_observations(request):
     """Return the independently quality-screened 2020/2022 evaluation sample."""
+    if settings.RESULT_OVERRIDE or settings.USE_POSTGIS:
+        return JsonResponse(
+            {"error": "当前数据源未绑定本项目的主要比较样本。"},
+            status=404,
+        )
     source = (
         settings.ROOT / "results" / "socioeconomic"
         / "recent-year-comparison" / "district_year.csv"
