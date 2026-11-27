@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - "implementation/**"
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Python, Django and browser logic
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
+      - name: Check Django configuration and published data
+        env:
+          DJANGO_DEBUG: "1"
+          DJANGO_SECRET_KEY: "ci-only-not-for-deployment"
+        run: |
+          python manage.py check
+          python manage.py migrate --noinput
+          python manage.py import_study
+          python manage.py test study --verbosity 2
+          python manage.py build_analysis --output outputs/ci-analysis
+
+      - name: Run spatial workflow tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Run browser analysis tests
+        run: node --test tests/test_client.cjs

@@ -1,12 +1,12 @@
 import json
 from tempfile import TemporaryDirectory
 from pathlib import Path
+from unittest.mock import patch
 
 from django.conf import settings
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import Client, TestCase, override_settings
-from unittest.mock import patch
 
 from .models import District, Observation
 
@@ -25,10 +25,27 @@ class StudyViewsTests(TestCase):
         self.assertEqual(self.client.get("/api/v1/observations/?district=500112").json()["count"], 4)
         self.assertEqual(self.client.get("/api/v1/observations/?year=bad").status_code, 400)
         self.assertEqual(self.client.get("/api/v1/analysis/").json()["counts"]["flow"], 5103)
+        health = self.client.get("/healthz")
+        self.assertEqual(health.status_code, 200)
+        self.assertEqual(health.json(), {
+            "status": "ok", "districts": 21, "observations": 84,
+            "years": [2010, 2015, 2020, 2022],
+        })
         row = Observation.objects.first()
         row.payload["population"] = 0
         row.save()
         self.assertEqual(self.client.get("/api/v1/analysis/").status_code, 409)
+
+    def test_health_rejects_incomplete_panel(self):
+        with patch("study.views.snapshot", side_effect=[
+            {"type": "FeatureCollection", "features": [
+                {"properties": {"code": f"{500100 + index:06d}"}} for index in range(21)
+            ]},
+            [],
+        ]):
+            response = self.client.get("/healthz")
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json()["status"], "not_ready")
 
     def test_invalid_import_keeps_previous_records(self):
         with TemporaryDirectory() as temp:

@@ -10,6 +10,7 @@ urlpatterns = [
     path("", views.page),
     path("mobile.html", views.page),
     path("desktop.html", views.page),
+    path("healthz", views.health),
     path("dashboard.json", views.data, {"name": "dashboard.json"}),
     path("districts.geojson", views.data, {"name": "districts.geojson"}),
     path("api/v1/observations/", views.observations),
