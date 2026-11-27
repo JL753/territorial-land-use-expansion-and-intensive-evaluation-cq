@@ -58,14 +58,14 @@ function applyMap(){
  const lo=vals.length?Math.min(...vals):0,hi=vals.length?Math.max(...vals):1;
  state.source.entities.values.forEach(entity=>{
   const code=String(entity.properties.code.getValue()),row=byCode.get(code),poly=entity.polygon;
-  const show=!!row&&Number.isFinite(row[state.metric]);entity.show=show;if(!show||!poly)return;
-  const v=row[state.metric],t=hi===lo?.5:(v-lo)/(hi-lo);
+  const baselineOnly=state.year===2010&&(state.metric==="expansion_km2"||state.metric==="annual_expansion_intensity_pct");const hasValue=!!row&&Number.isFinite(row[state.metric]);const show=!!row&&(hasValue||baselineOnly);entity.show=show;if(!show||!poly)return;
+  const v=hasValue?row[state.metric]:0,t=hi===lo?.5:(v-lo)/(hi-lo);
   const low=Cesium.Color.fromCssColorString("#176a87"),high=Cesium.Color.fromCssColorString("#f1c66f");
   const color=Cesium.Color.lerp(low,high,t,new Cesium.Color());
   poly.height=0;poly.extrudedHeight=2200+t*23000;poly.material=color.withAlpha(code===state.selected ? .96 : .78);
   poly.outline=true;poly.outlineColor=code===state.selected?Cesium.Color.WHITE:Cesium.Color.fromCssColorString("#78d7e7");
  });
- $("legend-range").textContent=vals.length?fmt(lo,2)+" — "+fmt(hi,2)+" "+metrics[state.metric][1]:"当前年份无可用值";
+ $("legend-range").textContent=vals.length?fmt(lo,2)+" — "+fmt(hi,2)+" "+metrics[state.metric][1]:(state.year===2010&&(state.metric==="expansion_km2"||state.metric==="annual_expansion_intensity_pct")?"基期无阶段扩张值":"当前年份无可用值");
  $("map-title").textContent=state.year+" · "+metrics[state.metric][0];
 }
 function render(){
