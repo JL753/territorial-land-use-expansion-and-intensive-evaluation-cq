@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 520" preserveAspectRatio="xMidYMid slice">
+<defs>
+ <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#e4eff7"/><stop offset="1" stop-color="#f6fafc"/></linearGradient>
+ <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#c9dce7"/><stop offset="1" stop-color="#e6eff4"/></linearGradient>
+ <pattern id="contours" width="180" height="120" patternUnits="userSpaceOnUse"><path d="M-30 70 C20 10 90 8 130 48 S210 92 230 35 M-20 92 C25 38 78 34 120 70 S190 112 220 64 M-10 112 C35 62 85 58 125 92 S190 132 230 88" fill="none" stroke="#8fb0c5" stroke-opacity=".25" stroke-width="1.1"/></pattern>
+ <filter id="soft"><feGaussianBlur stdDeviation="12"/></filter>
+</defs>
+<rect width="1600" height="520" fill="url(#sky)"/>
+<path d="M0 260 Q120 185 245 220 T500 200 T760 235 T1040 185 T1320 220 T1600 180 V520 H0Z" fill="#d7e6ee"/>
+<path d="M0 320 Q130 225 275 290 T560 265 T840 310 T1120 245 T1380 300 T1600 255 V520 H0Z" fill="url(#hill)"/>
+<path d="M0 370 Q180 290 340 345 T670 315 T980 355 T1300 300 T1600 340 V520 H0Z" fill="#e9f1f5"/>
+<rect width="1600" height="520" fill="url(#contours)"/>
+<path d="M-50 390 C180 310 260 450 430 395 S690 285 850 355 S1090 450 1260 375 S1480 300 1650 365" fill="none" stroke="#8fc4d8" stroke-width="38" stroke-opacity=".58"/>
+<path d="M-50 390 C180 310 260 450 430 395 S690 285 850 355 S1090 450 1260 375 S1480 300 1650 365" fill="none" stroke="#fff" stroke-width="2.2" stroke-opacity=".8"/>
+<path d="M180 0 L300 120 L410 82 L540 180 L650 115 L780 210 L900 150 L1010 245 L1140 160 L1280 260 L1410 170 L1600 240" fill="none" stroke="#9eb8c8" stroke-width="2" stroke-opacity=".26"/>
+<g fill="#6f96ad" fill-opacity=".17" stroke="#7fa3b8" stroke-opacity=".24">
+ <path d="M1100 250 l72 -34 62 28 -12 55 -86 18 -52 -25Z"/>
+ <path d="M1255 270 l88 -24 72 30 -18 52 -100 18 -55 -32Z"/>
+ <path d="M940 285 l70 -26 60 27 -16 45 -83 15 -43 -25Z"/>
+ <path d="M700 295 l85 -22 63 30 -22 52 -92 9 -47 -35Z"/>
+</g>
+<g stroke="#6c91aa" stroke-opacity=".2" fill="none">
+ <path d="M0 470 C230 420 330 490 520 450 S840 410 1040 465 S1380 430 1600 470"/>
+ <path d="M0 492 C230 442 330 512 520 472 S840 432 1040 487 S1380 452 1600 492"/>
+ <path d="M80 140 C210 100 310 150 430 125 S650 90 770 130"/>
+ <path d="M900 90 C1040 40 1150 105 1270 80 S1460 52 1580 95"/>
+</g>
+<g fill="#6c8da3" fill-opacity=".5" font-family="sans-serif" font-size="15" letter-spacing="4">
+ <text x="1180" y="445">YANGTZE RIVER</text>
+ <text x="190" y="300">CHONGQING TERRAIN</text>
+</g>
+<rect width="1600" height="520" fill="#edf5fa" opacity=".16"/>
+</svg>

@@ -69,4 +69,5 @@ PUBLISHED_RESULTS = ROOT / "results" / "socioeconomic" / "four-year-exploratory"
 RESULT_OVERRIDE = os.environ.get("CQ_RESULTS")
 USE_POSTGIS = os.environ.get("CQ_POSTGIS") == "1"
 OLLAMA_MODEL = os.environ.get("CQ_OLLAMA_MODEL")
+OLLAMA_BASE_URL = os.environ.get("CQ_OLLAMA_BASE_URL", "http://127.0.0.1:11434")
 ANALYSIS_REPORT = Path(os.environ.get("CQ_ANALYSIS_REPORT", str(ROOT / "results" / "analysis" / "report.json")))

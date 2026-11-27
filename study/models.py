@@ -22,3 +22,19 @@ class Observation(models.Model):
 
     def __str__(self):
         return f"{self.district_id} · {self.year}"
+
+
+class DataUpdateRun(models.Model):
+    source_key = models.CharField(max_length=32, db_index=True)
+    action = models.CharField(max_length=16, default="check")
+    status = models.CharField(max_length=16, default="pending")
+    version = models.CharField(max_length=128, blank=True)
+    message = models.CharField(max_length=500, blank=True)
+    details = models.JSONField(default=dict)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.source_key} · {self.action} · {self.status}"

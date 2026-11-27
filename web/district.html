@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#edf4f8">
+<title>山城地研 · 区县三维空间</title>
+<link rel="stylesheet" href="/vendor/maplibre-5.16.0.css">
+<link rel="stylesheet" href="/district.css">
+<script defer src="/vendor/maplibre-5.16.0.js"></script>
+<script defer src="/district.js"></script>
+</head>
+<body>
+<header><a href="/" class="brand"><span>渝</span><b>山城地研<small>CHONGQING GEOINTELLIGENCE</small></b></a><nav><a href="/dashboard3d.html">全域三维</a><a class="active" href="/district.html">区县三维</a><a href="/data-center.html">数据中心</a><a href="/">研究总览</a></nav><button id="district-fullscreen">全屏</button></header>
+<main>
+<section class="hero"><div><p>3D DISTRICT EXPLORER · TERRAIN & LAND USE</p><h1 id="district-heading">重庆区县三维空间</h1><span id="district-subtitle">选择研究区县，查看地形起伏、行政边界和建设用地专题数据。</span></div><div class="hero-meta"><strong>21 区县全覆盖</strong><small>地形来源：公开 DEM 瓦片服务 · 指标来源：已入库研究数据</small></div></section>
+<section class="workspace">
+<aside class="panel">
+ <h2>区县导航</h2><label for="district-select">选择区县</label><select id="district-select"></select>
+ <div id="district-list" class="district-list"></div>
+ <hr>
+ <h2>专题表达</h2><label for="year-select">已入库观测年份</label><select id="year-select"></select>
+ <label for="metric-select">地图指标</label><select id="metric-select"><option value="built_km2">不透水面面积</option><option value="expansion_km2">阶段净扩张</option><option value="annual_expansion_intensity_pct">年均扩张强度</option><option value="intensive_score">集约利用得分</option></select>
+ <label class="toggle"><input id="terrain-toggle" type="checkbox" checked>三维地形</label>
+ <label class="toggle"><input id="boundary-toggle" type="checkbox" checked>区县边界</label>
+ <label class="toggle"><input id="hillshade-toggle" type="checkbox" checked>地形晕渲</label>
+ <p class="source-note">地形以公开 DEM 瓦片呈现，建筑物高度未提供时不生成虚构建筑。当前研究指标只显示已经完成入库和质量审计的年份。</p>
+</aside>
+<section class="map-wrap"><div id="district-map"></div><div class="map-overlay"><span id="map-year-label">观测年份</span><strong id="map-metric-label">不透水面面积</strong></div><div class="map-attribution">© OpenStreetMap contributors · Terrain: AWS Terrain Tiles / Terrarium DEM</div></section>
+<aside class="panel profile">
+ <p class="eyebrow">DISTRICT PROFILE</p><h2 id="profile-name">请选择区县</h2><p id="profile-group">—</p>
+ <div class="stat-grid"><div><small>不透水面面积</small><strong id="stat-built">—</strong></div><div><small>阶段净扩张</small><strong id="stat-growth">—</strong></div><div><small>扩张强度</small><strong id="stat-intensity">—</strong></div><div><small>集约利用得分</small><strong id="stat-score">—</strong></div></div>
+ <h3>区县年度记录</h3><div id="year-history" class="history"></div>
+ <a href="/data-center.html">查看数据来源与更新状态 →</a>
+</aside>
+</section>
+</main>
+</body></html>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#eef4f8">
+<title>山城地研 · 数据更新中心</title>
+<link rel="stylesheet" href="/data-center.css">
+<script defer src="/data-center.js"></script>
+</head>
+<body>
+<header class="dc-top"><a href="/" class="dc-brand"><span>渝</span><b>山城地研<small>GEOINTELLIGENCE DATA HUB</small></b></a><nav><a href="/">研究总览</a><a href="/dashboard3d.html">三维空间</a><a href="/district.html">区县三维</a><a class="active" href="/data-center.html">数据中心</a><a href="/guide.html">毕设工作台</a></nav><span class="dc-live"><i></i>公开数据源监测</span></header>
+<main>
+<section class="dc-hero">
+  <div><p class="eyebrow">DATA CATALOG · VERSION MONITORING</p><h1>数据资源与更新中心</h1><p>统一管理土地覆盖、地形、建筑、道路、统计资料和行政区划数据。检查公开数据源版本，但不自动覆盖已发布的研究数据。</p></div>
+  <div class="dc-hero-note"><strong>数据更新原则</strong><span>发现新版本 → 下载暂存 → 质量审计 → 人工确认发布</span></div>
+</section>
+<section class="dc-summary" id="dc-summary">
+  <article><span>已登记数据源</span><strong id="source-count">—</strong><small>统一来源目录</small></article>
+  <article><span>可自动检查版本</span><strong id="checkable-count">—</strong><small>无需人工逐个访问</small></article>
+  <article><span>最近检查时间</span><strong id="last-check">—</strong><small>以服务器记录为准</small></article>
+  <article><span>当前数据口径</span><strong>版本化</strong><small>不覆盖历史研究成果</small></article>
+</section>
+<section class="dc-actions">
+  <div><h2>数据源目录</h2><p>标注数据覆盖、空间分辨率、更新机制和自动检查能力。</p></div>
+  <button id="check-updates">立即检查可用新版本</button>
+</section>
+<div id="dc-status" role="status" class="dc-status">正在读取数据源目录…</div>
+<section id="source-grid" class="dc-grid"></section>
+<section class="dc-history">
+  <div><h2>更新检查记录</h2><p>版本检查不会直接下载大文件，也不会更改当前研究数据。</p></div>
+  <div class="dc-table-wrap"><table><thead><tr><th>时间</th><th>数据源</th><th>动作</th><th>状态</th><th>版本 / 说明</th></tr></thead><tbody id="update-history"><tr><td colspan="5">暂无检查记录</td></tr></tbody></table></div>
+</section>
+<section class="dc-note">
+  <h2>实时性与数据边界</h2>
+  <ul>
+    <li>CLCD 是年度土地覆盖产品，不是实时遥感流；当前公开记录覆盖 1985—2025 产品期，实际可用年份以文件清单为准，需按版本下载并完成区县统计。</li>
+    <li>OSM 是持续编辑数据，可以定期同步快照，但公开 Overpass 服务有使用限制，不适合高频批量生产下载。</li>
+    <li>人口、GDP 和产业统计通常在统计年鉴或公报发布后才能获取，不存在可靠的实时区县 GDP 接口。</li>
+    <li>所有新数据必须保留来源、发布日期、许可、文件校验值、处理参数和质量审计结果。</li>
+  </ul>
+</section>
+</main>
+</body></html>
